@@ -75,21 +75,21 @@ object Region extends HBaseConnection {
   }
 
   def allAsync(): Promise[Seq[Region]] = {
-    Akka.future {
-      val list = new ListBuffer[Region]()
-
-      withServerInfos { serverInfo =>
-        val load = serverInfo.getLoad()
-        val regionsLoad = load.getRegionsLoad();
-        regionsLoad.foreach { regionLoad =>
-          list += Region(serverInfo, regionLoad)
-        }
-      }
-
-      list.toList
-    }
+    Akka.future { all() }
   }
-  def all(): Seq[Region] = allAsync().value.get
+  def all(): Seq[Region] = {
+    val list = new ListBuffer[Region]()
+
+    withServerInfos { serverInfo =>
+      val load = serverInfo.getLoad()
+      val regionsLoad = load.getRegionsLoad();
+      regionsLoad.foreach { regionLoad =>
+        list += Region(serverInfo, regionLoad)
+      }
+    }
+
+    list.toList
+  }
 
   def findByNameAsync(regionName: String): Promise[Region] = {
     allAsync().map { infos =>
