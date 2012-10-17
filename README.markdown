@@ -12,8 +12,6 @@ This tool tries to fill that gap by answering the following questions:
  - How well are the regions split for each table?
  - What is going on on particular regions? How long do compactions take?
 
-For more information have a look in the Wiki (coming soon).
-
 ## Requirements & Limitations
 
 The current version is tested on HBase 0.90.x in distributed mode only. Support for 0.92.x is planned and will be
@@ -35,7 +33,9 @@ The first time you start, the script will fetch all requirements to build and ru
 When the application has started, you can access the WEB UI at: <http://localhost:9000>
 
 Please note that history data about regions is only collected while the application is running, it will need to run
-some time until the region detail graphs fill up.
+some time until the region detail graphs fill up. 
+
+For information about the usage, check out our [Wiki][wu].
 
 ## How to display compactions
 
@@ -47,6 +47,10 @@ Hannibal can set the log level to `INFO` for you, just edit [conf/application.co
 and set
 
     init.set_hbase_loglevels_to_info = true
+
+## More Information
+
+More information about the tool can be found in the [Wiki][w]
 
 ## Additional Features
 
@@ -69,3 +73,5 @@ With help from: [Jean-Pierre König][], [Christian Gügi][] and [Vadim Kisselman
  [Jean-Pierre König]: https://twitter.com/jpkoenig
  [Christian Gügi]: https://twitter.com/cguegi
  [Vadim Kisselmann]: https://twitter.com/vkisselmann
+ [w]: https://github.com/sentric/hannibal/wiki
+ [wu]: https://github.com/sentric/hannibal/wiki/Usage
