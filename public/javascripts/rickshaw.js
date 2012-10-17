@@ -2,6 +2,7 @@
  *
  *  [1]: https://github.com/timob/rickshaw/commit/208dd6d2f58f2975fb74dd2e19c878195cd75bc7
  *  [2]: https://github.com/shutterstock/rickshaw/pull/73
+ *  [3]: https://github.com/shutterstock/rickshaw/pull/137
  */
 var Rickshaw = {
 
