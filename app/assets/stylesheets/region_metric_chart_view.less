@@ -1,0 +1,48 @@
+.region-metric-chart-view {
+    @x-axis-height: 20px;
+    @y-axis-width: 0px;
+    @legend-width: 200px;
+    @timeline-height: 20px;
+    @slider-height: 20px;
+    position: relative;
+    width: 100%;
+    height: 400px;
+
+    .chart {
+      position: absolute;
+      left: @y-axis-width;
+      right: @legend-width;
+      bottom: @x-axis-height + @slider-height + @timeline-height;
+      top: 0;
+    }
+
+    .legend-container {
+        position: absolute;
+        right: 0;
+        vertical-align: top;
+    }
+
+    .x-axis {
+        position: absolute;
+        height: @x-axis-height;
+        top: auto;
+        right: 0;
+        bottom: @slider-height + @timeline-height;
+        left: @y-axis-width;
+    }
+
+    .timeline {
+        position: absolute;
+        left: 0;
+        bottom: @slider-height;
+        left: @y-axis-width;
+
+    }
+
+    .slider {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        left: @y-axis-width;
+    }
+}

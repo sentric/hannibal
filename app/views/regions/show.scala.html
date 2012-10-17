@@ -1,0 +1,66 @@
+@(region: models.Region, info: models.RegionInfo, longestCompaction: Long)
+
+@regionMetricChart(metricNames: Seq[String]) = {
+    <div class="region-metric-chart-view" data-region-name="@region.regionName" data-metric-names="@com.codahale.jerkson.Json.generate(metricNames)">
+        <div class="x-axis"></div>
+        <div class="chart"></div>
+        <div class="legend-container">
+            <div class="smoother" title="Smoothing"></div>
+            <div class="legend"></div>
+        </div>
+        <div class="timeline"></div>
+        <div class="slider"></div>
+    </div>
+}
+
+@content = {
+    <div id="show-region-view">
+        <div class="widget">
+            <div class="title">Details</div>
+            <div class="content">
+                <ul>
+                    <li>Region: <b>@info.regionName</b></li>
+                    <li>Table: <a href="@routes.Tables.show(region.tableName)"><b>@region.tableName</b></a></li>
+                    <li>startKey: <b>@info.startKey</b></li>
+                    <li>endKey: <b>@info.endKey</b></li>
+                    <li>Deployed on: <a href="@region.serverInfoUrl"><b>@region.serverHostName</b></a></li>
+                    <li>Storefile Size : <b>@(region.storefileSizeMB)MB</b></li>
+                    <li>Memstore Flush Size: <b>@(info.memstoreFlushSize/(1024*1024))MB</b></li>
+                    <li>Longest Compaction during last 7 Days: <b>@(longestCompaction/1000.0)s</b></li>
+                </ul>
+            </div>
+            <div>
+
+            </div>
+        </div>
+
+        <div class="widget">
+            <div class="title">Region History</div>
+            <div class="content">
+                @regionMetricChart(Seq(
+                    models.MetricDef.STOREFILES,
+                    models.MetricDef.COMPACTIONS,
+                    models.MetricDef.MEMSTORE_SIZE_MB,
+                    models.MetricDef.STOREFILE_SIZE_MB
+                ))
+            </div>
+            <div class="description">
+                <div class="headline">How did your region evolve over time?</div>
+                <div class="body">
+                   This chart shows recorded history of the region. The main purpose of the chart is to gain insights on the memstore and compactions, especially how often they occur and how long they take.
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@includes = {
+  <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/region_metric_chart_view.css")">
+  <script src="@routes.Assets.at("javascripts/views/regions/RegionMetricChart.js")" type="text/javascript"></script>
+  <script src="@routes.Assets.at("javascripts/views/regions/ShowRegion.js")" type="text/javascript"></script>
+  <script src="@routes.Assets.at("javascripts/models/Metric.js")" type="text/javascript"></script>
+  <script src="@routes.Assets.at("javascripts/models/MetricSeries.js")" type="text/javascript"></script>
+  <script src="@routes.Assets.at("javascripts/main/regions/show_region.js")" type="text/javascript"></script>
+}
+
+@main("Region")(content)(includes)

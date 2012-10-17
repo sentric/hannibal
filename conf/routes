@@ -1,0 +1,25 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# Home page
+GET     /                                                           controllers.Application.index
+
+GET     /servers                                                    controllers.Servers.index
+
+GET     /tables                                                     controllers.Tables.index()
+GET     /tables/                                                    controllers.Tables.index()
+GET     /tables/:tableName                                          controllers.Tables.show(tableName: String)
+
+GET     /regions                                                    controllers.Regions.index()
+GET     /regions/                                                   controllers.Regions.index()
+GET     /regions/.json                                              controllers.Regions.listJson()
+GET     /regions/:regionName                                        controllers.Regions.redirectToShow(regionName : String)
+GET     /regions/:regionName/                                       controllers.Regions.show(regionName : String)
+
+GET     /metrics/:target/.json                                      controllers.Metrics.listJson(target : String)
+GET     /metrics/:target/:metric/.json                              controllers.Metrics.showJson(target : String, metric: String)
+
+# Map static resources from the /public folder to the /assets URL path
+GET     /assets/*file               controllers.Assets.at(path="/public", file)
+

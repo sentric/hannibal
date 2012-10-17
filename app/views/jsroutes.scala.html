@@ -1,0 +1,42 @@
+@()
+
+<script type="text/javascript">
+    Routes = window.Routes = {
+        Servers: {
+            index: route("@routes.Servers.index()")
+        },
+        Tables: {
+            index: route("@routes.Tables.index()"),
+            show: route("@routes.Tables.show("%name%")")
+        },
+        Regions: {
+            index: route("@routes.Regions.index()"),
+            show: route("@routes.Regions.show("%name%")"),
+            listJson: route("@routes.Regions.listJson()")
+        },
+        Metrics: {
+            listJson: route("@routes.Metrics.listJson("%target%")"),
+            showJson: route("@routes.Metrics.showJson("%target%", "%name%")")
+        }
+    }
+
+    function route(u) {
+        return function(options, suffix) {
+            var url = u;
+            options = options || {}
+            for (key in options) {
+                if (url.indexOf("%" + key + "%") > -1) {
+                    url = url.replace("%" + key + "%", encodeURIComponent(options[key]));
+                }
+                else {
+                    var args = options[key] instanceof Array ? options[key] : [options[key]];
+                    _(args).forEach(function(v) {
+                        var sep = url.indexOf("?") > -1 ? "&": "?";
+                        url = url + sep + key + "=" + encodeURIComponent(v);
+                    });
+                }
+            }
+            return url;
+        }
+    }
+</script>

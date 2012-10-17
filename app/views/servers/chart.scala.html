@@ -1,0 +1,8 @@
+@(title: String)(content: Html)(javascriptIncludes: Html)
+
+@combinedIncludes = {
+
+  @javascriptIncludes
+}
+
+@main(title)(content)(combinedIncludes)

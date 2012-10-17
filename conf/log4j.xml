@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "http://logging.apache.org/log4j/docs/api/org/apache/log4j/xml/log4j.dtd">
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+    <!-- ################# A P P E N D E R D E F I N I T I O N S ################# -->
+    <appender name="DefaultFileAppender" class="org.apache.log4j.RollingFileAppender">
+      <param name="File" value="logs/log4j.log" />
+      <param name="append" value="true" />
+      <param name="MaxFileSize" value="100000KB" />
+      <param name="MaxBackupIndex" value="10" />
+      <layout class="org.apache.log4j.PatternLayout">
+        <param name="ConversionPattern" value="%d{ISO8601} %-5p [%t] %c{1} - %m%n" />
+        <!-- output with class, method and line <param name="ConversionPattern"
+        value="%d{ISO8601} %-5p [%t] %c{2} (%F:%M(%L)) - %m%n" /> -->
+      </layout>
+    </appender>
+
+    <!-- ######################################################################### -->
+
+    <logger name="org.apache" additivity="false">
+      <level value="WARN" />
+      <appender-ref ref="DefaultFileAppender" />
+    </logger>
+
+    <root>
+      <level value="INFO" />
+      <appender-ref ref="DefaultFileAppender" />
+    </root>
+
+</log4j:configuration>
