@@ -1,4 +1,4 @@
-@(region: models.Region, info: models.RegionInfo, longestCompaction: Long)
+@(region: models.Region, info: models.RegionInfo, longestCompaction: Long)(implicit request: play.api.mvc.Request[Any])
 
 @regionMetricChart(metricNames: Seq[String]) = {
     <div class="region-metric-chart-view" data-region-name="@region.regionName" data-metric-names="@com.codahale.jerkson.Json.generate(metricNames)">
@@ -63,4 +63,9 @@
   <script src="@routes.Assets.at("javascripts/main/regions/show_region.js")" type="text/javascript"></script>
 }
 
-@main("Region")(content)(includes)
+@breadcrumbs = {
+  <li><a href="@routes.Servers.index()">Servers</a> <span class="divider">/</span></li>
+  <li><a href="@routes.Tables.show(region.tableName)">Table: @region.tableName</a> <span class="divider">/</span></li>
+}
+
+@main("Region: " + region.regionName.take(20) + "…")(content)(includes)(breadcrumbs)

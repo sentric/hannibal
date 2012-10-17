@@ -1,8 +1,8 @@
-@(title: String)(content: Html)(javascriptIncludes: Html)
+@(title: String)(content: Html)(javascriptIncludes: Html)(breadcrumbs: Html)(implicit request: play.api.mvc.Request[Any])
 
 @combinedIncludes = {
 
   @javascriptIncludes
 }
 
-@main(title)(content)(combinedIncludes)
+@main(title)(content)(combinedIncludes)(breadcrumbs)

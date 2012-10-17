@@ -1,4 +1,4 @@
-@(tableName:String)
+@(tableName:String)(implicit request: play.api.mvc.Request[Any])
 
 @tableRegionsChart() = {
     <div class="table-regions-chart-view" data-table-name="@tableName">
@@ -33,5 +33,10 @@
   <script src="@routes.Assets.at("javascripts/main/tables/show_table.js")" type="text/javascript"></script>
 }
 
-@main("Table: " + tableName)(content)(includes)
+@breadcrumbs = {
+  <li><a href="@routes.Servers.index()">Servers</a> <span class="divider">/</span></li>
+}
+
+
+@main("Table: " + tableName)(content)(includes)(breadcrumbs)
 

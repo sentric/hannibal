@@ -1,4 +1,4 @@
-@(regionList:Seq[models.RegionInfo]) 
+@(regionList:Seq[models.RegionInfo])(implicit request: play.api.mvc.Request[Any])
 
 @main("Welcome to Play 2.0") {
 
@@ -7,6 +7,4 @@
 	<li>@region.toString</li> }
 </ul>
 
-} {
-  
-}
+} { } { }

@@ -13,17 +13,17 @@ import play.api.Play.current
 
 object Regions extends Controller {
 
-  def index() = Action {
+  def index() = Action { implicit request =>
     Async {
       models.Region.allAsync().map { regionInfos => Ok(views.html.regions.index(regionInfos)) }
     }
   }
 
-  def redirectToShow(regionName: String) = Action {
+  def redirectToShow(regionName: String) = Action { implicit request =>
     Redirect(routes.Regions.show(regionName))
   }
 
-  def show(regionName: String) = Action {
+  def show(regionName: String) = Action { implicit request =>
     val decodedRegionName = URLDecoder.decode(regionName, "UTF-8")
     Async {
       models.Region.findByNameAsync(decodedRegionName).map { region =>
@@ -37,7 +37,7 @@ object Regions extends Controller {
     }
   }
 
-  def listJson = Action { request =>
+  def listJson = Action { implicit request =>
     Async {
       models.Region.allAsync.map { regionInfos =>
         var filteredRegionInfos = regionInfos

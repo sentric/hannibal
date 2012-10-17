@@ -1,4 +1,4 @@
-@(regionList:Seq[models.Region])
+@(regionList:Seq[models.Region])(implicit request: play.api.mvc.Request[Any])
 
 @main("Regions") {
 
@@ -7,6 +7,4 @@
 	<li><a href="@routes.Regions.show(java.net.URLEncoder.encode(region.regionName, "UTF-8"))">@region.regionName</a></li> }
 </ul>
 
-} {
-  
-}
+} { } { }

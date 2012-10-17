@@ -20,6 +20,8 @@ GET     /regions/:regionName/                                       controllers.
 GET     /metrics/:target/.json                                      controllers.Metrics.listJson(target : String)
 GET     /metrics/:target/:metric/.json                              controllers.Metrics.showJson(target : String, metric: String)
 
-# Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file               controllers.Assets.at(path="/public", file)
-
+# Bootstrap image assets (they're references as url('../img/$name.png') in bootstrap.css)
+GET     /assets/img/glyphicons-halflings.png                        controllers.Assets.at(path="/public", file="images/glyphicons-halflings.png")
+GET     /assets/img/glyphicons-halflings-white.png                  controllers.Assets.at(path="/public", file="images/glyphicons-halflings.png-white")
+# Assets from /public folder
+GET     /assets/*file                                               controllers.Assets.at(path="/public", file)
