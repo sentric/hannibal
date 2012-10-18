@@ -5,11 +5,11 @@
 <html>
     <head>
         <title>@title</title>
-        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/rickshaw.css")">
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/jquery-ui.css")">
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.css")">
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/bootstrap-responsive.css")">
+        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
 
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
 
@@ -32,7 +32,7 @@
     <body>
         <div class="navbar">
             <div class="navbar-inner">
-                <a class="brand" href="@routes.Servers.index()">Hannibal</a>
+                <a class="brand" href="@routes.Servers.index()"><image src="@routes.Assets.at("images/hannibal-logo-small-transparent.png")"/></a>
                 <ul class="nav">
                     <li @if(request.path.toString().startsWith(routes.Servers.index().toString())){ class="active"}>
                         <a href="@routes.Servers.index()">Servers</a>
