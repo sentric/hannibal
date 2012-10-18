@@ -1,4 +1,4 @@
-# Hannibal
+# ![Hannibal](https://github.com/sentric/hannibal/blob/master/public/images/hannibal-logo-large-white.png?raw=true)
 
 Hannibal is a tool to help monitor and maintain [HBase](http://hbase.apache.org)-Clusters that are configured for
 [manual splitting](http://hbase.apache.org/book/important_configurations.html#disable.splitting).
