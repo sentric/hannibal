@@ -1,7 +1,7 @@
 class @TableRegionsChartView extends Backbone.View
 
   initialize: ->
-    @tableName = @options.tableName
+    @table = @options.table
     @palette = @options.palette
     @collection.on "reset", _.bind(@render, @)
 
@@ -12,14 +12,14 @@ class @TableRegionsChartView extends Backbone.View
       regions = @collection.reduce((memo, region) ->
         "#{memo}<li><a href=\"#{Routes.Regions.show({name:region.get('regionName')})}\">#{region.get('regionName')}<a/></li>"
       , "" )
-      @$el.html("The table #{@tableName} seems to have not any data yet, it contains the regions:<ul>#{regions}</ul>")
+      @$el.html("The table #{@table.name} seems to have not any data yet, it contains the regions:<ul>#{regions}</ul>")
     else
-      @series = [@createSeries(@tableName, @collection)]
+      @series = [@createSeries(@table.name, @collection)]
 
       @graph =  new Rickshaw.Graph
         element: @$(".chart")[0],
-        renderer: 'bar',
         series: @series
+        renderer: 'bar'
 
       @yAxis = new Rickshaw.Graph.Axis.Y
         graph: @graph,
@@ -31,6 +31,24 @@ class @TableRegionsChartView extends Backbone.View
         graph: @graph,
         element: @$(".x-axis")[0]
         tickFormat: (x) => if x < @collection.length && x % 1 == 0 then "##{x+1}" else ""
+
+      @legend = new Rickshaw.Graph.Legend
+        graph: @graph
+        element: @$(".legend")[0]
+
+
+      @threshold = @table.maxFileSize / 1024 / 1024
+      @thresholdLine = new RickshawUtil.ThresholdLine
+        graph: @graph
+        legend: @legend
+        threshold: @threshold
+        name: "Split Size"
+        color: "#ff0000"
+        disabled: @threshold > @collection.at(0).get('storefileSizeMB') * 2
+
+      @shelving = new Rickshaw.Graph.Behavior.Series.Toggle
+        graph: @graph
+        legend: @legend
 
       @hoverDetail = new RickshawUtil.InteractiveHoverDetail
         graph: @graph
@@ -59,6 +77,7 @@ class @TableRegionsChartView extends Backbone.View
   createSeries: (name, regions) ->
     minSize = regions.max((region) -> region.get('storefileSizeMB')).get('storefileSizeMB') / 100
     series = {
+      name: "Storefile Size (MB)"
       data: regions.map((region, x) ->
         y = region.get('storefileSizeMB')
         return {
@@ -67,6 +86,7 @@ class @TableRegionsChartView extends Backbone.View
           region: region
         }
       ),
+      noLegend: true
       color: @palette.color()
     }
 

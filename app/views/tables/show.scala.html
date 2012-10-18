@@ -1,24 +1,28 @@
-@(tableName:String)(implicit request: play.api.mvc.Request[Any])
+@(table:Table)(implicit request: play.api.mvc.Request[Any])
 
 @tableRegionsChart() = {
-    <div class="table-regions-chart-view" data-table-name="@tableName">
+    <div class="table-regions-chart-view" data-table="@com.codahale.jerkson.Json.generate(table)">
         <div class="y-axis"></div>
         <div class="x-axis"></div>
         <div class="chart"></div>
+        <div class="legend-container">
+            <div class="smoother" title="Smoothing"></div>
+            <div class="legend"></div>
+        </div>
     </div>
 }
 
 @content = {
     <div id="show-table-view">
         <div class="widget">
-            <div class="title">Region Sizes for Table @tableName</div>
+            <div class="title">Region Sizes for Table @table.name</div>
             <div class="content">
                 @tableRegionsChart()
             </div>
             <div class="description">
                 <div class="headline">How well are your regions split? </div>
                 <div class="body">
-                    This chart shows all regions for the table @tableName ordered by their sizes. Regions that are near to your configured Split-Size will be automatically split by HBase soon.
+                    This chart shows all regions for the table @table.name ordered by their sizes. Regions that are near to your configured Split-Size will be automatically split by HBase soon.
                 </div>
             </div>
         </div>
@@ -38,5 +42,5 @@
 }
 
 
-@main("Table: " + tableName)(content)(includes)(breadcrumbs)
+@main("Table: " + table.name)(content)(includes)(breadcrumbs)
 

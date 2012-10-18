@@ -5,11 +5,11 @@ class @ShowTableView extends Backbone.View
     @tableRegionsChartView = @createTableRegionsChartView($(".table-regions-chart-view"))
 
   createTableRegionsChartView: ($el) ->
-    tableName = $el.data("table-name")
-    regions = Regions.byTable(tableName)
+    table = $el.data("table")
+    regions = Regions.byTable(table.name)
     tableRegionsChartView = new TableRegionsChartView
       el: $el
-      tableName: tableName
+      table: table
       palette: @palette
       collection: regions
     regions.fetch()
