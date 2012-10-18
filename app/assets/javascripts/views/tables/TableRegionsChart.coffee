@@ -52,7 +52,7 @@ class @TableRegionsChartView extends Backbone.View
         )
         onClick: (series) =>
           document.location.href = Routes.Regions.show
-            name: series.value.region
+            name: series.value.region.get('regionName')
 
       @graph.render()
 
