@@ -1,4 +1,6 @@
 class @Region extends Backbone.Model
+  isZeroLength: () ->
+    @get('storefileSizeMB') == 0
 
 class @Regions extends Backbone.Collection
   url: Routes.Regions.listJson()
@@ -16,3 +18,6 @@ class @Regions extends Backbone.Collection
 
   ofTable: (table) ->
     @select (regionInfo) -> regionInfo.get('tableName') == table
+
+  isZeroLength: () ->
+    @all((region) -> region.isZeroLength())
