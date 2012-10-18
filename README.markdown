@@ -8,7 +8,7 @@ single regions in an easy way. This information is essential when your cluster i
 especially when the data growth is not uniform.
 
 This tool tries to fill that gap by answering the following questions:
- - How well is the load balanced over the RegionServers?
+ - How well are regions balanced over the cluster?
  - How well are the regions split for each table?
  - What is going on on particular regions? How long do compactions take?
 
