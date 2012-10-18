@@ -32,10 +32,12 @@
     <body>
         <div class="navbar">
             <div class="navbar-inner">
-                <a class="brand" href="@routes.Servers.index()"><image src="@routes.Assets.at("images/hannibal-logo-small-transparent.png")"/></a>
+                <a class="brand" href="@routes.Servers.index()">
+                    <image src="@routes.Assets.at("images/hannibal-logo-small-transparent.png")" width="113" heigh="31"/>
+                </a>
                 <ul class="nav">
                     <li @if(request.path.toString().startsWith(routes.Servers.index().toString())){ class="active"}>
-                        <a href="@routes.Servers.index()">Servers</a>
+                        <a href="@routes.Servers.index()">Cluster</a>
                     </li>
                     <li @if(request.path.toString().startsWith(routes.Tables.index().toString())){ class="active"}>
                         <a href="@routes.Tables.index()">Tables</a>
