@@ -30,17 +30,20 @@ class @TableRegionsChartView extends Backbone.View
       @xAxis = new RickshawUtil.LeftAlignedXAxis
         graph: @graph,
         element: @$(".x-axis")[0]
-        tickFormat: (x) => if x < @collection.length then "##{x+1}" else ""
+        tickFormat: (x) => if x < @collection.length && x % 1 == 0 then "##{x+1}" else ""
 
       @hoverDetail = new RickshawUtil.InteractiveHoverDetail
         graph: @graph
         xFormatter: ((x) =>
-          region = @collection.at(x)
-          "##{x+1} : #{region.get('regionName')}"
+          if x >= @collection.length
+            ""
+          else
+            region = @collection.at(x)
+            "##{x+1} : #{region.get('regionName')}"
         )
         yFormatter: ((y) => y)
         formatter: ((series, x, y, formattedX, formattedY, d) =>
-          region = @collection.at(x)
+          region = d.value.region
           headline = "<b>" + region.get('startKey') + "</b>"
           host = "Host:&nbsp;" + region.get('serverHostName')
           storefileSize = "Size (MB):&nbsp;" + region.get("storefileSizeMB").toFixed(0)
@@ -55,14 +58,23 @@ class @TableRegionsChartView extends Backbone.View
 
   createSeries: (name, regions) ->
     minSize = regions.max((region) -> region.get('storefileSizeMB')).get('storefileSizeMB') / 100
-    {
+    series = {
       data: regions.map((region, x) ->
         y = region.get('storefileSizeMB')
         return {
           x: x
           y: if y > minSize then y else minSize
-          region: region.get('regionName')
+          region: region
         }
       ),
       color: @palette.color()
     }
+
+    # Add another datapoint because the bar-renderer won't render anything when there is only one datapoint
+    if series.data.length == 1
+      series.data.push {
+        x: 1
+        y: 0
+        region: series.data[0].region
+      }
+    series
