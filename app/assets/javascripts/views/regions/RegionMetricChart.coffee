@@ -45,6 +45,8 @@ class @RegionMetricChartView extends Backbone.View
         graph: @graph,
         element: @$('.timeline')[0]
 
+      @createCompactionAnnotations(compactionsSeries) if compactionsSeries
+
       @legend = new Rickshaw.Graph.Legend
         graph: @graph
         element: @$(".legend")[0]
@@ -53,9 +55,10 @@ class @RegionMetricChartView extends Backbone.View
         graph: @graph
         legend: @legend
 
-      @createCompactionAnnotations(compactionsSeries) if compactionsSeries
       @graph.render()
+
       @colorizeAnnotations(compactionsSeries.color) if compactionsSeries
+
       @trigger "graph_rendered"
 
       $(".timeline").delegate(".annotation", 'mouseover',( (e) ->
@@ -67,6 +70,7 @@ class @RegionMetricChartView extends Backbone.View
       ));
 
   createCompactionAnnotations: (compactions) ->
+    compactions.noLegend = true
     metric = compactions.metric
     values = metric.getValues()
     start = Math.round(metric.getBegin() / 1000)
