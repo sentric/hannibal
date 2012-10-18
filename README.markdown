@@ -10,7 +10,7 @@ especially when the data growth is not uniform.
 This tool tries to fill that gap by answering the following questions:
  - How well are regions balanced over the cluster?
  - How well are the regions split for each table?
- - What is going on on particular regions? How long do compactions take?
+ - How do regions evolve over time?
 
 ## Requirements & Limitations
 
@@ -25,22 +25,22 @@ Java 6 JDK is required on the machine where this tool is built.
 
 2. Copy `<project>/conf/hbase-site.template.xml` to `<project>/conf/hbase-site.xml` and adjust it.
 
-3. run the start script inside the root folder of the project: `./start`
+3. Run the start script inside the root folder of the project: `./start`
 
 The first time you start, the script will fetch all requirements to build and run the the application via
 [sbt](http://www.scala-sbt.org/), so it will take a few minutes to build.
 
 When the application has started, you can access the WEB UI at: <http://localhost:9000>
 
-Please note that history data about regions is only collected while the application is running, it will need to run
+Please note that history data about regions is only collected while the application is running, it will need to run for
 some time until the region detail graphs fill up. 
 
 For information about the usage, check out our [Wiki][wu].
 
 ## How to display compactions
 
-HBase 0.90.x's API doesn't allow to query information on running compactions directly, so what we do is to parse
-the RegionServers' log files directly, which gladly are available through the service interface.
+HBase 0.90.x's API doesn't allow you to query information on running compactions directly, so what we do is to parse
+the RegionServers' log files directly, which are available through the service interface.
 For this to work, the log levels need to be set at least to `INFO`.
 
 Hannibal can set the log level to `INFO` for you, just edit [conf/application.conf](blob/master/conf/application.conf)
@@ -65,7 +65,7 @@ Hannibal is released under MIT License, see [LICENSE][] for details.
 
 This tool is developed at [Sentric][] by: [Nils Kübler][] and [Jiayong Ou][]
 
-With help from: [Jean-Pierre König][], [Christian Gügi][] and [Vadim Kisselmann][]
+With help from: [Jean-Pierre König][], [Christian Gügi][] and [Vadim Kisselmann][], Ben Taylor, Stephanie Höhn
 
  [Sentric]: http://www.sentric.ch
  [Nils Kübler]: https://twitter.com/nkuebler
