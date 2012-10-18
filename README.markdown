@@ -75,3 +75,5 @@ With help from: [Jean-Pierre König][], [Christian Gügi][] and [Vadim Kisselman
  [Vadim Kisselmann]: https://twitter.com/vkisselmann
  [w]: https://github.com/sentric/hannibal/wiki
  [wu]: https://github.com/sentric/hannibal/wiki/Usage
+
+[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/ed9e66b101612798e3e015369f86b502 "githalytics.com")](http://githalytics.com/sentric/hannibal)
