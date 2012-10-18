@@ -57,9 +57,9 @@ More information about the tool can be found in the [Wiki][w]
 If you need additional features please get in [touch with us](http://sentric.ch/contact), maybe we can work something
 out.
 
-## Licence
+## License
 
-TODO
+Hannibal is released under MIT License, see [LICENSE][] for details.
 
 ## Contributors
 
@@ -75,5 +75,6 @@ With help from: [Jean-Pierre König][], [Christian Gügi][] and [Vadim Kisselman
  [Vadim Kisselmann]: https://twitter.com/vkisselmann
  [w]: https://github.com/sentric/hannibal/wiki
  [wu]: https://github.com/sentric/hannibal/wiki/Usage
+ [LICENSE]: https://github.com/sentric/hannibal/blob/master/LICENSE
 
 [![githalytics.com alpha](https://cruel-carlota.pagodabox.com/ed9e66b101612798e3e015369f86b502 "githalytics.com")](http://githalytics.com/sentric/hannibal)
