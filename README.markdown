@@ -25,10 +25,12 @@ Java 6 JDK is required on the machine where this tool is built.
 
 2. Copy `<project>/conf/hbase-site.template.xml` to `<project>/conf/hbase-site.xml` and adjust it.
 
-3. Run the start script inside the root folder of the project: `./start`
+3. Build the project using the build script indside the root folder of the project: `./build`
 
-The first time you start, the script will fetch all requirements to build and run the the application via
-[sbt](http://www.scala-sbt.org/), so it will take a few minutes to build.
+4. Run the start script inside the root folder of the project: `./start`
+
+The first time you build, [sbt](http://www.scala-sbt.org/ will fetch all requirements to build and run the the
+application, so it will take a few minutes to build.
 
 When the application has started, you can access the WEB UI at: <http://localhost:9000>
 

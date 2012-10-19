@@ -1,7 +1,7 @@
 #!/bin/sh
 script=$0
 if [ -h $script ]; then
-        script=`readlink $script`
+   script=`readlink $script`
 fi
 dir=`dirname $script`
 

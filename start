@@ -2,8 +2,12 @@
 
 script=$0
 if [ -h $script ]; then
-        script=`readlink $script`
+    script=`readlink $script`
 fi
 dir=`dirname $script`
 
-$dir/sbt -DapplyEvolutions.default=true start
+if [ -f $dir/target/start ]; then
+    $dir/target/start -DapplyEvolutions.default=true
+else
+    echo "The project has not been built yet, please run './build' first"
+fi
