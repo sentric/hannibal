@@ -1,3 +1,7 @@
+/*
+ * Copyright 2012 Sentric. See LICENSE for details.
+ */
+
 package utils
 
 import scala.collection.JavaConversions._

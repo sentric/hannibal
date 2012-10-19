@@ -1,3 +1,7 @@
+/*
+ * Copyright 2012 Sentric. See LICENSE for details.
+ */
+
 import models.{Compaction, MetricDef}
 import play.api._
 import play.api.mvc._

@@ -1,3 +1,7 @@
+/*
+ * Copyright 2012 Sentric. See LICENSE for details.
+ */
+
 package models
 
 import play.api.Logger
@@ -6,14 +10,6 @@ import play.api.libs.ws.WS
 import collection.mutable.{MutableList, Map}
 import java.util.Date
 import utils.HBaseConnection
-
-/**
- * Created by IntelliJ IDEA.
- * User: nkuebler
- * Date: 26.09.12
- * Time: 16:41
- * To change this template use File | Settings | File Templates.
- */
 
 case class Compaction(region: String, start: Date, end: Date)
 

@@ -1,3 +1,5 @@
+# Copyright 2012 Sentric. See LICENSE for details.
+
 root = exports ? @
 
 root.ChartView = class ChartView extends Backbone.View

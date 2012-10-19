@@ -1,3 +1,7 @@
+/*
+ * Copyright 2012 Sentric. See LICENSE for details.
+ */
+
 package models
 
 case class RegionName(tableName: String, startKey: String, regionIdTimestamp: Long, encodedName: String)

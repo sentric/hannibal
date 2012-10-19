@@ -1,3 +1,5 @@
+# Copyright 2012 Sentric. See LICENSE for details.
+
 ChartView = @ChartView
 
 class StackingToggleView extends Backbone.View

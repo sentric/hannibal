@@ -1,3 +1,5 @@
+# Copyright 2012 Sentric. See LICENSE for details.
+
 class @RegionMetricChartView extends Backbone.View
   initialize: ->
     @regionIdTimestamp = @$el.data("region-id-timestamp")

@@ -1,3 +1,5 @@
+# Copyright 2012 Sentric. See LICENSE for details.
+
 class @Metric extends Backbone.Model
   url: ->
     Routes.Metric.showJson
