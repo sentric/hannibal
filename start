@@ -9,5 +9,5 @@ dir=`dirname $script`
 if [ -d $dir/target ]; then
     java -jar $dir/sbt-launch-0.11.3.jar -DapplyEvolutions.default=true start
 else
-    echo "The project has not been built yet, please run './build' first"
+    echo "The project has not yet been built, please run './build' first"
 fi
