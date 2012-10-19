@@ -21,16 +21,24 @@ class @RickshawUtil
         if hoveredSeries?
           @hoveredSeries = hoveredSeries
           if typeof @onOver == "function"
-            @onOver hoveredSeries
+            @onOver(hoveredSeries)
+          $("body").css("cursor", "pointer")
         else
-          @hoveredSeries = null
+          @mouseOut()
       args["onHide"] = () =>
+        @mouseOut()
+      super args
+
+    mouseOut: () ->
+      if @hoveredSeries
         @hoveredSeries = null
         if typeof @onOut == "function"
           @onOut()
-      super args
+        $("body").css("cursor", "default")
+
     _addListeners: () ->
       this.graph.element.addEventListener 'click', (e) =>
+        console.log("click")
         if @hoveredSeries
           if typeof @onClick == "function"
             @onClick @hoveredSeries
