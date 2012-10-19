@@ -8,8 +8,6 @@ class @TableRegionsChartView extends Backbone.View
     @collection.on "reset", _.bind(@render, @)
 
   render: ->
-    console.log("render", @collection)
-
     if @collection.isZeroLength()
       regions = @collection.reduce((memo, region) ->
         "#{memo}<li><a href=\"#{Routes.Regions.show({name:region.get('regionName')})}\">#{region.get('regionName')}<a/></li>"
@@ -23,11 +21,13 @@ class @TableRegionsChartView extends Backbone.View
         series: @series
         renderer: 'bar'
 
+      minExponent = RickshawUtil.getHumanReadableExponent(_.max(@series[0].data, (data) -> data.y).y * 1024 * 1024)
+
       @yAxis = new Rickshaw.Graph.Axis.Y
         graph: @graph,
         orientation: 'left',
         element: @$(".y-axis")[0]
-        tickFormat: (val) -> if val > 0 then RickshawUtil.humanReadableBytes(val * 1024 * 1024) else 0
+        tickFormat: (val) -> if val > 0 then RickshawUtil.humanReadableBytes(val * 1024 * 1024, minExponent) else 0
 
       @xAxis = new RickshawUtil.LeftAlignedXAxis
         graph: @graph,

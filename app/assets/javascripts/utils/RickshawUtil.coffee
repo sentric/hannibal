@@ -100,9 +100,11 @@ class @RickshawUtil
             .attr("height", 1)
           nodes[0][0].setAttribute("fill", "#ff0000")
 
-  @humanReadableBytes: (bytes) ->
+  @humanReadableBytes: (bytes, minExponent = 0) ->
     prefixes = ["bytes", "kB", "MB", "GB", "TB", "PB"]
-    exponent = Math.floor(Math.log(bytes) / Math.log(1024))
+    exponent = Math.max(minExponent, @getHumanReadableExponent(bytes))
     return (bytes / Math.pow(1024, Math.floor(exponent))).toFixed(2) + " " + prefixes[exponent]
 
+  @getHumanReadableExponent: (bytes) ->
+    Math.floor(Math.log(bytes) / Math.log(1024))
 
