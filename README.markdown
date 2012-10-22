@@ -73,7 +73,7 @@ With help from: [Jean-Pierre König][], [Christian Gügi][] and [Vadim Kisselman
  [Nils Kübler]: https://twitter.com/nkuebler
  [Jiayong Ou]: https://twitter.com/jiayongou
  [Jean-Pierre König]: https://twitter.com/jpkoenig
- [Christian Gügi]: https://twitter.com/cguegi
+ [Christian Gügi]: https://twitter.com/chrisgugi
  [Vadim Kisselmann]: https://twitter.com/vkisselmann
  [w]: https://github.com/sentric/hannibal/wiki
  [wu]: https://github.com/sentric/hannibal/wiki/Usage
