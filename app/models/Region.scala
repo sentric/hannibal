@@ -84,7 +84,7 @@ object Region extends HBaseConnection {
   def all(): Seq[Region] = {
     val list = new ListBuffer[Region]()
 
-    withServerInfos { serverInfo =>
+    eachServerInfo { serverInfo =>
       val load = serverInfo.getLoad()
       val regionsLoad = load.getRegionsLoad();
       regionsLoad.foreach { regionLoad =>

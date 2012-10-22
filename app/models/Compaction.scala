@@ -23,7 +23,7 @@ object Compaction extends HBaseConnection {
 
   def init() = {
     Logger.info("setting Loglevels to INFO for the Regionservers")
-    withServerInfos {
+    eachServerInfo {
       serverInfo =>
         val url = baseUrl(serverInfo) + "/logLevel?log=org.apache.hadoop.hbase&level=INFO"
         WS.url(url).get().map {
@@ -42,7 +42,7 @@ object Compaction extends HBaseConnection {
   def all(): Seq[Compaction] = {
     var resultList = MutableList[Compaction]()
     var result: String = null
-    withServerInfos {
+    eachServerInfo {
       serverInfo =>
         val hostName = serverInfo.getHostname().split("\\.")(0)
         val url = baseUrl(serverInfo) + "/logs/hbase-hbase-regionserver-" + hostName + ".log"

@@ -13,7 +13,7 @@ object Table extends HBaseConnection {
 
   def all(): Seq[Table] = {
     val list = new ListBuffer[Table]()
-    withTableDescriptors { desc =>
+    eachTableDescriptor { desc =>
       list += Table(desc)
     }
     list.toList

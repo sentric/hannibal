@@ -20,15 +20,15 @@ trait HBaseConnection {
       table.close()
     }
   }
-  protected def withTableDescriptors(functionBlock: (HTableDescriptor) => Unit) = {
+  protected def eachTableDescriptor(functionBlock: (HTableDescriptor) => Unit) = {
     withHBaseAdmin { admin =>
-      for(desc <- admin.listTables()) {
+      admin.listTables().foreach { desc =>
         functionBlock(desc)
       }
     }
   }
 
-  protected def withServerInfos(functionBlock: (HServerInfo) => Unit) = {
+  protected def eachServerInfo(functionBlock: (HServerInfo) => Unit) = {
     withHBaseAdmin { hbaseAdmin =>
       val status = hbaseAdmin.getClusterStatus()
       val serverInfos = status.getServerInfo()
