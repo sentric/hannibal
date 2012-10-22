@@ -1,16 +1,22 @@
-# ![Hannibal](https://github.com/sentric/hannibal/blob/master/public/images/hannibal-logo-large-white.png?raw=true)
+![Hannibal][Hannibal-Logo]
 
-Hannibal is a tool to help monitor and maintain [HBase](http://hbase.apache.org)-Clusters that are configured for
-[manual splitting](http://hbase.apache.org/book/important_configurations.html#disable.splitting).
+ [Hannibal-Logo]: https://github.com/sentric/hannibal/blob/master/public/images/hannibal-logo-large-white.png?raw=true
+
+Hannibal is a tool to help monitor and maintain [HBase][]-Clusters that are configured for
+[manual splitting][].
+
+ [HBase]: http://hbase.apache.org
+ [manual splitting]: http://hbase.apache.org/book/important_configurations.html#disable.splitting
 
 While HBase provides metrics to monitor overall cluster health via JMX or Ganglia, it lacks the ability to monitor
 single regions in an easy way. This information is essential when your cluster is configured for manual splits,
 especially when the data growth is not uniform.
 
 This tool tries to fill that gap by answering the following questions:
- - How well are regions balanced over the cluster?
- - How well are the regions split for each table?
- - How do regions evolve over time?
+
+ * How well are regions balanced over the cluster?
+ * How well are the regions split for each table?
+ * How do regions evolve over time?
 
 ## Requirements & Limitations
 
@@ -21,23 +27,33 @@ Java 6 JDK is required on the machine where this tool is built.
 
 ## Quickstart
 
-1. Grab the sources from github: `git clone https://github.com/sentric/hannibal.git`
+ 1. Grab the sources from github: 
+ 
+        $ git clone https://github.com/sentric/hannibal.git
 
-2. Copy `<project>/conf/hbase-site.template.xml` to `<project>/conf/hbase-site.xml` and adjust it.
+ 2. Copy `<project>/conf/hbase-site.template.xml` to `<project>/conf/hbase-site.xml` and adjust it.
 
-3. Build the project using the build script indside the root folder of the project: `./build`
+ 3. Build the project using the build script indside the root folder of the project: 
+ 
+        $ ./build
 
-4. Run the start script inside the root folder of the project: `./start`
+ 4. Run the start script inside the root folder of the project: 
+ 
+        $ ./start
 
-The first time you build, [sbt](http://www.scala-sbt.org/ will fetch all requirements to build and run the the
-application, so it will take a few minutes to build.
+The first time you build, [`sbt`][sbt] will fetch all dependencies needed to build and run the the
+application. It will take a few minutes to build.
 
-When the application has started, you can access the WEB UI at: <http://localhost:9000>
+ [sbt]: http://www.scala-sbt.org/
+
+When the application has started, you can access the web UI at: <http://localhost:9000>
 
 Please note that history data about regions is only collected while the application is running, it will need to run for
 some time until the region detail graphs fill up. 
 
-For information about the usage, check out our [Wiki][wu].
+For information about the usage, check out [the Usage page on our Wiki][Wiki-Usage].
+
+ [Wiki-Usage]: https://github.com/sentric/hannibal/wiki/Usage
 
 ## How to display compactions
 
@@ -52,7 +68,9 @@ and set
 
 ## More Information
 
-More information about the tool can be found in the [Wiki][w]
+More information about the tool can be found in the [Wiki][]
+
+ [Wiki]: https://github.com/sentric/hannibal/wiki
 
 ## Additional Features
 
@@ -62,6 +80,8 @@ out.
 ## License
 
 Hannibal is released under MIT License, see [LICENSE][] for details.
+
+ [LICENSE]: https://github.com/sentric/hannibal/blob/master/LICENSE
 
 ## Contributors
 
@@ -75,8 +95,5 @@ With help from: [Jean-Pierre König][], [Christian Gügi][] and [Vadim Kisselman
  [Jean-Pierre König]: https://twitter.com/jpkoenig
  [Christian Gügi]: https://twitter.com/chrisgugi
  [Vadim Kisselmann]: https://twitter.com/vkisselmann
- [w]: https://github.com/sentric/hannibal/wiki
- [wu]: https://github.com/sentric/hannibal/wiki/Usage
- [LICENSE]: https://github.com/sentric/hannibal/blob/master/LICENSE
 
 [![githalytics.com alpha](https://cruel-carlota.pagodabox.com/ed9e66b101612798e3e015369f86b502 "githalytics.com")](http://githalytics.com/sentric/hannibal)
