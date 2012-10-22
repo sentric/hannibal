@@ -3,7 +3,7 @@
 class @ShowTableView extends Backbone.View
 
   initialize: ->
-    @palette = new Rickshaw.Color.Palette( { scheme: 'munin' } )
+    @palette = new RickshawUtil.TablePalette()
     @tableRegionsChartView = @createTableRegionsChartView($(".table-regions-chart-view"))
 
   createTableRegionsChartView: ($el) ->

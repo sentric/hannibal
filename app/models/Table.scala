@@ -34,6 +34,13 @@ object Table extends HBaseConnection {
     name = Bytes.toString(wrapped.getName()),
     maxFileSize = wrapped.getMaxFileSize()
   )
+  
+  def getTableColors(): Map[String, String] = {
+    all().map {table => 
+      val tableColor = Palette.getColor(table.name).toHtmlCode
+      (table.name, tableColor)
+    }.toMap
+  }
 }
 
 case class Table(name:String, maxFileSize:Long)

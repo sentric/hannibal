@@ -15,12 +15,14 @@ root.ChartView = class ChartView extends Backbone.View
 
   initialize: ->
     @tableColors = {}
-    @palette = new Rickshaw.Color.Palette()
+    @palette = new RickshawUtil.TablePalette()
+
     @updateAggregates()
     @collection.on "add remove reset change", _.bind(@updateAggregates, @)
 
   updateAggregates: ->
     @hostNames = _.keys(@collection.groupByAttribute("serverHostName")).sort()
+    @regionsByTable = @collection.groupByAttribute("tableName")
     @hostNameMap = _.reduce(@hostNames, ((indexes, hostName, i)-> indexes[hostName] = i; indexes), {})
 
   getChartSeries: -> throw "getChartSeries() not implemented in #{klass.name}"
@@ -45,9 +47,8 @@ root.ChartView = class ChartView extends Backbone.View
 
     return {graph, legend, highlighter, shelving}
 
-  getColor: (tableName) ->
-    @tableColors[tableName] = @palette.color(tableName) unless @tableColors[tableName]?
-    return @tableColors[tableName]
+  getColor: (tableName) -> 
+    @palette.color(tableName)
 
   hostNameAtIndex: (i) =>
     @hostNames[i]

@@ -1,6 +1,22 @@
 # Copyright 2012 Sentric. See LICENSE for details.
 
+root = exports ? @
+
 class @RickshawUtil
+  class @TablePalette
+    constructor: (options = {}) ->
+      options = _.defaults options,
+        paletteOptions: {},
+        tableColors: root.TableColors
+
+      {paletteOptions, tableColors} = options
+
+      @palette = new Rickshaw.Color.Palette(paletteOptions)
+      @tableColors = tableColors
+
+    color: (key) ->
+      @tableColors[key] = @palette.color(key) unless @tableColors[key]?
+      return @tableColors[key]
 
   class @LeftAlignedXAxis extends Rickshaw.Graph.Axis.X
     constructor: ->
@@ -107,4 +123,3 @@ class @RickshawUtil
 
   @getHumanReadableExponent: (bytes) ->
     Math.floor(Math.log(bytes) / Math.log(1024))
-

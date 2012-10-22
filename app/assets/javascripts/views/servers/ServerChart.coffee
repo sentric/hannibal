@@ -40,7 +40,7 @@ class StackingToggleView extends Backbone.View
     hostNames = @hostNames
     hostNameMap = @hostNameMap
 
-    for own tableName, regionInfos of @collection.groupByAttribute("tableName")
+    for own tableName, regionInfos of @regionsByTable 
       groupedByHost = _.groupBy(regionInfos, (regionInfo) -> regionInfo.get("serverHostName"))
       _.each hostNames, (hostName)-> groupedByHost[hostName] = [] unless groupedByHost[hostName]
       values = for own hostName, regionInfos of groupedByHost

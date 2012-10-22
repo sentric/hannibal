@@ -89,7 +89,7 @@ class @TableRegionsChartView extends Backbone.View
         }
       ),
       noLegend: true
-      color: @palette.color()
+      color: @palette.color(name)
     }
 
     # Add another datapoint because the bar-renderer won't render anything when there is only one datapoint
