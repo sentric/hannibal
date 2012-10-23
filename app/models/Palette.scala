@@ -3,7 +3,7 @@ package models
 import scala.util.Random
 import scala.collection.mutable.HashMap
 
-class Palette(baseColor: Color = new Color(1, 1, 1)) {
+class Palette(baseColor: Color = new Color(0.5F, 0.5F, 0.5F)) {
   val keyedColors: HashMap[String, Color] = new HashMap()
 
   // Ported from http://stackoverflow.com/questions/43044/algorithm-to-randomly-generate-an-aesthetically-pleasing-color-palette/43235#43235
