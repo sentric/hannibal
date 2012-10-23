@@ -12,6 +12,7 @@ bin
 .settings/
 .target/
 data/*.rrd
+data/*.db
 .idea
 .idea_modules
 .DS_Store
