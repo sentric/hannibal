@@ -1,5 +1,7 @@
 @(table:Table)(implicit request: play.api.mvc.Request[Any])
 
+@import helpers.Referer
+
 @tableRegionsChart() = {
     <div class="table-regions-chart-view" data-table="@com.codahale.jerkson.Json.generate(table)">
         <div class="y-axis"></div>
@@ -39,7 +41,11 @@
 }
 
 @breadcrumbs = {
-  <li><a href="@routes.Servers.index()">Cluster</a> <span class="divider">/</span></li>
+  @if(Referer.isFromPath(routes.Tables.index)) {
+    <li><a href="@routes.Tables.index">Tables</a> <span class="divider">/</span></li>
+  } else {
+    <li><a href="@routes.Servers.index">Cluster</a> <span class="divider">/</span></li>
+  }
 }
 
 

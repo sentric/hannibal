@@ -1,5 +1,7 @@
 @(region: models.Region, info: models.RegionInfo, longestCompaction: Long)(implicit request: play.api.mvc.Request[Any])
 
+@import helpers.Referer
+
 @regionMetricChart(metricNames: Seq[String]) = {
     <div class="region-metric-chart-view" data-region-name="@region.regionName" data-metric-names="@com.codahale.jerkson.Json.generate(metricNames)">
         <div class="x-axis"></div>
@@ -65,8 +67,12 @@
 }
 
 @breadcrumbs = {
-  <li><a href="@routes.Servers.index()">Cluster</a> <span class="divider">/</span></li>
-  <li><a href="@routes.Tables.show(region.tableName)">Table: @region.tableName</a> <span class="divider">/</span></li>
+  @if(Referer.isFromPath(routes.Regions.index)) {
+    <li><a href="@routes.Regions.index()">Regions</a> <span class="divider">/</span></li>
+  } else {
+    <li><a href="@routes.Servers.index()">Cluster</a> <span class="divider">/</span></li>
+    <li><a href="@routes.Tables.show(region.tableName)">Table: @region.tableName</a> <span class="divider">/</span></li>
+  }
 }
 
 @main("Region: " + region.regionName.take(20) + "…")(content)(includes)(breadcrumbs)
