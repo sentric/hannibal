@@ -45,6 +45,38 @@
   &.all-toggle {
     margin-top: 1.5em;
   }
+
+  a.action {
+    opacity: 0.6;
+
+    // Make the acutal content invisible so we can replace it with
+    // content from :after
+    color: transparent;
+    position: relative;
+
+    &:hover {
+      opacity: 0.9;
+    }
+
+    &:after {
+      content: "☑";
+      font-size: 21px;
+      font-weight: bold;
+      color: white;
+
+      position: absolute;
+      left: -3px;
+      top: -3px;
+    }
+  }
+
+  &.disabled { 
+    opacity: 0.6;
+
+    a.action:after {
+      content: "☐";
+    }
+  }
 }
 
 .navbar {
