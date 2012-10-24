@@ -90,4 +90,8 @@ class StackingToggleView extends Backbone.View
       el: @$('.stack-toggle')
       graph: graph
 
-    _.extend(components, {xAxis, yAxis, @hoverDetail, stackingToggle})
+    allSeriesToggle = new RickshawUtil.AllSeriesToggle
+      toggle: components.shelving
+      toggleText: "All tables"
+
+    _.extend(components, {xAxis, yAxis, @hoverDetail, stackingToggle, allSeriesToggle})

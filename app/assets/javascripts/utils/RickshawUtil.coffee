@@ -1,6 +1,7 @@
 # Copyright 2012 Sentric. See LICENSE for details.
 
 root = exports ? @
+$ = root.jQuery
 
 class @RickshawUtil
   class @TablePalette
@@ -115,6 +116,50 @@ class @RickshawUtil
             .attr("width", graph.width)
             .attr("height", 1)
           nodes[0][0].setAttribute("fill", "#ff0000")
+
+  class @AllSeriesToggle extends Backbone.View
+    events:
+      "click .line": (ev) ->
+        if $(ev.target).parents('.all-toggle').length > 0
+          @toggleAll()
+        
+        @render()
+      
+    constructor: (options = {}) ->
+      # This needs to be done before Backbone.View's constructor is run
+      # to have a default 'el' option
+      {@toggle, toggle: {@graph, @legend}} = options
+      _.defaults options,
+        el: @legend.list
+        toggleText: "All Series"
+
+      super(options)
+
+    initialize: ->
+      @render()
+
+    toggleAll: ->
+      $('.line.disabled', @legend.element).removeClass('disabled')
+      _.chain(@graph.series)
+        .select((serie) -> serie.disabled)
+        .invoke('enable')
+
+    render: ->
+      $toggle = @$('.all-toggle')
+
+      if $toggle.length == 0
+        # Use concatenation to avoid introducing whitespaces. Otherwise
+        # the layout could be disrupted
+        @$el.append "" +
+          """<li class="line all-toggle">""" +
+            """<a class="action">✔</a>""" +
+            """<div class="swatch"></div>""" +
+            """<span class="label">#{@options.toggleText}</span>""" +
+          """</li>""" +
+        ""
+        $toggle = @$('.all-toggle')
+
+      $toggle.toggleClass 'disabled', _.any(@graph.series, (series) -> series.disabled)
 
   @humanReadableBytes: (bytes, minExponent = 0) ->
     prefixes = ["bytes", "kB", "MB", "GB", "TB", "PB"]
