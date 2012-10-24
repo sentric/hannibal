@@ -16,3 +16,4 @@ data/*.db
 .idea
 .idea_modules
 .DS_Store
+conf/hbase-site.xml
