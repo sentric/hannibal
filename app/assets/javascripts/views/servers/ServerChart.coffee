@@ -77,12 +77,14 @@ class StackingToggleView extends Backbone.View
       graph: graph
       xFormatter: @hostNameAtIndex
       yFormatter: (y)-> "#{y} MB",
-      formatter: ((series, x, y, formattedX, formattedY, d) =>
-        headline = "<b>" + series.name + "</b>"
+      formatter: (series, x, y, formattedX, formattedY, d) ->
         size = formattedY
-        count = d.value.regionInfos.length + " Regions"
-        headline + "<br>" + size + "<br>" + count
-      )
+        count = d.value.regionInfos.length
+        return """
+          <b>#{series.name}</b><br/>
+          #{size}<br/>
+          #{count} Regions
+        """
       onClick: (series) =>
         @trigger("table:click", series)
 

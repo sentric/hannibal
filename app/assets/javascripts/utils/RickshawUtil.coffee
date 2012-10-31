@@ -30,36 +30,32 @@ class @RickshawUtil
 
   class @InteractiveHoverDetail extends Rickshaw.Graph.HoverDetail
     initialize: (args) ->
-      @onClick = args["onClick"];
-      @onOver = args["onOver"];
-      @onOut = args["onOut"];
-      args["onRender"] = (renderArgs)=>
-        hoveredSeries = _.find(renderArgs.detail, (d)-> d.active)
-        if hoveredSeries?
-          @hoveredSeries = hoveredSeries
-          if typeof @onOver == "function"
-            @onOver(hoveredSeries)
-          $("body").css("cursor", "pointer")
-        else
+      {@onClick, @onOver, @onOut} = args
+      _.extend args,
+        onRender: (renderArgs) =>
+          hoveredSeries = _.find(renderArgs.detail, (d)-> d.active)
+          if hoveredSeries?
+            @hoveredSeries = hoveredSeries
+            @onOver(hoveredSeries) if _.isFunction(@onHover)
+
+            $("body").css(cursor: "pointer")
+          else
+            @mouseOut()
+        onHide: =>
           @mouseOut()
-      args["onHide"] = () =>
-        @mouseOut()
+
       super args
 
     mouseOut: () ->
       if @hoveredSeries
         @hoveredSeries = null
-        if typeof @onOut == "function"
-          @onOut()
+        @onOut() if _.isFunction(@onOut)
         $("body").css("cursor", "default")
 
     _addListeners: () ->
-      this.graph.element.addEventListener 'click', (e) =>
-        console.log("click")
-        if @hoveredSeries
-          if typeof @onClick == "function"
-            @onClick @hoveredSeries
-      super()
+      @graph.element.addEventListener 'click', (e) =>
+        @onClick(@hoveredSeries) if @hoveredSeries and _.isFunction(@onClick)
+      super
 
     # TODO: contribute this back to Rickshaw.js
     updateGroupedHover: (e) ->
