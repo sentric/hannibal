@@ -61,6 +61,59 @@ class @RickshawUtil
             @onClick @hoveredSeries
       super()
 
+    # TODO: contribute this back to Rickshaw.js
+    updateGroupedHover: (e) ->
+      e ?= @lastEvent
+      return  unless e
+
+      @lastEvent = e
+      return  unless e.target.nodeName.match(/^(path|svg|rect)$/)
+
+      graph = @graph
+      $el = $(@element)
+
+      eventX = e.offsetX or e.layerX
+      eventY = e.offsetY or e.layerY
+      domainX = Math.floor(graph.x.invert(eventX))
+      barsXStart = graph.x(domainX)
+      formattedXValue = @xFormatter(domainX)
+      activeSeries = graph.series.active()
+
+      seriesBarWidth = graph.renderer.barWidth() / activeSeries.length
+      activeSeriesIndex = Math.floor((eventX - barsXStart) / seriesBarWidth)
+
+      # Bail out if the cursor's in the margin between two X values
+      return  if activeSeriesIndex > activeSeries.length - 1
+
+      detailXOffset = barsXStart + (activeSeriesIndex * seriesBarWidth)
+      detail = for series, index in activeSeries
+        data = series.data[domainX]
+        {
+          series
+          formattedYValue: @yFormatter(data.y)
+          graphX: barsXStart
+          graphY: graph.y(data.y)
+          order: index
+          name: series.name
+          value: data
+          active: index == activeSeriesIndex
+        }
+
+      $el.html('').css(left: "#{detailXOffset}px")
+
+      if @visible then @render
+        detail: detail
+        domainX: domainX
+        formattedXValue: formattedXValue
+        mouseX: eventX
+        mouseY: eventY
+
+    update: (e) ->
+      if @graph.renderer.unstack
+        @updateGroupedHover(e)
+      else
+        super
+
   class @ThresholdLine
     constructor: (args) ->
       if args.graph.renderer.name != "bar"
