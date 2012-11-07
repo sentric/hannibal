@@ -25,6 +25,11 @@ available soon.
 
 Java 6 JDK is required on the machine where this tool is built.
 
+## Video Tutorial
+
+There is a tutorial video on [YouTube][yt], that shows how to install and use Hannibal.
+[yt]: http://www.youtube.com/watch?v=I4Kto41a5kE&hd=1][
+
 ## Quickstart
 
  1. Grab the sources from github: 
