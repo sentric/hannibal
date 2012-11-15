@@ -5,9 +5,9 @@
 package models
 
 import play.api.Logger
-import org.apache.hadoop.hbase.HServerInfo
+import org.apache.hadoop.hbase.ServerName
 import play.api.libs.ws.WS
-import collection.mutable.{MutableList, Map}
+import collection.mutable.MutableList
 import java.util.Date
 import utils.HBaseConnection
 
@@ -18,17 +18,16 @@ object Compaction extends HBaseConnection {
   val STARTING = "Starting"
   val COMPETED = "completed"
 
-  val COMPACTION = """(.*) INFO org.apache.hadoop.hbase.regionserver.HRegion: (Starting|completed) compaction on region (.*\.)""".r
-  val DATE_FORMAT = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS")
+  val COMPACTION = """(.*) INFO compactions.CompactionRequest: completed compaction: regionName=(.*\.), storeName=(.*), fileCount=(.*), fileSize=(.*), priority=(.*), time=(.*); duration=(.*)sec""".r
 
   def init() = {
     Logger.info("setting Loglevels to INFO for the Regionservers")
-    eachServerInfo {
-      serverInfo =>
-        val url = baseUrl(serverInfo) + "/logLevel?log=org.apache.hadoop.hbase&level=INFO"
+    eachServer {
+      (hbaseAdmin, clusterStatus, serverName) =>
+        val url = baseUrl(serverName) + "/logLevel?log=org.apache.hadoop.hbase&level=INFO"
         WS.url(url).get().map {
           response =>
-            Logger.debug("... Loglevel set to INFO for server " + serverInfo.getHostname())
+            Logger.debug("... Loglevel set to INFO for server " + serverName.getHostname())
         }
     }
   }
@@ -41,35 +40,30 @@ object Compaction extends HBaseConnection {
 
   def all(): Seq[Compaction] = {
     var resultList = MutableList[Compaction]()
-    eachServerInfo {
-      serverInfo =>
-        val hostName = serverInfo.getHostname().split("\\.")(0)
-        val url = baseUrl(serverInfo) + "/logs/hbase-hbase-regionserver-" + hostName + ".log"
+
+    eachServer {
+      (hbaseAdmin, clusterStatus, serverName) =>
+        val hostName = serverName.getHostname()
+        val url = baseUrl(serverName) + "/logs/hbase-hbase-regionserver-" + hostName + ".log"
         Logger.debug("... fetching Logfile from " + url)
         val response = WS.url(url).get().value.get
         if(response.ahcResponse.getStatusCode() != 200) {
            throw new Exception("couldn't load Compaction Metrics from URL: " + url);
         }
 
-        var startPoints = Map[String, Date]()
-
         // TODO: this pattern-matching is so damn slow, replace by something faster!
-        for (COMPACTION(date, typ, region) <- COMPACTION findAllIn response.body) {
-          if (typ == STARTING) {
-            startPoints += region -> DATE_FORMAT.parse(date)
+        for (COMPACTION(date, region, store, fileCount, fileSize, priority, time, duration) <- COMPACTION findAllIn response.body) {
+          val date = new java.util.Date(time.toLong / 1000 / 1000)
+          val durationMsec = if (duration.toLong > 0) {
+            duration.toLong * 1000
           } else {
-            if (!startPoints.contains(region)) {
-              Logger.info("... no compaction-start found for compaction on region: " + region)
-            } else {
-              resultList += Compaction(region, startPoints(region), DATE_FORMAT.parse(date))
-              startPoints -= region
-            }
+            1
           }
+          resultList += Compaction(region, new Date(date.getTime() - durationMsec), date)
         }
-        if(startPoints.size > 0) Logger.info("... " + startPoints.size + " compactions currently running on "+ hostName)
     }
     resultList.toList
   }
 
-  def baseUrl(serverInfo: HServerInfo) = "http://" + serverInfo.getHostname() + ":" + serverInfo.getInfoPort()
+  def baseUrl(serverName: ServerName) = "http://" + serverName.getHostname() + ":60030"
 }

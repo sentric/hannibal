@@ -8,8 +8,8 @@ object ApplicationBuild extends Build {
     val appVersion      = "1.0-SNAPSHOT"
 
     val appDependencies = Seq(
-       "org.apache.hadoop" % "hadoop-core" % "0.20.2-cdh3u4",
-       "org.apache.hbase" % "hbase" % "0.90.6-cdh3u4",
+       "org.apache.hadoop" % "hadoop-common" % "2.0.0-cdh4.1.2",
+       "org.apache.hbase" % "hbase" % "0.92.1-cdh4.1.2",
        "org.mockito" % "mockito-core" % "1.9.0" % "test",
        "org.mockito" % "mockito-all" % "1.9.0" % "test"
     )

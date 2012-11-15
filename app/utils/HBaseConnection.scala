@@ -4,8 +4,9 @@
 
 package utils
 
+import play.Logger
 import scala.collection.JavaConversions._
-import org.apache.hadoop.hbase.{HTableDescriptor, HServerInfo, HBaseConfiguration}
+import org.apache.hadoop.hbase.{HTableDescriptor, HServerLoad, HBaseConfiguration, ServerName, ClusterStatus}
 import org.apache.hadoop.hbase.client.{HTable, HBaseAdmin}
 import org.apache.hadoop.hbase.util.Bytes
 
@@ -28,18 +29,19 @@ trait HBaseConnection {
     }
   }
 
-  protected def eachServerInfo(functionBlock: (HServerInfo) => Unit) = {
+  protected def eachServer(functionBlock: (HBaseAdmin, ClusterStatus, ServerName) => Unit) = {
     withHBaseAdmin { hbaseAdmin =>
-      val status = hbaseAdmin.getClusterStatus()
-      val serverInfos = status.getServerInfo()
-      serverInfos.foreach { serverInfo =>
-        functionBlock(serverInfo)
+      val clusterStatus = hbaseAdmin.getClusterStatus()
+      val servers = clusterStatus.getServers()
+      servers.foreach { serverName =>
+        functionBlock(hbaseAdmin, clusterStatus, serverName)
       }
     }
   }
 
   protected def withHBaseAdmin(functionBlock: (HBaseAdmin) => Unit) = {
     val conf = HBaseConfiguration.create()
+
     val client = new HBaseAdmin(conf)
     try {
       functionBlock(client)
