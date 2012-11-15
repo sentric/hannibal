@@ -9,8 +9,10 @@ import play.api.Play.current
 import play.api.db.DB
 import play.api.Logger
 import models.MetricDef._
-import org.hsqldb.lib.MD5
 import collection.mutable.{ListBuffer, MutableList}
+import org.apache.hadoop.hbase.util.Bytes
+import utils.ByteUtil
+import java.security.MessageDigest
 
 object MetricDef {
 
@@ -63,7 +65,7 @@ object MetricDef {
 
   def now() = new java.util.Date().getTime()
 
-  def hash(value:String) = MD5.encodeString(value, null)
+  def hash(value:String) = ByteUtil.toHexString(MessageDigest.getInstance("MD5").digest(Bytes.toBytes(value)))
 
   val SQL_FIND_METRIC = SQL("""
     SELECT
