@@ -41,18 +41,20 @@ object Compaction extends HBaseConnection {
 
   def all(): Seq[Compaction] = {
     var resultList = MutableList[Compaction]()
-    var result: String = null
     eachServerInfo {
       serverInfo =>
         val hostName = serverInfo.getHostname().split("\\.")(0)
         val url = baseUrl(serverInfo) + "/logs/hbase-hbase-regionserver-" + hostName + ".log"
         Logger.debug("... fetching Logfile from " + url)
-        result = WS.url(url).get().value.get.body
+        val response = WS.url(url).get().value.get
+        if(response.ahcResponse.getStatusCode() != 200) {
+           throw new Exception("couldn't load Compaction Metrics from URL: " + url);
+        }
 
         var startPoints = Map[String, Date]()
 
         // TODO: this pattern-matching is so damn slow, replace by something faster!
-        for (COMPACTION(date, typ, region) <- COMPACTION findAllIn result) {
+        for (COMPACTION(date, typ, region) <- COMPACTION findAllIn response.body) {
           if (typ == STARTING) {
             startPoints += region -> DATE_FORMAT.parse(date)
           } else {
