@@ -65,7 +65,7 @@ object Region extends HBaseConnection {
                serverName        = serverName.getServerName(),
                serverHostName    = serverName.getHostname(),
                serverPort        = serverName.getPort(),
-               serverInfoPort    = serverName.getPort(),
+               serverInfoPort    = 60030,
                
                regionName        = regionName,
                stores            = regionLoad.getStores(),
