@@ -20,15 +20,29 @@ object Compaction extends HBaseConnection {
 
   val COMPACTION = """(.*) INFO compactions.CompactionRequest: completed compaction: regionName=(.*\.), storeName=(.*), fileCount=(.*), fileSize=(.*), priority=(.*), time=(.*); duration=(.*)sec""".r
 
+  var logFileUrlPattern: String = null
+  var logLevelUrlPattern: String = null
+  var setLogLevelsOnStartup: Boolean = false
+
+  def configure(setLogLevelsOnStartup: Boolean = false, logFileUrlPattern: String = null, logLevelUrlPattern: String = null) = {
+    this.setLogLevelsOnStartup = setLogLevelsOnStartup
+    this.logFileUrlPattern = logFileUrlPattern
+    this.logLevelUrlPattern = logLevelUrlPattern
+  }
+
   def init() = {
-    Logger.info("setting Loglevels to INFO for the Regionservers")
-    eachServer {
-      (hbaseAdmin, clusterStatus, serverName) =>
-        val url = baseUrl(serverName) + "/logLevel?log=org.apache.hadoop.hbase&level=INFO"
-        WS.url(url).get().map {
-          response =>
-            Logger.debug("... Loglevel set to INFO for server " + serverName.getHostname())
-        }
+    if (setLogLevelsOnStartup) {
+      Logger.info("setting Loglevels for the Regionservers")
+      eachServer {
+        (hbaseAdmin, clusterStatus, serverName) =>
+          val url = logLevelUrl(serverName)
+          val response = WS.url(url).get().value.get
+          if (response.ahcResponse.getStatusCode() != 200) {
+            throw new Exception("couldn't set log-level with URL: " + url);
+          } else {
+            Logger.debug("... Loglevel set for server " + serverName.getHostname())
+          }
+      }
     }
   }
 
@@ -40,15 +54,13 @@ object Compaction extends HBaseConnection {
 
   def all(): Seq[Compaction] = {
     var resultList = MutableList[Compaction]()
-
     eachServer {
       (hbaseAdmin, clusterStatus, serverName) =>
-        val hostName = serverName.getHostname()
-        val url = baseUrl(serverName) + "/logs/hbase-hbase-regionserver-" + hostName + ".log"
+        val url = logFileUrl(serverName)
         Logger.debug("... fetching Logfile from " + url)
         val response = WS.url(url).get().value.get
-        if(response.ahcResponse.getStatusCode() != 200) {
-           throw new Exception("couldn't load Compaction Metrics from URL: " + url);
+        if (response.ahcResponse.getStatusCode() != 200) {
+          throw new Exception("couldn't load Compaction Metrics from URL: " + url + " check compactions.logfile_pattern in application.conf");
         }
 
         // TODO: this pattern-matching is so damn slow, replace by something faster!
@@ -65,5 +77,13 @@ object Compaction extends HBaseConnection {
     resultList.toList
   }
 
-  def baseUrl(serverName: ServerName) = "http://" + serverName.getHostname() + ":60030"
+  def logFileUrl(serverName: ServerName) = fillPlaceholders(serverName, logFileUrlPattern)
+
+  def logLevelUrl(serverName: ServerName) = fillPlaceholders(serverName, logLevelUrlPattern)
+
+  def fillPlaceholders(serverName: ServerName, string: String) =
+    string
+      .replaceAll("%hostname%", serverName.getHostname())
+      .replaceAll("%infoport%", "60030")
+      .replaceAll("%hostname-without-domain%", serverName.getHostname().split("\\.")(0))
 }
