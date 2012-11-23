@@ -9,11 +9,11 @@ import play.api.mvc._
 import java.net.URLDecoder
 import collection.mutable.MutableList
 import collection.Map
-import models.{Metric, MetricDef}
 import com.codahale.jerkson.Json._
 import com.codahale.jerkson.Json
 import play.api.libs.concurrent.Akka
 import play.api.Play.current
+import models.{Table, Metric, MetricDef}
 
 object Regions extends Controller {
 
@@ -35,7 +35,8 @@ object Regions extends Controller {
           NotFound
         else {
       	  val info = region.getRegionInfo()
-          Ok(views.html.regions.show(region, info, region.findLongestCompactionInLastWeek()))
+          val table = Table.findByName(region.tableName)
+          Ok(views.html.regions.show(region, info, table, region.findLongestCompactionInLastWeek()))
         }
       }
     }

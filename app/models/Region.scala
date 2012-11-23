@@ -117,5 +117,4 @@ case class RegionInfo(wrapped:HRegionInfo) {
   def version() = wrapped.getVersion()
   def regionId() = wrapped.getRegionId()
   def regionName() = wrapped.getRegionNameAsString()
-  def memstoreFlushSize() = wrapped.getTableDesc().getMemStoreFlushSize();
 }

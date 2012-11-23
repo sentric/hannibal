@@ -1,4 +1,4 @@
-@(region: models.Region, info: models.RegionInfo, longestCompaction: Long)(implicit request: play.api.mvc.Request[Any])
+@(region: models.Region, info: models.RegionInfo, table: models.Table, longestCompaction: Long)(implicit request: play.api.mvc.Request[Any])
 
 @import helpers.Referer
 
@@ -27,7 +27,7 @@
                     <li>endKey: <b>@info.endKey</b></li>
                     <li>Deployed on: <a href="@region.serverInfoUrl"><b>@region.serverHostName</b></a></li>
                     <li>Storefile Size : <b>@(region.storefileSizeMB)MB</b></li>
-                    <li>Memstore Flush Size: <b>@(info.memstoreFlushSize/(1024*1024))MB</b></li>
+                    <li>Memstore Flush Size: <b>@(table.memstoreFlushSize/(1024*1024))MB</b></li>
                     <li>Longest Compaction during last 7 Days: <b>@(longestCompaction/1000.0)s</b></li>
                 </ul>
             </div>
