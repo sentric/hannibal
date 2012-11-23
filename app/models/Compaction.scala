@@ -15,10 +15,7 @@ case class Compaction(region: String, start: Date, end: Date)
 
 object Compaction extends HBaseConnection {
 
-  val STARTING = "Starting"
-  val COMPETED = "completed"
-
-  val COMPACTION = """(.*) INFO compactions.CompactionRequest: completed compaction: regionName=(.*\.), storeName=(.*), fileCount=(.*), fileSize=(.*), priority=(.*), time=(.*); duration=(.*)sec""".r
+  val COMPACTION = """(.*) INFO (.*)\.CompactionRequest: completed compaction: regionName=(.*\.), storeName=(.*), fileCount=(.*), fileSize=(.*), priority=(.*), time=(.*); duration=(.*)sec""".r
 
   var logFileUrlPattern: String = null
   var logLevelUrlPattern: String = null
@@ -64,8 +61,8 @@ object Compaction extends HBaseConnection {
         }
 
         // TODO: this pattern-matching is so damn slow, replace by something faster!
-        for (COMPACTION(date, region, store, fileCount, fileSize, priority, time, duration) <- COMPACTION findAllIn response.body) {
-          val date = new java.util.Date(time.toLong / 1000 / 1000)
+        for (COMPACTION(date, pkg, region, store, fileCount, fileSize, priority, time, duration) <- COMPACTION findAllIn response.body) {
+          val date = new java.util.Date(time.toLong / 1000)
           val durationMsec = if (duration.toLong > 0) {
             duration.toLong * 1000
           } else {
