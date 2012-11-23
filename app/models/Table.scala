@@ -32,7 +32,8 @@ object Table extends HBaseConnection {
 
   def apply(wrapped: HTableDescriptor): Table = Table(
     name = Bytes.toString(wrapped.getName()),
-    maxFileSize = wrapped.getMaxFileSize()
+    maxFileSize = wrapped.getMaxFileSize(),
+    memstoreFlushSize = wrapped.getMemStoreFlushSize()
   )
   
   def getTableColors(): Map[String, String] = {
@@ -43,4 +44,4 @@ object Table extends HBaseConnection {
   }
 }
 
-case class Table(name:String, maxFileSize:Long)
+case class Table(name:String, maxFileSize:Long, memstoreFlushSize:Long)
