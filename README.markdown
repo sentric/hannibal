@@ -69,7 +69,7 @@ For this to work, the log levels need to be set at least to `INFO`.
 Hannibal can set the log level to `INFO` for you, just edit [conf/application.conf](blob/master/conf/application.conf)
 and set
 
-    init.set_hbase_loglevels_to_info = true
+    compactions.set-loglevels-on-startup = true
 
 ## More Information
 

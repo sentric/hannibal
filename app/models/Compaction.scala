@@ -21,15 +21,29 @@ object Compaction extends HBaseConnection {
   val COMPACTION = """(.*) INFO org.apache.hadoop.hbase.regionserver.HRegion: (Starting|completed) compaction on region (.*\.)""".r
   val DATE_FORMAT = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS")
 
+  var logFileUrlPattern: String = null
+  var logLevelUrlPattern: String = null
+  var setLogLevelsOnStartup: Boolean = false
+
+  def configure(setLogLevelsOnStartup: Boolean = false, logFileUrlPattern: String = null, logLevelUrlPattern: String = null) = {
+    this.setLogLevelsOnStartup = setLogLevelsOnStartup
+    this.logFileUrlPattern = logFileUrlPattern
+    this.logLevelUrlPattern = logLevelUrlPattern
+  }
+
   def init() = {
-    Logger.info("setting Loglevels to INFO for the Regionservers")
-    eachServerInfo {
-      serverInfo =>
-        val url = baseUrl(serverInfo) + "/logLevel?log=org.apache.hadoop.hbase&level=INFO"
-        WS.url(url).get().map {
-          response =>
-            Logger.debug("... Loglevel set to INFO for server " + serverInfo.getHostname())
-        }
+    if (setLogLevelsOnStartup) {
+      Logger.info("setting Loglevels for the Regionservers")
+      eachServerInfo {
+        serverInfo =>
+          val url = logLevelUrl(serverInfo)
+          val response = WS.url(url).get().value.get
+          if (response.ahcResponse.getStatusCode() != 200) {
+            throw new Exception("couldn't set log-level with URL: " + url);
+          } else {
+            Logger.debug("... Loglevel set for server " + serverInfo.getHostname())
+          }
+      }
     }
   }
 
@@ -43,12 +57,11 @@ object Compaction extends HBaseConnection {
     var resultList = MutableList[Compaction]()
     eachServerInfo {
       serverInfo =>
-        val hostName = serverInfo.getHostname().split("\\.")(0)
-        val url = baseUrl(serverInfo) + "/logs/hbase-hbase-regionserver-" + hostName + ".log"
+        val url = logFileUrl(serverInfo)
         Logger.debug("... fetching Logfile from " + url)
         val response = WS.url(url).get().value.get
-        if(response.ahcResponse.getStatusCode() != 200) {
-           throw new Exception("couldn't load Compaction Metrics from URL: " + url);
+        if (response.ahcResponse.getStatusCode() != 200) {
+          throw new Exception("couldn't load Compaction Metrics from URL: " + url + " check compactions.logfile_pattern in application.conf");
         }
 
         var startPoints = Map[String, Date]()
@@ -66,10 +79,18 @@ object Compaction extends HBaseConnection {
             }
           }
         }
-        if(startPoints.size > 0) Logger.info("... " + startPoints.size + " compactions currently running on "+ hostName)
+        if (startPoints.size > 0) Logger.info("... " + startPoints.size + " compactions currently running on " + serverInfo.getHostname())
     }
     resultList.toList
   }
 
-  def baseUrl(serverInfo: HServerInfo) = "http://" + serverInfo.getHostname() + ":" + serverInfo.getInfoPort()
+  def logFileUrl(serverInfo: HServerInfo) = fillPlaceholders(serverInfo, logFileUrlPattern)
+
+  def logLevelUrl(serverInfo: HServerInfo) = fillPlaceholders(serverInfo, logLevelUrlPattern)
+
+  def fillPlaceholders(serverInfo: HServerInfo, string: String) =
+    string
+      .replaceAll("%hostname%", serverInfo.getHostname())
+      .replaceAll("%infoport%", serverInfo.getInfoPort().toString)
+      .replaceAll("%hostname-without-domain%", serverInfo.getHostname().split("\\.")(0))
 }
