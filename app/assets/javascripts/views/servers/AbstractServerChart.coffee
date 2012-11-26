@@ -2,7 +2,7 @@
 
 root = exports ? @
 
-root.ChartView = class ChartView extends Backbone.View
+class @AbstractServerChartView extends Backbone.View
   klass = @
 
   @chartContent = """
