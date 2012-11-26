@@ -10,6 +10,7 @@ import play.api.libs.ws.WS
 import collection.mutable.MutableList
 import java.util.Date
 import utils.HBaseConnection
+import java.text.SimpleDateFormat
 
 case class Compaction(region: String, start: Date, end: Date)
 
@@ -20,11 +21,16 @@ object Compaction extends HBaseConnection {
   var logFileUrlPattern: String = null
   var logLevelUrlPattern: String = null
   var setLogLevelsOnStartup: Boolean = false
+  var logFileDateFormat: SimpleDateFormat = null
 
-  def configure(setLogLevelsOnStartup: Boolean = false, logFileUrlPattern: String = null, logLevelUrlPattern: String = null) = {
+  def configure(setLogLevelsOnStartup: Boolean = false,
+                logFileUrlPattern: String = null,
+                logLevelUrlPattern: String = null,
+                logFileDateFormat: String = null) = {
     this.setLogLevelsOnStartup = setLogLevelsOnStartup
     this.logFileUrlPattern = logFileUrlPattern
     this.logLevelUrlPattern = logLevelUrlPattern
+    this.logFileDateFormat = new java.text.SimpleDateFormat(logFileDateFormat)
   }
 
   def init() = {
@@ -57,18 +63,19 @@ object Compaction extends HBaseConnection {
         Logger.debug("... fetching Logfile from " + url)
         val response = WS.url(url).get().value.get
         if (response.ahcResponse.getStatusCode() != 200) {
-          throw new Exception("couldn't load Compaction Metrics from URL: " + url + " check compactions.logfile_pattern in application.conf");
+          throw new Exception("couldn't load Compaction Metrics from URL: '" +
+            url + "', please check compactions.logfile_pattern in application.conf");
         }
 
         // TODO: this pattern-matching is so damn slow, replace by something faster!
         for (COMPACTION(date, pkg, region, store, fileCount, fileSize, priority, time, duration) <- COMPACTION findAllIn response.body) {
-          val date = new java.util.Date(time.toLong / 1000)
+          val end = logFileDateFormat.parse(date)
           val durationMsec = if (duration.toLong > 0) {
             duration.toLong * 1000
           } else {
             1
           }
-          resultList += Compaction(region, new Date(date.getTime() - durationMsec), date)
+          resultList += Compaction(region, new Date(end.getTime() - durationMsec), end)
         }
     }
     resultList.toList
