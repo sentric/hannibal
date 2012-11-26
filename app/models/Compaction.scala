@@ -10,6 +10,7 @@ import play.api.libs.ws.WS
 import collection.mutable.{MutableList, Map}
 import java.util.Date
 import utils.HBaseConnection
+import java.text.SimpleDateFormat
 
 case class Compaction(region: String, start: Date, end: Date)
 
@@ -18,17 +19,21 @@ object Compaction extends HBaseConnection {
   val STARTING = "Starting"
   val COMPETED = "completed"
 
-  val COMPACTION = """(.*) INFO org.apache.hadoop.hbase.regionserver.HRegion: (Starting|completed) compaction on region (.*\.)""".r
-  val DATE_FORMAT = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS")
+  val COMPACTION = """(.*) INFO (.*).HRegion: (Starting|completed) compaction on region (.*\.)""".r
 
   var logFileUrlPattern: String = null
   var logLevelUrlPattern: String = null
   var setLogLevelsOnStartup: Boolean = false
+  var logFileDateFormat: SimpleDateFormat = null
 
-  def configure(setLogLevelsOnStartup: Boolean = false, logFileUrlPattern: String = null, logLevelUrlPattern: String = null) = {
+  def configure(setLogLevelsOnStartup: Boolean = false,
+                logFileUrlPattern: String = null,
+                logLevelUrlPattern: String = null,
+                logFileDateFormat: String = null) = {
     this.setLogLevelsOnStartup = setLogLevelsOnStartup
     this.logFileUrlPattern = logFileUrlPattern
     this.logLevelUrlPattern = logLevelUrlPattern
+    this.logFileDateFormat = new java.text.SimpleDateFormat(logFileDateFormat)
   }
 
   def init() = {
@@ -61,20 +66,26 @@ object Compaction extends HBaseConnection {
         Logger.debug("... fetching Logfile from " + url)
         val response = WS.url(url).get().value.get
         if (response.ahcResponse.getStatusCode() != 200) {
-          throw new Exception("couldn't load Compaction Metrics from URL: " + url + " check compactions.logfile_pattern in application.conf");
+          throw new Exception("couldn't load Compaction Metrics from URL: '" +
+            url + "', please check compactions.logfile_pattern in application.conf");
         }
 
         var startPoints = Map[String, Date]()
 
         // TODO: this pattern-matching is so damn slow, replace by something faster!
-        for (COMPACTION(date, typ, region) <- COMPACTION findAllIn response.body) {
+        for (COMPACTION(date, pkg, typ, region) <- COMPACTION findAllIn response.body) {
           if (typ == STARTING) {
-            startPoints += region -> DATE_FORMAT.parse(date)
+            try {
+              startPoints += region -> logFileDateFormat.parse(date)
+            } catch {
+              case e: Exception => throw new Exception("Couldn't parse the date '" + date + "' with dateformat '" +
+                logFileDateFormat.toPattern + "', please check compactions.logfile-date-format in application.conf")
+            }
           } else {
             if (!startPoints.contains(region)) {
               Logger.info("... no compaction-start found for compaction on region: " + region)
             } else {
-              resultList += Compaction(region, startPoints(region), DATE_FORMAT.parse(date))
+              resultList += Compaction(region, startPoints(region), logFileDateFormat.parse(date))
               startPoints -= region
             }
           }

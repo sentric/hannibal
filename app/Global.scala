@@ -22,7 +22,8 @@ object Global extends GlobalSettings {
       Compaction.configure(
         setLogLevelsOnStartup = app.configuration.getBoolean("compactions.set-loglevels-on-startup") == Some(true),
         logLevelUrlPattern = app.configuration.getString("compactions.loglevel-url-pattern").get,
-        logFileUrlPattern = app.configuration.getString("compactions.logfile-url-pattern").get
+        logFileUrlPattern = app.configuration.getString("compactions.logfile-url-pattern").get,
+        logFileDateFormat = app.configuration.getString("compactions.logfile-date-format").get
       )
 
       val updateMetricsActor = Akka.system.actorOf(Props[UpdateMetricsActor], name = "updateMetricsActor")
