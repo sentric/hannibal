@@ -20,10 +20,12 @@ This tool tries to fill that gap by answering the following questions:
 
 ## Requirements & Limitations
 
-The current version is tested on HBase 0.90.x in distributed mode only. Support for 0.92.x is planned and will be
-available soon.
+The current version is compatible to HBase 0.90.x in distributed mode only. Support for 0.92.x is currently in
+development and can be previewed in the [0.92 branch][b92].
 
 Java 6 JDK is required on the machine where this tool is built.
+
+[b92]: https://github.com/sentric/hannibal/tree/topic/hbase-0.92
 
 ## Video Tutorial
 

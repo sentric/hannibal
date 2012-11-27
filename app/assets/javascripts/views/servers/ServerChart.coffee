@@ -1,7 +1,5 @@
 # Copyright 2012 Sentric. See LICENSE for details.
 
-ChartView = @ChartView
-
 class StackingToggleView extends Backbone.View
   events:
     "click .stacking-options .enable": -> @toggle(true)
@@ -27,7 +25,7 @@ class StackingToggleView extends Backbone.View
       </ul>
     """
 
-@ServerChartView = class ServerChartView extends ChartView
+class @ServerChartView extends  AbstractServerChartView
 
   initialize: ->
     super
