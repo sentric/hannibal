@@ -20,12 +20,12 @@ This tool tries to fill that gap by answering the following questions:
 
 ## Requirements & Limitations
 
-The current version is compatible to HBase 0.90.x in distributed mode only. Support for 0.92.x is currently in
-development and can be previewed in the [0.92 branch][b92].
+The current version is compatible to HBase 0.90.x in distributed mode only. Support for 0.92.x is available in the
+[0.92 branch][b92].
 
 Java 6 JDK is required on the machine where this tool is built.
 
-[b92]: https://github.com/sentric/hannibal/tree/topic/hbase-0.92
+[b92]: https://github.com/sentric/hannibal/tree/hbase-0.92
 
 ## Video Tutorial
 
@@ -37,14 +37,19 @@ There is a tutorial video on [YouTube][yt], that shows how to install and use Ha
  1. Grab the sources from github: 
  
         $ git clone https://github.com/sentric/hannibal.git
+        $ cd hannibal
 
- 2. Copy `<project>/conf/hbase-site.template.xml` to `<project>/conf/hbase-site.xml` and adjust it.
+ 2. (only for HBase 0.92.x) Change the branch:
 
- 3. Build the project using the build script indside the root folder of the project: 
+        $ git checkout hbase-0.92
+
+ 3. Copy `conf/hbase-site.template.xml` to `conf/hbase-site.xml` and adjust it.
+
+ 4. Build the project using the build script inside the root folder of the project:
  
         $ ./build
 
- 4. Run the start script inside the root folder of the project: 
+ 5. Run the start script inside the root folder of the project:
  
         $ ./start
 
@@ -65,13 +70,28 @@ For information about the usage, check out [the Usage page on our Wiki][Wiki-Usa
 ## How to display compactions
 
 HBase 0.90.x's API doesn't allow you to query information on running compactions directly, so what we do is to parse
-the RegionServers' log files directly, which are available through the service interface.
-For this to work, the log levels need to be set at least to `INFO`.
+the RegionServers' log files directly, which are available through the service interface. HBase 0.92 allows to query
+compactions directly, but we still collect compactions using the logfile-parsing way, because this way we don't miss 
+any short running compactions.
+The downside is that this doesn't work without further configuration because either, the url-pattern and the 
+date pattern can differ from system to system. Regardless of which version of HBase you use, you should check those 
+parameters in [conf/application.conf](blob/master/conf/application.conf):
+
+    compactions.logfile-url-pattern = "..."
+    compactions.logfile-date-format = "yyyy-MM-dd HH:mm:ss,SSS"
+    
+Informations about compactions are logged with `INFO`-Level, so the log levels need to be set at least to `INFO`.
 
 Hannibal can set the log level to `INFO` for you, just edit [conf/application.conf](blob/master/conf/application.conf)
 and set
 
     compactions.set-loglevels-on-startup = true
+if you have problems, please make sure that the url-pattern is correct
+
+    compactions.loglevel-url-pattern = "..." 
+
+Please let [me][Nils Kübler] know if you have trouble with this, or have an idea how we could record information more
+easily.
 
 ## More Information
 
