@@ -13,13 +13,14 @@ trait HBaseConnection {
 
   protected def withHTable(tableName:String, functionBlock: (HTable) => Unit) = {
     val conf = HBaseConfiguration.create()
-    val table = new HTable(Bytes.toBytes(tableName))
+    val table = new HTable(conf, Bytes.toBytes(tableName))
     try {
       functionBlock(table)
     } finally {
       table.close()
     }
   }
+
   protected def eachTableDescriptor(functionBlock: (HTableDescriptor) => Unit) = {
     withHBaseAdmin { admin =>
       admin.listTables().foreach { desc =>
