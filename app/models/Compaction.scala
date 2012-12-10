@@ -73,23 +73,32 @@ object Compaction extends HBaseConnection {
         var startPoints = Map[String, Date]()
 
         // TODO: this pattern-matching is so damn slow, replace by something faster!
-        for (COMPACTION(date, pkg, typ, region) <- COMPACTION findAllIn response.body) {
-          if (typ == STARTING) {
-            try {
-              startPoints += region -> logFileDateFormat.parse(date)
-            } catch {
-              case e: Exception => throw new Exception("Couldn't parse the date '" + date + "' with dateformat '" +
-                logFileDateFormat.toPattern + "', please check compactions.logfile-date-format in application.conf")
-            }
-          } else {
-            if (!startPoints.contains(region)) {
-              Logger.info("... no compaction-start found for compaction on region: " + region)
+        try
+        {
+          for (COMPACTION(date, pkg, typ, region) <- COMPACTION findAllIn response.body) {
+            if (typ == STARTING) {
+              try {
+                startPoints += region -> logFileDateFormat.parse(date)
+              } catch {
+                case e: Exception => throw new Exception("Couldn't parse the date '" + date + "' with dateformat '" +
+                  logFileDateFormat.toPattern + "', please check compactions.logfile-date-format in application.conf")
+              }
             } else {
-              resultList += Compaction(region, startPoints(region), logFileDateFormat.parse(date))
-              startPoints -= region
+              if (!startPoints.contains(region)) {
+                Logger.info("... no compaction-start found for compaction on region: " + region)
+              } else {
+                resultList += Compaction(region, startPoints(region), logFileDateFormat.parse(date))
+                startPoints -= region
+              }
             }
           }
         }
+        catch
+        {
+          case e:java.text.ParseException => throw new Exception("'" + e.getMessage()
+            + "' please check compactions.logfile-date-format in application.conf");
+        }
+
         if (startPoints.size > 0) Logger.info("... " + startPoints.size + " compactions currently running on " + serverInfo.getHostname())
     }
     resultList.toList

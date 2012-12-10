@@ -24,7 +24,7 @@ Java 6 JDK is required on the machine where this tool is built.
 
 ### HBase Compatibilty
 
-Hannibal currently supports HBase versions 0.90 to 0.94.  Be sure to checkout the correct branch for your version. Although we prefer Clouderas versions, you can try to alter the version in project/Build.scala if you wish to.
+Hannibal currently supports HBase versions 0.90 to 0.94.  Be sure to checkout the correct branch for your version. Although we prefer Cloudera's versions, you can try to alter the version in project/Build.scala if you wish to.
 
 - HBase 0.90.6-cdh3u4 support is available in the branch [master][master]
 - HBase 0.92.1-cdh4.1.2 support is available in the branch [hbase-0.92][b92]
