@@ -1,0 +1,47 @@
+#!/bin/sh
+NAME=hbase-testdata-generator
+NICELEVEL=10
+
+export PATH="${PATH:+$PATH:}/usr/sbin:/sbin"
+
+script=$0
+if [ -h $script ]; then
+        script=`readlink $script`
+fi
+dir=`dirname $script`
+abs_dir="`cd $dir; pwd`"
+
+PIDFILE=/var/run/hbase-testdata-generator.pid
+
+#This is the command to be run, give the full pathname
+DAEMON=$abs_dir/hbase-testdata-generator.sh
+DAEMON_OPTS=""
+
+. /lib/lsb/init-functions
+
+case "$1" in
+  start)
+    echo -n "Starting daemon: "$NAME
+        start-stop-daemon --start --quiet --background --nicelevel $NICELEVEL --oknodo --make-pidfile --pidfile $PIDFILE --startas $DAEMON -- $DAEMON_OPTS
+    echo "."
+        ;;
+  stop)
+    echo -n "Stopping daemon: "$NAME
+        start-stop-daemon --stop --quiet --oknodo --pidfile $PIDFILE --retry=TERM/630/KILL/10
+    echo "."
+        ;;
+  restart)
+        start-stop-daemon --stop --quiet --oknodo --pidfile $PIDFILE --retry=TERM/630/KILL/10
+    sleep 2
+        start-stop-daemon --start --quiet --background --nicelevel $NICELEVEL --oknodo --make-pidfile --pidfile $PIDFILE --startas $DAEMON -- $DAEMON_OPTS
+        ;;
+  status)
+    status_of_proc -p "$PIDFILE" "$DAEMON" $NAME && exit 0 || exit 1
+  ;;
+  *)
+        echo "Usage: "$1" {start|stop|restart|status}"
+        exit 1
+esac
+
+exit 0
+
