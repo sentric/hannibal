@@ -11,6 +11,7 @@ import collection.mutable.{MutableList, Map}
 import java.util.Date
 import utils.HBaseConnection
 import java.text.SimpleDateFormat
+import java.util.regex._
 
 case class Compaction(region: String, start: Date, end: Date)
 
@@ -19,7 +20,10 @@ object Compaction extends HBaseConnection {
   val STARTING = "Starting"
   val COMPETED = "completed"
 
-  val COMPACTION = """(.*) INFO (.*).HRegion: (Starting|completed) compaction on region (.*\.)""".r
+  val COMPACTION = Pattern.compile(
+    """^(.*) INFO (.*).HRegion: (Starting|completed) compaction on region (.*\.)""",
+    Pattern.MULTILINE
+  )
 
   var logFileUrlPattern: String = null
   var logLevelUrlPattern: String = null
@@ -74,7 +78,8 @@ object Compaction extends HBaseConnection {
 
         try
         {
-          COMPACTION.findAllIn(response.body).matchData.foreach { m =>
+          val m = COMPACTION.matcher(response.body);
+          while(m.find()) {
             val date = m.group(1)
             val pkg = m.group(2)
             val typ = m.group(3)
