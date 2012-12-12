@@ -72,10 +72,14 @@ object Compaction extends HBaseConnection {
 
         var startPoints = Map[String, Date]()
 
-        // TODO: this pattern-matching is so damn slow, replace by something faster!
         try
         {
-          for (COMPACTION(date, pkg, typ, region) <- COMPACTION findAllIn response.body) {
+          COMPACTION.findAllIn(response.body).matchData.foreach { m =>
+            val date = m.group(1)
+            val pkg = m.group(2)
+            val typ = m.group(3)
+            val region = m.group(4)
+
             if (typ == STARTING) {
               try {
                 startPoints += region -> logFileDateFormat.parse(date)
