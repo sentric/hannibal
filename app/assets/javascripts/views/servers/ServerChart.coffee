@@ -38,7 +38,11 @@ class @ServerChartView extends  AbstractServerChartView
     hostNames = @hostNames
     hostNameMap = @hostNameMap
 
-    for own tableName, regionInfos of @regionsByTable 
+    if hostNames.length == 1
+      hostNames.push ""
+      hostNameMap[""] = 1
+
+    series = for own tableName, regionInfos of @regionsByTable
       groupedByHost = _.groupBy(regionInfos, (regionInfo) -> regionInfo.get("serverHostName"))
       _.each hostNames, (hostName)-> groupedByHost[hostName] = [] unless groupedByHost[hostName]
       values = for own hostName, regionInfos of groupedByHost
@@ -51,6 +55,7 @@ class @ServerChartView extends  AbstractServerChartView
         name: tableName
         data: values
         color: @getColor(tableName)
+
 
   createGraphComponents: ->
     components = super()
