@@ -7,7 +7,7 @@ Vagrant::Config.run do |config|
   config.vm.box = "lucid32"
 
   config.vm.define :hbase do |vm_conf|
-    vm_conf.vm.host_name = "hannibal-dev-hbase"
+    vm_conf.vm.host_name = "dev.hbase-0-90.hannibal"
     vm_conf.vm.customize ["modifyvm", :id, "--memory", 1536]
     vm_conf.vm.network :hostonly, "192.168.80.10"
     vm_conf.vm.provision :puppet do |puppet|

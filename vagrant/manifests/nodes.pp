@@ -1,3 +1,3 @@
-node hannibal-dev-hbase {
+node dev {
   include cloudera::hbase::standalone
 }
