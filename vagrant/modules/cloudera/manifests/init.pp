@@ -6,11 +6,12 @@ class cloudera::hbase::standalone {
     require cloduera::base
 
     service { "hadoop-hbase-master":
+        name => "hbase-master",
         ensure => running,
-        require => Package["hadoop-hbase-master"],
+        require => Package["hbase-master"],
     }
 
-    package { "hadoop-hbase-master":
+    package { "hbase-master":
         ensure => latest,
     }
 }
@@ -22,11 +23,11 @@ class cloduera::base {
 class cloudera::repository {
 
     apt::source { "cloudera-repository":
-        location => "http://archive.cloudera.com/debian",
-        release => "lucid-cdh3u4",
+        location => "http://archive.cloudera.com/cdh4/ubuntu/lucid/amd64/cdh",
+        release => "lucid-cdh4.1.2",
         repos => "contrib",
         key => "02A818DD",
-        key_source => "http://archive.cloudera.com/debian/archive.key"
+        key_source => "http://archive.cloudera.com/cdh4/ubuntu/lucid/amd64/cdh/archive.key"
     }
 
 }
