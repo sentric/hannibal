@@ -96,7 +96,12 @@ object Compaction extends HBaseConnection {
               if (!startPoints.contains(region)) {
                 Logger.info("... no compaction-start found for compaction on region: " + region)
               } else {
-                resultList += Compaction(region, startPoints(region), logFileDateFormat.parse(date))
+                val startDate = startPoints(region)
+                var endDate = logFileDateFormat.parse(date)
+                if(endDate.getTime() < startDate.getTime()) {
+                  endDate = new Date(startDate.getTime()+1)
+                }
+                resultList += Compaction(region, startDate, endDate)
                 startPoints -= region
               }
             }
