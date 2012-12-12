@@ -42,7 +42,7 @@ end
 def createTable(table, cf, splits)
 
     conf = HBaseConfiguration.create()
-    conf.set('hbase.zookeeper.quorum', 'hannibal-dev-hbase')
+    conf.set('hbase.zookeeper.quorum', '192.168.80.10')
     conf.set('hbase.rootdir', 'file:///tmp/hbase-hbase/hbase')
     admin = HBaseAdmin.new(conf)
 
