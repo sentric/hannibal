@@ -1,0 +1,4 @@
+sun-java5-jdk shared/accepted-sun-dlj-v1-1 select true
+sun-java5-jre shared/accepted-sun-dlj-v1-1 select true
+sun-java6-jdk shared/accepted-sun-dlj-v1-1 select true
+sun-java6-jre shared/accepted-sun-dlj-v1-1 select true

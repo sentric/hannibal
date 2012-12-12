@@ -21,16 +21,11 @@
  */
 -->
 <configuration>
-  <property>
-    <name>hbase.cluster.distributed</name>
-    <value>true</value>
-  </property>
-  <property>
-    <name>hbase.rootdir</name>
-    <value>! insert HDFS-Root HBase dir here !</value>
-  </property>
-  <property>
-    <name>hbase.zookeeper.quorum</name>
-      <value>! insert Zookeeper Quorum here !</value>
-  </property>
+
+    <!-- Defaults to Standalone Configuration for Vagrant -->
+    <property>
+        <name>hbase.zookeeper.quorum</name>
+        <value>hannibal-dev-hbase</value>
+    </property>
+
 </configuration>

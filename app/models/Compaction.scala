@@ -11,12 +11,16 @@ import collection.mutable.MutableList
 import java.util.Date
 import utils.HBaseConnection
 import java.text.SimpleDateFormat
+import java.util.regex._
 
 case class Compaction(region: String, start: Date, end: Date)
 
 object Compaction extends HBaseConnection {
 
-  val COMPACTION = """(.*) INFO (.*)\.CompactionRequest: completed compaction: regionName=(.*\.), storeName=(.*), fileCount=(.*), fileSize=(.*), priority=(.*), time=(.*); duration=(.*)sec""".r
+  val COMPACTION = Pattern.compile(
+    """^(.*) INFO (.*)\.CompactionRequest: completed compaction: regionName=(.*\.), storeName=(.*), fileCount=(.*), fileSize=(.*), priority=(.*), time=(.*); duration=(.*)sec""",
+    Pattern.MULTILINE
+  )
 
   var logFileUrlPattern: String = null
   var logLevelUrlPattern: String = null
@@ -67,15 +71,34 @@ object Compaction extends HBaseConnection {
             url + "', please check compactions.logfile_pattern in application.conf");
         }
 
-        // TODO: this pattern-matching is so damn slow, replace by something faster!
-        for (COMPACTION(date, pkg, region, store, fileCount, fileSize, priority, time, duration) <- COMPACTION findAllIn response.body) {
-          val end = logFileDateFormat.parse(date)
-          val durationMsec = if (duration.toLong > 0) {
-            duration.toLong * 1000
-          } else {
-            1
+        try
+        {
+          val m = COMPACTION.matcher(response.body);
+          while(m.find()) {
+            val date = m.group(1)
+            val pkg = m.group(2)
+            val region = m.group(3)
+            val store = m.group(4)
+            val fileCount = m.group(5)
+            val fileSize = m.group(6)
+            val priority = m.group(7)
+            val time = m.group(8)
+            val duration = m.group(9)
+
+            val end = logFileDateFormat.parse(date)
+            val durationMsec = if (duration.toLong > 0) {
+              duration.toLong * 1000
+            } else {
+              1
+            }
+
+            resultList += Compaction(region, new Date(end.getTime() - durationMsec), end)
           }
-          resultList += Compaction(region, new Date(end.getTime() - durationMsec), end)
+        }
+        catch
+        {
+          case e:java.text.ParseException => throw new Exception("'" + e.getMessage()
+            + "' please check compactions.logfile-date-format in application.conf");
         }
     }
     resultList.toList
