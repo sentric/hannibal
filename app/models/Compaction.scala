@@ -18,9 +18,10 @@ case class Compaction(region: String, start: Date, end: Date)
 object Compaction extends HBaseConnection {
 
   val COMPACTION = Pattern.compile(
-    """^(.*) INFO (.*)\.CompactionRequest: completed compaction: regionName=(.*\.), storeName=(.*), fileCount=(.*), fileSize=(.*), priority=(.*), time=(.*); duration=(.*)sec""",
+    """^(.*) INFO (.*)\.CompactionRequest: completed compaction: regionName=(.*\.), storeName=(.*), fileCount=(.*), fileSize=(.*), priority=(.*), time=(.*); duration=(.*)$""",
     Pattern.MULTILINE
   )
+  val TIME = Pattern.compile("""^((\d+)mins, )?((\d+)sec)$""")
 
   var logFileUrlPattern: String = null
   var logLevelUrlPattern: String = null
@@ -86,11 +87,7 @@ object Compaction extends HBaseConnection {
             val duration = m.group(9)
 
             val end = logFileDateFormat.parse(date)
-            val durationMsec = if (duration.toLong > 0) {
-              duration.toLong * 1000
-            } else {
-              1
-            }
+            val durationMsec = parseDuration(duration)
 
             resultList += Compaction(region, new Date(end.getTime() - durationMsec), end)
           }
@@ -102,6 +99,20 @@ object Compaction extends HBaseConnection {
         }
     }
     resultList.toList
+  }
+
+  def parseDuration(s:String) = {
+    val m = TIME.matcher(s)
+    m.find()
+    var seconds = m.group(4).toLong
+    if (m.group(2) != null)
+      seconds += m.group(2).toLong * 60
+
+    if(seconds > 0) {
+      seconds * 1000
+    } else {
+       1
+    }
   }
 
   def logFileUrl(serverName: ServerName) = fillPlaceholders(serverName, logFileUrlPattern)
