@@ -19,7 +19,7 @@ class apache::hbase::base {
     require java
 
     apache::package { "hbase":
-        version => "0.90.6",
+        version => "0.92.2",
         notify => Exec["permissions"]
     }
 
