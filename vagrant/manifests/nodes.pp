@@ -1,5 +1,10 @@
 node dev {
+
+  # Use CDH Version ...
   include cloudera::hbase::standalone
+
+  # ... or use Apache Version
+  # include apache::hbase::standalone
 
   file { "/etc/init.d/hbase-testdata-generator":
     ensure => "link",
