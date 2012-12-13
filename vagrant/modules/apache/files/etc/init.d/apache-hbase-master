@@ -1,0 +1,10 @@
+#!/bin/sh
+
+if [ "$1" = "status" ]; then
+   su -c "jps | grep HMaster" hbase
+   code=$?
+   exit $code
+else
+   su -c "/opt/hbase/bin/hbase-daemon.sh $* master" hbase
+fi
+
