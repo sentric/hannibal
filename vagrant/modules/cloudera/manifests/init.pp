@@ -1,5 +1,5 @@
 class cloudera {
-
+    # TODO change to CDH-Version that includes HBase 0.94 when it is released.
 }
 
 class cloudera::hbase::standalone {

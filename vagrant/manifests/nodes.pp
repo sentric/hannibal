@@ -1,10 +1,7 @@
 node dev {
 
-  # Use CDH Version ...
-  include cloudera::hbase::standalone
-
-  # ... or use Apache Version
-  # include apache::hbase::standalone
+  # No CDH Version of HBase 0.94 available yet, so use Apache Version
+  include apache::hbase::standalone
 
   include hannibal
 }
