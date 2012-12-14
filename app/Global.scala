@@ -24,7 +24,7 @@ object Global extends GlobalSettings {
         logLevelUrlPattern = app.configuration.getString("compactions.loglevel-url-pattern").get,
         logFileUrlPattern = app.configuration.getString("compactions.logfile-url-pattern").get,
         logFileDateFormat = app.configuration.getString("compactions.logfile-date-format").get,
-        logFetchTimeout =  app.configuration.getInt("compactions.logfile.fetch.timeout.in.seconds").get
+        logFetchTimeout =  app.configuration.getInt("compactions.logfile-fetch-timeout-in-seconds").get
       )
 
       val updateMetricsActor = Akka.system.actorOf(Props[UpdateMetricsActor], name = "updateMetricsActor")
