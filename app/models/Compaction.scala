@@ -18,6 +18,7 @@ object Compaction extends HBaseConnection {
 
   val COMPACTION = """(.*) INFO (.*)\.CompactionRequest: completed compaction: regionName=(.*\.), storeName=(.*), fileCount=(.*), fileSize=(.*), priority=(.*), time=(.*); duration=(.*)sec""".r
 
+  var logFetchTimeout: Int = 5
   var logFileUrlPattern: String = null
   var logLevelUrlPattern: String = null
   var setLogLevelsOnStartup: Boolean = false
@@ -26,11 +27,13 @@ object Compaction extends HBaseConnection {
   def configure(setLogLevelsOnStartup: Boolean = false,
                 logFileUrlPattern: String = null,
                 logLevelUrlPattern: String = null,
-                logFileDateFormat: String = null) = {
+                logFileDateFormat: String = null,
+                logFetchTimeout: Int = 5) = {
     this.setLogLevelsOnStartup = setLogLevelsOnStartup
     this.logFileUrlPattern = logFileUrlPattern
     this.logLevelUrlPattern = logLevelUrlPattern
     this.logFileDateFormat = new java.text.SimpleDateFormat(logFileDateFormat)
+    this.logFetchTimeout = logFetchTimeout
   }
 
   def init() = {
@@ -61,7 +64,7 @@ object Compaction extends HBaseConnection {
       (hbaseAdmin, clusterStatus, serverName) =>
         val url = logFileUrl(serverName)
         Logger.debug("... fetching Logfile from " + url)
-        val response = WS.url(url).get().value.get
+        val response = WS.url(url).get().await(logFetchTimeout * 1000).get
         if (response.ahcResponse.getStatusCode() != 200) {
           throw new Exception("couldn't load Compaction Metrics from URL: '" +
             url + "', please check compactions.logfile_pattern in application.conf");
