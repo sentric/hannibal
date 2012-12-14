@@ -7,15 +7,15 @@ import org.apache.hadoop.hbase.HColumnDescriptor
 
 def main
     splits = [
-       "row-0.1",
-       "row-0.2",
-       "row-0.3",
-       "row-0.4",
-       "row-0.5",
-       "row-0.6",
-       "row-0.7",
-       "row-0.8",
-       "row-0.9",
+       "row-0.10",
+       "row-0.12",
+       "row-0.16",
+       "row-0.24",
+       "row-0.40",
+       "row-0.64",
+       "row-0.84",
+       "row-0.88",
+       "row-0.90",
     ]
 
    createTable("lorem", "cf1", splits)
