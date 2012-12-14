@@ -14,7 +14,7 @@ abs_dir="`cd $dir; pwd`"
 PIDFILE=/var/run/hbase-testdata-generator.pid
 
 #This is the command to be run, give the full pathname
-DAEMON=$abs_dir/hbase-testdata-generator.sh
+DAEMON=/opt/hbase-testdata-generator/hbase-testdata-generator.sh
 DAEMON_OPTS=""
 
 . /lib/lsb/init-functions

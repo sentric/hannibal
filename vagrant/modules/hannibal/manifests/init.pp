@@ -1,4 +1,5 @@
 class hannibal {
+  require hannibal::hbase_testdata_generator
 
   file { "/etc/profile.d/hannibal.sh":
     ensure => file,
