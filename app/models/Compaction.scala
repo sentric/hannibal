@@ -69,18 +69,18 @@ object Compaction extends HBaseConnection {
     var resultList = MutableList[Compaction]()
     eachServerInfo {
       serverInfo =>
-        val url = logFileUrl(serverInfo)
-        Logger.debug("... fetching Logfile from " + url)
-        val response = WS.url(url).get().await(logFetchTimeout * 1000).get
-        if (response.ahcResponse.getStatusCode() != 200) {
-          throw new Exception("couldn't load Compaction Metrics from URL: '" +
-            url + "', please check compactions.logfile_pattern in application.conf");
-        }
-
-        var startPoints = Map[String, Date]()
-
         try
         {
+          val url = logFileUrl(serverInfo)
+          Logger.debug("... fetching Logfile from " + url)
+          val response = WS.url(url).get().await(logFetchTimeout * 1000).get
+          if (response.ahcResponse.getStatusCode() != 200) {
+            throw new Exception("couldn't load Compaction Metrics from URL: '" +
+              url + "', please check compactions.logfile_pattern in application.conf");
+          }
+
+          var startPoints = Map[String, Date]()
+
           val m = COMPACTION.matcher(response.body);
           while(m.find()) {
             val date = m.group(1)
@@ -109,14 +109,16 @@ object Compaction extends HBaseConnection {
               }
             }
           }
+
+          if (startPoints.size > 0) Logger.info("... " + startPoints.size + " compactions currently running on " + serverInfo.getHostname())
         }
         catch
         {
+          case e:java.util.concurrent.TimeoutException => throw new Exception("'" + e.getMessage()
+            + "' please try to increase compactions.logfile-fetch-timeout-in-seconds in application.conf")
           case e:java.text.ParseException => throw new Exception("'" + e.getMessage()
             + "' please check compactions.logfile-date-format in application.conf");
         }
-
-        if (startPoints.size > 0) Logger.info("... " + startPoints.size + " compactions currently running on " + serverInfo.getHostname())
     }
     resultList.toList
   }
