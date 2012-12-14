@@ -125,7 +125,14 @@ Hannibal is released under MIT License, see [LICENSE][] for details.
 
 This tool is developed at [Sentric][] by: [Nils Kübler][] and [Jiayong Ou][]
 
-With help from: [Jean-Pierre König][], [Christian Gügi][] and [Vadim Kisselmann][], Ben Taylor, Stephanie Höhn
+With help from:
+
+ * [Jean-Pierre König][]
+ * [Christian Gügi][]
+ * [Vadim Kisselmann][]
+ * Ben Taylor
+ * Stephanie Höhn
+ * [Alexandre Normand][]
 
  [Sentric]: http://www.sentric.ch
  [Nils Kübler]: https://twitter.com/nkuebler
@@ -133,5 +140,6 @@ With help from: [Jean-Pierre König][], [Christian Gügi][] and [Vadim Kisselman
  [Jean-Pierre König]: https://twitter.com/jpkoenig
  [Christian Gügi]: https://twitter.com/chrisgugi
  [Vadim Kisselmann]: https://twitter.com/vkisselmann
+ [Alexandre Normand]: https://github.com/alexandre-normand
 
 [![githalytics.com alpha](https://cruel-carlota.pagodabox.com/ed9e66b101612798e3e015369f86b502 "githalytics.com")](http://githalytics.com/sentric/hannibal)
