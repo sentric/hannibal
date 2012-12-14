@@ -16,4 +16,6 @@ node dev {
     ensure => "running",
     require => File["/etc/init.d/hbase-testdata-generator"]
   }
+
+  include hannibal
 }
