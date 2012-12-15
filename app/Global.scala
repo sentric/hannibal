@@ -24,13 +24,14 @@ object Global extends GlobalSettings {
         logLevelUrlPattern = app.configuration.getString("compactions.loglevel-url-pattern").get,
         logFileUrlPattern = app.configuration.getString("compactions.logfile-url-pattern").get,
         logFileDateFormat = app.configuration.getString("compactions.logfile-date-format").get,
-        logFetchTimeout =  app.configuration.getInt("compactions.logfile-fetch-timeout-in-seconds").get
+        logFetchTimeout =  app.configuration.getInt("compactions.logfile-fetch-timeout-in-seconds").get,
+        initialLookBehindSizeInKBs =  app.configuration.getInt("compactions.logfile-initial-look-behind-size-in-kb").get
       )
 
       val updateMetricsActor = Akka.system.actorOf(Props[UpdateMetricsActor], name = "updateMetricsActor")
       Akka.system.scheduler.schedule(0 seconds, 60 seconds, updateMetricsActor, UpdateMetricsActor.UPDATE_REGION_INFO_METRICS)
       Akka.system.scheduler.scheduleOnce(15 seconds, updateMetricsActor, UpdateMetricsActor.INIT_COMPACTION_METRICS)
-      Akka.system.scheduler.schedule(30 seconds, 600 seconds, updateMetricsActor, UpdateMetricsActor.UPDATE_COMPACTION_METRICS)
+      Akka.system.scheduler.schedule(30 seconds, 300 seconds, updateMetricsActor, UpdateMetricsActor.UPDATE_COMPACTION_METRICS)
       Akka.system.scheduler.schedule(90 seconds, 1 days, updateMetricsActor, UpdateMetricsActor.CLEAN_OLD_METRICS)
 
     } else {
