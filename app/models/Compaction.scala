@@ -6,17 +6,19 @@ package models
 
 import play.api.Logger
 import org.apache.hadoop.hbase.HServerInfo
-import play.api.libs.ws.WS
-import collection.mutable.{MutableList, Map}
+import play.api.libs.ws.{Response, WS}
+import collection.mutable.MutableList
 import java.util.Date
 import utils.HBaseConnection
-import java.text.SimpleDateFormat
+
 import java.util.regex._
+import collection.mutable
+import play.api.libs.concurrent.NotWaiting
+import org.apache.commons.lang.StringUtils
 
 case class Compaction(region: String, start: Date, end: Date)
 
-object Compaction extends HBaseConnection {
-
+object Compaction {
   val STARTING = "Starting"
   val COMPETED = "completed"
 
@@ -24,40 +26,6 @@ object Compaction extends HBaseConnection {
     """^(.*) INFO (.*).HRegion: (Starting|completed) compaction on region (.*\.)""",
     Pattern.MULTILINE
   )
-
-  var logFetchTimeout: Int = 5
-  var logFileUrlPattern: String = null
-  var logLevelUrlPattern: String = null
-  var setLogLevelsOnStartup: Boolean = false
-  var logFileDateFormat: SimpleDateFormat = null
-
-  def configure(setLogLevelsOnStartup: Boolean = false,
-                logFileUrlPattern: String = null,
-                logLevelUrlPattern: String = null,
-                logFileDateFormat: String = null,
-                logFetchTimeout: Int = 5) = {
-    this.setLogLevelsOnStartup = setLogLevelsOnStartup
-    this.logFileUrlPattern = logFileUrlPattern
-    this.logLevelUrlPattern = logLevelUrlPattern
-    this.logFileDateFormat = new java.text.SimpleDateFormat(logFileDateFormat)
-    this.logFetchTimeout = logFetchTimeout
-  }
-
-  def init() = {
-    if (setLogLevelsOnStartup) {
-      Logger.info("setting Loglevels for the Regionservers")
-      eachServerInfo {
-        serverInfo =>
-          val url = logLevelUrl(serverInfo)
-          val response = WS.url(url).get().value.get
-          if (response.ahcResponse.getStatusCode() != 200) {
-            throw new Exception("couldn't set log-level with URL: " + url);
-          } else {
-            Logger.debug("... Loglevel set for server " + serverInfo.getHostname())
-          }
-      }
-    }
-  }
 
   def forRegion(compactions: Seq[Compaction], region: String): Seq[Compaction] = {
     compactions.filter((compaction) => {
@@ -67,21 +35,11 @@ object Compaction extends HBaseConnection {
 
   def all(): Seq[Compaction] = {
     var resultList = MutableList[Compaction]()
-    eachServerInfo {
-      serverInfo =>
-        try
-        {
-          val url = logFileUrl(serverInfo)
-          Logger.debug("... fetching Logfile from " + url)
-          val response = WS.url(url).get().await(logFetchTimeout * 1000).get
-          if (response.ahcResponse.getStatusCode() != 200) {
-            throw new Exception("couldn't load Compaction Metrics from URL: '" +
-              url + "', please check compactions.logfile_pattern in application.conf");
-          }
-
+    LogFile.all().foreach {
+      logFile =>
+        try {
           var startPoints = Map[String, Date]()
-
-          val m = COMPACTION.matcher(response.body);
+          val m = COMPACTION.matcher(logFile.tail())
           while(m.find()) {
             val date = m.group(1)
             val pkg = m.group(2)
@@ -90,17 +48,17 @@ object Compaction extends HBaseConnection {
 
             if (typ == STARTING) {
               try {
-                startPoints += region -> logFileDateFormat.parse(date)
+                startPoints += region -> LogFile.dateFormat.parse(date)
               } catch {
                 case e: Exception => throw new Exception("Couldn't parse the date '" + date + "' with dateformat '" +
-                  logFileDateFormat.toPattern + "', please check compactions.logfile-date-format in application.conf")
+                  LogFile.dateFormat.toPattern + "', please check compactions.logfile-date-format in application.conf")
               }
             } else {
               if (!startPoints.contains(region)) {
                 Logger.info("... no compaction-start found for compaction on region: " + region)
               } else {
                 val startDate = startPoints(region)
-                var endDate = logFileDateFormat.parse(date)
+                var endDate = LogFile.dateFormat.parse(date)
                 if(endDate.getTime() < startDate.getTime()) {
                   endDate = new Date(startDate.getTime()+1)
                 }
@@ -110,7 +68,7 @@ object Compaction extends HBaseConnection {
             }
           }
 
-          if (startPoints.size > 0) Logger.info("... " + startPoints.size + " compactions currently running on " + serverInfo.getHostname())
+          if (startPoints.size > 0) Logger.info("... " + startPoints.size + " compactions currently running on " + logFile.regionServer.serverName)
         }
         catch
         {
@@ -123,13 +81,4 @@ object Compaction extends HBaseConnection {
     resultList.toList
   }
 
-  def logFileUrl(serverInfo: HServerInfo) = fillPlaceholders(serverInfo, logFileUrlPattern)
-
-  def logLevelUrl(serverInfo: HServerInfo) = fillPlaceholders(serverInfo, logLevelUrlPattern)
-
-  def fillPlaceholders(serverInfo: HServerInfo, string: String) =
-    string
-      .replaceAll("%hostname%", serverInfo.getHostname())
-      .replaceAll("%infoport%", serverInfo.getInfoPort().toString)
-      .replaceAll("%hostname-without-domain%", serverInfo.getHostname().split("\\.")(0))
 }
