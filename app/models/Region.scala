@@ -5,12 +5,11 @@
 package models
 
 import play.Logger
-import scala.collection.JavaConversions._
 import scala.collection.mutable.ListBuffer
 import org.apache.hadoop.hbase.client.HBaseAdmin
 import utils.HBaseConnection
 import org.apache.hadoop.hbase.util.Bytes
-import org.apache.hadoop.hbase.{HRegionInfo, HRegionLocation, HServerInfo, HServerLoad}
+import org.apache.hadoop.hbase.{HRegionInfo, HRegionLocation, HServerLoad}
 import play.api.libs.concurrent.Promise
 import play.api.libs.concurrent.Akka
 import play.api.Play.current
@@ -56,16 +55,16 @@ extends HBaseConnection {
   }
 }
 
-object Region extends HBaseConnection {
-  def apply(serverInfo: HServerInfo, regionLoad: HServerLoad.RegionLoad) : Region = {
+object Region {
+  def apply(regionServer: RegionServer, regionLoad: HServerLoad.RegionLoad) : Region = {
     val regionName = regionLoad.getNameAsString()
     val parsedRegionName = RegionName(regionName)
 
     Region(
-               serverName        = serverInfo.getServerName(),
-               serverHostName    = serverInfo.getHostname(),
-               serverPort        = serverInfo.getServerAddress().getPort(),
-               serverInfoPort    = serverInfo.getInfoPort(),
+               serverName        = regionServer.serverName,
+               serverHostName    = regionServer.hostName,
+               serverPort        = regionServer.port,
+               serverInfoPort    = regionServer.infoPort,
                
                regionName        = regionName,
                stores            = regionLoad.getStores(),
@@ -84,11 +83,9 @@ object Region extends HBaseConnection {
   def all(): Seq[Region] = {
     val list = new ListBuffer[Region]()
 
-    eachServerInfo { serverInfo =>
-      val load = serverInfo.getLoad()
-      val regionsLoad = load.getRegionsLoad();
-      regionsLoad.foreach { regionLoad =>
-        list += Region(serverInfo, regionLoad)
+    HBase.eachRegionServer { regionServer =>
+      regionServer.regionsLoad.foreach { regionLoad =>
+        list += Region(regionServer, regionLoad)
       }
     }
 

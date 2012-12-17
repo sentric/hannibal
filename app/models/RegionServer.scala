@@ -5,6 +5,8 @@
 package models
 
 import org.apache.hadoop.hbase.HServerInfo
+import scala.collection.JavaConversions._
+import org.apache.hadoop.hbase.HServerLoad.RegionLoad
 
 class RegionServer(val serverInfo: HServerInfo) {
 
@@ -16,6 +18,26 @@ class RegionServer(val serverInfo: HServerInfo) {
 
   def serverName = {
     serverInfo.getServerName
+  }
+
+  def hostName = {
+    serverInfo.getHostname
+  }
+
+  def port = {
+    serverInfo.getServerAddress().getPort
+  }
+
+  def infoPort = {
+    serverInfo.getInfoPort
+  }
+
+  def load = {
+    serverInfo.getLoad
+  }
+
+  def regionsLoad:Iterable[RegionLoad] = {
+    load.getRegionsLoad
   }
 
   override def toString = serverName
