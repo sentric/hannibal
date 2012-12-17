@@ -7,7 +7,7 @@ package actors
 import akka.actor.Actor
 import play.api.Logger
 import java.util.Date
-import models.{Compaction, MetricDef}
+import models.{LogFile, Compaction, MetricDef}
 import actors.UpdateMetricsActor._
 
 object UpdateMetricsActor {
@@ -36,7 +36,7 @@ class UpdateMetricsActor extends Actor {
       })
 
     case INIT_COMPACTION_METRICS =>
-      Compaction.init()
+      LogFile.init()
 
     case UPDATE_COMPACTION_METRICS =>
       updateMetrics("CompactionMetrics", () => {

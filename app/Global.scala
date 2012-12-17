@@ -2,7 +2,7 @@
  * Copyright 2012 Sentric. See LICENSE for details.
  */
 
-import models.{Compaction, MetricDef}
+import models.{LogFile, Compaction, MetricDef}
 import play.api._
 import play.api.mvc._
 import play.api.mvc.Results._
@@ -19,7 +19,7 @@ object Global extends GlobalSettings {
     if(app.mode != Mode.Test) {
       Logger.info("Application has started in "+app.mode+"-Mode, starting Update-Metrics-Actor")
 
-      Compaction.configure(
+      LogFile.configure(
         setLogLevelsOnStartup = app.configuration.getBoolean("compactions.set-loglevels-on-startup") == Some(true),
         logLevelUrlPattern = app.configuration.getString("compactions.loglevel-url-pattern").get,
         logFileUrlPattern = app.configuration.getString("compactions.logfile-url-pattern").get,
