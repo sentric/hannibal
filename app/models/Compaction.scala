@@ -19,13 +19,17 @@ import org.apache.commons.lang.StringUtils
 case class Compaction(region: String, start: Date, end: Date)
 
 object Compaction {
-  val STARTING = "Starting"
-  val COMPETED = "completed"
 
+  val TIME = Pattern.compile("""^((\d+)mins, )?((\d+)sec)$""")
+
+  // The Pattern is dependent on the HBase-Version - between HBase 0.90 and HBase 0.92 the format was changed
   val COMPACTION = Pattern.compile(
-    """^(.*) INFO (.*).HRegion: (Starting|completed) compaction on region (.*\.)""",
+    """^(.*) INFO (.*).HRegion: completed compaction on region (.*\.) after (.*)$""",
     Pattern.MULTILINE
   )
+  val DATE_GROUP = 1
+  val REGION_GROUP = 3
+  val DURATION_GROUP = 4
 
   def forRegion(compactions: Seq[Compaction], region: String): Seq[Compaction] = {
     compactions.filter((compaction) => {
@@ -41,31 +45,14 @@ object Compaction {
           var startPoints = Map[String, Date]()
           val m = COMPACTION.matcher(logFile.tail())
           while(m.find()) {
-            val date = m.group(1)
-            val pkg = m.group(2)
-            val typ = m.group(3)
-            val region = m.group(4)
+            val date = m.group(DATE_GROUP)
+            val region = m.group(REGION_GROUP)
+            val duration = m.group(DURATION_GROUP)
 
-            if (typ == STARTING) {
-              try {
-                startPoints += region -> LogFile.dateFormat.parse(date)
-              } catch {
-                case e: Exception => throw new Exception("Couldn't parse the date '" + date + "' with dateformat '" +
-                  LogFile.dateFormat.toPattern + "', please check compactions.logfile-date-format in application.conf")
-              }
-            } else {
-              if (!startPoints.contains(region)) {
-                Logger.info("... no compaction-start found for compaction on region: " + region)
-              } else {
-                val startDate = startPoints(region)
-                var endDate = LogFile.dateFormat.parse(date)
-                if(endDate.getTime() < startDate.getTime()) {
-                  endDate = new Date(startDate.getTime()+1)
-                }
-                resultList += Compaction(region, startDate, endDate)
-                startPoints -= region
-              }
-            }
+            val end = LogFile.dateFormat.parse(date)
+            val durationMsec = parseDuration(duration)
+
+            resultList += Compaction(region, new Date(end.getTime() - durationMsec), end)
           }
 
           if (startPoints.size > 0) Logger.info("... " + startPoints.size + " compactions currently running on " + logFile.regionServer.serverName)
@@ -79,6 +66,20 @@ object Compaction {
         }
     }
     resultList.toList
+  }
+
+  def parseDuration(s:String) = {
+    val m = TIME.matcher(s)
+    m.find()
+    var seconds = m.group(4).toLong
+    if (m.group(2) != null)
+      seconds += m.group(2).toLong * 60
+
+    if(seconds > 0) {
+      seconds * 1000
+    } else {
+      1
+    }
   }
 
 }

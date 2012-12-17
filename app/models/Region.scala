@@ -83,7 +83,7 @@ object Region {
   def all(): Seq[Region] = {
     val list = new ListBuffer[Region]()
 
-    HBase.eachRegionServer { regionServer =>
+    RegionServer.each { regionServer =>
       regionServer.regionsLoad.foreach { regionLoad =>
         list += Region(regionServer, regionLoad)
       }

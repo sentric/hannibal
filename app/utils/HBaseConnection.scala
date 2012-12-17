@@ -29,16 +29,6 @@ trait HBaseConnection {
     }
   }
 
-  protected def eachServerInfo(functionBlock: (HServerInfo) => Unit) = {
-    withHBaseAdmin { hbaseAdmin =>
-      val status = hbaseAdmin.getClusterStatus()
-      val serverInfos = status.getServerInfo()
-      serverInfos.foreach { serverInfo =>
-        functionBlock(serverInfo)
-      }
-    }
-  }
-
   protected def withHBaseAdmin(functionBlock: (HBaseAdmin) => Unit) = {
     val conf = HBaseConfiguration.create()
     val client = new HBaseAdmin(conf)
