@@ -100,7 +100,7 @@ object LogFile {
   def init() = {
     if (setLogLevelsOnStartup) {
       Logger.info("setting Loglevels for the Regionservers")
-      RegionServer.each {
+      HBase.eachRegionServer {
         regionServer =>
           val url = logLevelUrl(regionServer)
           val response = WS.url(url).get().value.get
@@ -115,7 +115,7 @@ object LogFile {
 
   def all() = {
     val list = new ListBuffer[LogFile]()
-    RegionServer.each {
+    HBase.eachRegionServer {
       regionServer =>
         list += LogFile(regionServer)
     }

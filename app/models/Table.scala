@@ -4,16 +4,15 @@
 
 package models
 
-import utils.HBaseConnection
 import collection.mutable.ListBuffer
 import org.apache.hadoop.hbase.util.Bytes
 import org.apache.hadoop.hbase.HTableDescriptor
 
-object Table extends HBaseConnection {
+object Table {
 
   def all(): Seq[Table] = {
     val list = new ListBuffer[Table]()
-    eachTableDescriptor { desc =>
+    HBase.eachTableDescriptor { desc =>
       list += Table(desc)
     }
     list.toList
@@ -21,7 +20,7 @@ object Table extends HBaseConnection {
 
   def findByName(name: String): Table = {
     var desc:HTableDescriptor = null
-    withHBaseAdmin { admin =>
+    HBase.withAdmin { admin =>
       desc = admin.getTableDescriptor(Bytes.toBytes(name))
     }
     if(desc != null)

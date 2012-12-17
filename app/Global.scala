@@ -2,7 +2,8 @@
  * Copyright 2012 Sentric. See LICENSE for details.
  */
 
-import models.{LogFile, Compaction, MetricDef}
+import models.hbase090.HBase090
+import models.{HBase, LogFile, Compaction, MetricDef}
 import play.api._
 import play.api.mvc._
 import play.api.mvc.Results._
@@ -16,6 +17,7 @@ import actors.UpdateMetricsActor
 object Global extends GlobalSettings {
 
   override def onStart(app: Application) {
+
     if(app.mode != Mode.Test) {
       Logger.info("Application has started in "+app.mode+"-Mode, starting Update-Metrics-Actor")
 

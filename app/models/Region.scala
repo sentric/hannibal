@@ -7,7 +7,6 @@ package models
 import play.Logger
 import scala.collection.mutable.ListBuffer
 import org.apache.hadoop.hbase.client.HBaseAdmin
-import utils.HBaseConnection
 import org.apache.hadoop.hbase.util.Bytes
 import org.apache.hadoop.hbase.{HRegionInfo, HRegionLocation, HServerLoad}
 import play.api.libs.concurrent.Promise
@@ -28,11 +27,11 @@ case class Region(serverName       : String,
                       tableName        : String,
                       startKey         : String,
                       regionIdTimestamp: Long)
-extends HBaseConnection {
+{
 
   def getRegionInfo() = {
     var loc:HRegionLocation = null;
-    withHBaseAdmin { admin =>
+    HBase.withAdmin { admin =>
       val connection = admin.getConnection()
       loc = connection.getRegionLocation(Bytes.toBytes(tableName), Bytes.toBytes(startKey), false)
     }
@@ -83,7 +82,7 @@ object Region {
   def all(): Seq[Region] = {
     val list = new ListBuffer[Region]()
 
-    RegionServer.each { regionServer =>
+    HBase.eachRegionServer { regionServer =>
       regionServer.regionsLoad.foreach { regionLoad =>
         list += Region(regionServer, regionLoad)
       }
