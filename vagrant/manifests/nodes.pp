@@ -17,3 +17,13 @@ node "dev.hbase-0-92" {
     hbaseVersion => "0.92"
   }
 }
+
+node "dev.hbase-0-94" {
+  class { "apache::hbase::standalone":
+    version => "0.94.1"
+  }
+
+  class { "hannibal":
+    hbaseVersion => "0.94"
+  }
+}

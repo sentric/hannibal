@@ -28,6 +28,10 @@ object ApplicationBuild extends Build {
         "org.apache.hadoop" % "hadoop-common" % "2.0.0-cdh4.1.2",
         "org.apache.hbase" % "hbase" % "0.92.1-cdh4.1.2"
       )
+      case "0.94" => Seq(
+        "org.apache.hadoop" % "hadoop-core" % "1.0.3",
+        "org.apache.hbase" % "hbase" % "0.94.1"
+      )
     })
 
     val appResolvers = Seq(
