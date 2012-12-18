@@ -12,7 +12,7 @@ class HBase092 extends models.HBase {
       val status = hbaseAdmin.getClusterStatus()
       val servers = status.getServers()
       servers.foreach { serverName =>
-        functionBlock(new RegionServer092(hbaseAdmin, status, serverName))
+        functionBlock(new RegionServer092(status, serverName))
       }
     }
   }

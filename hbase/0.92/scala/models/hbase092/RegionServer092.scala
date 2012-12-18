@@ -7,9 +7,8 @@ package models.hbase092
 import org.apache.hadoop.hbase.HServerLoad.RegionLoad
 import org.apache.hadoop.hbase.{ServerName, ClusterStatus, HServerInfo}
 import scala.collection.JavaConversions._
-import org.apache.hadoop.hbase.client.HBaseAdmin
 
-class RegionServer092(val hBaseAdmin:HBaseAdmin, val clusterStatus:ClusterStatus, val serverNameObj:ServerName) extends models.RegionServer {
+class RegionServer092(val clusterStatus:ClusterStatus, val serverNameObj:ServerName) extends models.RegionServer {
   override def serverName = {
     serverNameObj.getServerName()
   }

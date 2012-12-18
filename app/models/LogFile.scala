@@ -40,8 +40,8 @@ case class LogFile(regionServer:RegionServer) {
       // Set the next offset to the base offset + the offset matching the last newline found
       logOffsets(regionServer) = logOffsets(regionServer) + offsetOfLastNewline(response.body)
 
-      Logger.debug("Updating logfile offset to [%d] for server [%s]".
-        format(logOffsets(regionServer), regionServer.serverName))
+      Logger.debug("Updating logfile offset to [%d] for server %s".
+        format(logOffsets(regionServer), regionServer))
     }
 
     response.body
@@ -107,7 +107,7 @@ object LogFile {
           if (response.ahcResponse.getStatusCode() != 200) {
             throw new Exception("couldn't set log-level with URL: " + url);
           } else {
-            Logger.debug("... Loglevel set for server [%s]".format(regionServer))
+            Logger.debug("... Loglevel set for server %s".format(regionServer))
           }
       }
     }
