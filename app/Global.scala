@@ -2,7 +2,6 @@
  * Copyright 2012 Sentric. See LICENSE for details.
  */
 
-import models.hbase090.HBase090
 import models.{HBase, LogFile, Compaction, MetricDef}
 import play.api._
 import play.api.mvc._

@@ -17,11 +17,18 @@ object ApplicationBuild extends Build {
     println("Configuring for HBase Version: %s".format(hBaseVersion))
 
     val appDependencies = Seq(
-       "org.apache.hadoop" % "hadoop-core" % "0.20.2-cdh3u4",
-       "org.apache.hbase" % "hbase" % "0.90.6-cdh3u4",
        "org.mockito" % "mockito-core" % "1.9.0" % "test",
        "org.mockito" % "mockito-all" % "1.9.0" % "test"
-    ) 
+    ) ++ (hBaseVersion match {
+      case "0.90" => Seq(
+        "org.apache.hadoop" % "hadoop-core" % "0.20.2-cdh3u4",
+        "org.apache.hbase" % "hbase" % "0.90.6-cdh3u4"
+      )
+      case "0.92" => Seq(
+        "org.apache.hadoop" % "hadoop-common" % "2.0.0-cdh4.1.2",
+        "org.apache.hbase" % "hbase" % "0.92.1-cdh4.1.2"
+      )
+    })
 
     val appResolvers = Seq(
       "Cloudera Public Repository" at "http://repository.cloudera.com/artifactory/cloudera-repos/",
@@ -36,7 +43,10 @@ object ApplicationBuild extends Build {
     		</dependencies>
     )
 
-    val hBaseSourceDirectory = "hbase/%s/scala".format(hBaseVersion)
+    val hBaseSourceDirectory = (hBaseVersion match {
+      case "0.90" => "hbase/0.90/scala"
+      case _ => "hbase/0.92/scala"
+    })
 
     val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA).settings(
       resolvers ++= appResolvers,
