@@ -24,15 +24,7 @@ Java 6 JDK is required on the machine where this tool is built.
 
 ### HBase Compatibilty
 
-Hannibal currently supports HBase versions 0.90 to 0.94.  Be sure to checkout the correct branch for your version. Although we prefer Cloudera's versions, you can try to alter the version in project/Build.scala if you wish to.
-
-- HBase 0.90.6-cdh3u4 support is available in the branch [master][master]
-- HBase 0.92.1-cdh4.1.2 support is available in the branch [hbase-0.92][b92]
-- HBase 0.94.1 support is available in the branch [habse-0.94][b94]
-
-[master]: https://github.com/sentric/hannibal/
-[b92]: https://github.com/sentric/hannibal/tree/hbase-0.92
-[b94]: https://github.com/sentric/hannibal/tree/hbase-0.94
+Hannibal currently supports HBase versions 0.90 to 0.94. Be sure to set the environment-variable HANNIBAL_HBASE_VERSION for your version, as described in the Quickstart-section. The scala-sources are currently compiled with Cloudera's HBase versions wherever possible, you can try to alter the version in project/Build.scala if you wish to.
 
 ## Video Tutorial
 
@@ -46,13 +38,11 @@ There is also a tutorial video on [YouTube][yt], that shows how to install and u
         $ git clone https://github.com/sentric/hannibal.git
         $ cd hannibal
 
- 2. Change the branch according to your HBase version (for example for HBase-0.92 sdo):
+ 2. Set the Environmentvariable HANNIBAL_HBASE_VERSION according to your HBase version. For example for HBase 0.92 do:
 
-        $ git checkout hbase-0.92
+        $ export HANNIBAL_HBASE_VERSION=0.92
     
-    see the [HBase Compatibilty][hc] Section for a complete list of supported HBase versions.
-    
-[hc]: https://github.com/sentric/hannibal/#hbase-compatibility
+    Other possible values are "0.90" or "0.94"
 
  3. Copy `conf/hbase-site.template.xml` to `conf/hbase-site.xml` and adjust it.
 
