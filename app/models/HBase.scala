@@ -1,13 +1,14 @@
 package models
 
 import scala.collection.JavaConversions._
-import hbase090.HBase090
 import org.apache.hadoop.hbase.client.{HBaseAdmin, HTable}
 import org.apache.hadoop.hbase.{HTableDescriptor, HBaseConfiguration}
 import org.apache.hadoop.hbase.util.Bytes
 
 /**
  * Abstract Factory to access HBase-API. Allows to separate parts that changed between HBase 0.90 and HBase 0.92.
+ *
+ * The concrete implementation is found in hannibal/hbase/[version]/scala
  */
 trait HBase {
   def eachRegionServer(functionBlock: (RegionServer) => Unit)
@@ -42,5 +43,3 @@ trait HBase {
     }
   }
 }
-
-object HBase extends HBase090

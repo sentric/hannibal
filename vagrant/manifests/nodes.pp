@@ -1,10 +1,9 @@
-node dev {
+node "dev.hbase-0-90" {
+  class { "apache::hbase::standalone":
+    version => "0.90.6"
+  }
 
-  # Use CDH Version ...
-  include cloudera::hbase::standalone
-
-  # ... or use Apache Version
-  # include apache::hbase::standalone
-
-  include hannibal
+  class { "hannibal":
+    hbaseVersion => "0.90"
+  }
 }

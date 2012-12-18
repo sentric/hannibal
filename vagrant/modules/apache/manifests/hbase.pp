@@ -1,6 +1,10 @@
 
-class apache::hbase::standalone {
-    require apache::hbase::base
+class apache::hbase::standalone(
+  $version = "0.90.6"
+) {
+    class { "apache::hbase::base":
+      version => $version
+    }
 
     service { "hadoop-hbase-master":
         name => "apache-hbase-master",
@@ -11,15 +15,18 @@ class apache::hbase::standalone {
     file { "/etc/init.d/apache-hbase-master":
         ensure => file,
         source => "puppet:///modules/apache/etc/init.d/apache-hbase-master",
-        mode => 0777
+        mode => 0777,
+        require => Class["apache::hbase::base"]
     }
 }
 
-class apache::hbase::base {
+class apache::hbase::base(
+  $version
+) {
     require java
 
     apache::package { "hbase":
-        version => "0.90.6",
+        version => $version,
         notify => Exec["permissions"]
     }
 
