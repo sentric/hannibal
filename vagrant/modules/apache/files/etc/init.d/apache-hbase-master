@@ -5,6 +5,7 @@ if [ "$1" = "status" ]; then
    code=$?
    exit $code
 else
+   export HBASE_HEAPSIZE=768
    su -c "/opt/hbase/bin/hbase-daemon.sh $* master" hbase
 fi
 

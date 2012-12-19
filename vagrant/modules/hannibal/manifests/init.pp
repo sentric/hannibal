@@ -8,4 +8,12 @@ class hannibal(
     mode => 0777,
     content => template("${module_name}/etc/profile.d/hannibal.sh")
   }
+
+  package { "vim":
+    ensure => latest
+  }
+
+  package { "htop":
+    ensure => latest
+  }
 }
