@@ -18,30 +18,30 @@ case class LogFile(regionServer:RegionServer) {
   def tail() = {
     val url = logFileUrl(regionServer)
 
-    if (!logOffsets.contains(regionServer)) {
+    if (!logOffsets.contains(regionServer.serverName)) {
       val headValue: NotWaiting[Response] = WS.url(url).head().value
       val logLength = headValue.get.header("Content-Length").get.toLong
       val offset = scala.math.max(0, logLength - initialLogLookBehindSizeInKBs * 1024)
       Logger.info("Initializing log offset to [%d] for log file at %s with content-length [%d]".format(offset, url, logLength))
-      logOffsets(regionServer) = offset
+      logOffsets(regionServer.serverName) = offset
     }
 
-    var response: Response = recentLogContent(url, logOffsets(regionServer))
+    var response: Response = recentLogContent(url, logOffsets(regionServer.serverName))
 
     val contentRange = response.getAHCResponse.getHeader("Content-Range")
     val rangeValue = StringUtils.substringBetween(contentRange, "bytes", "/").trim()
     if (rangeValue eq "*") {
       // The offset doesn't match the file content because, presumably, of log file rotation,
       // reset the offset to 0
-      logOffsets(regionServer) = 0l
+      logOffsets(regionServer.serverName) = 0l
       Logger.info("Log file [%s] seems to have rotated, resetting offset to 0".format(url))
-      response = recentLogContent(url, logOffsets(regionServer))
+      response = recentLogContent(url, logOffsets(regionServer.serverName))
     } else {
       // Set the next offset to the base offset + the offset matching the last newline found
-      logOffsets(regionServer) = logOffsets(regionServer) + offsetOfLastNewline(response.body)
+      logOffsets(regionServer.serverName) = logOffsets(regionServer.serverName) + offsetOfLastNewline(response.body)
 
       Logger.debug("Updating logfile offset to [%d] for server %s".
-        format(logOffsets(regionServer), regionServer))
+        format(logOffsets(regionServer.serverName), regionServer))
     }
 
     response.body
@@ -79,7 +79,7 @@ object LogFile {
   private var logLevelUrlPattern: String = null
   private var setLogLevelsOnStartup: Boolean = false
   private var logFileDateFormat: SimpleDateFormat = null
-  private var logOffsets = mutable.Map.empty[RegionServer, Long]
+  private var logOffsets = mutable.Map.empty[String, Long]
 
   val NEWLINE = "\n".getBytes("UTF-8")(0)
 
