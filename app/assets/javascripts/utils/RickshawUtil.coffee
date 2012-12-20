@@ -165,6 +165,8 @@ class @RickshawUtil
             .attr("width", graph.width)
             .attr("height", 1)
           nodes[0][0].setAttribute("fill", "#ff0000")
+        else
+          $(".line").addClass("disabled")
 
   class @AllSeriesToggle extends Backbone.View
     events:
