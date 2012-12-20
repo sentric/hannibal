@@ -56,6 +56,9 @@ class @ServerChartView extends  AbstractServerChartView
         data: values
         color: @getColor(tableName)
 
+    series.sort( (a, b) -> a.name < b.name )
+
+
 
   createGraphComponents: ->
     components = super()
