@@ -190,10 +190,15 @@ class @RickshawUtil
       @render()
 
     toggleAll: ->
-      $('.line.disabled', @legend.element).removeClass('disabled')
-      _.chain(@graph.series)
-        .select((serie) -> serie.disabled)
-        .invoke('enable')
+      if(_(@graph.series).select((serie) -> serie.disabled).length > 0)
+        @lastLines = $('.line.disabled', @legend.element).removeClass('disabled')
+        @lastElements = _.chain(@graph.series)
+          .select((serie) -> serie.disabled)
+          .invoke('enable')
+      else
+        $('.line', @legend.element).addClass('disabled')
+        _.chain(@graph.series)
+          .invoke('disable')
 
     render: ->
       $toggle = @$('.all-toggle')
