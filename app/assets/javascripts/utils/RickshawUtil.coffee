@@ -190,15 +190,7 @@ class @RickshawUtil
       @render()
 
     toggleAll: ->
-      if(_(@graph.series).select((serie) -> serie.disabled).length > 0)
-        @lastLines = $('.line.disabled', @legend.element).removeClass('disabled')
-        @lastElements = _.chain(@graph.series)
-          .select((serie) -> serie.disabled)
-          .invoke('enable')
-      else
-        $('.line', @legend.element).addClass('disabled')
-        _.chain(@graph.series)
-          .invoke('disable')
+      RickshawUtil.LegendHelper.toggleAll(@legend)
 
     render: ->
       $toggle = @$('.all-toggle')
@@ -228,24 +220,76 @@ class @RickshawUtil
   class @LegendShortener extends Backbone.View
     initialize: ->
       @length = @options.length
-      @elements = {}
       @$(".label").each((idx,  element) =>
         if($(element).html().length > @length)
           @add(element)
       )
 
     add: (element) ->
-      @elements[element] = $(element).html()
+      element.fullName = $(element).html()
       $(element).bind("mouseover", _.bind(@doMouseOver, @, element))
       $(element).bind("mouseout", _.bind(@doMouseOut, @, element))
       @doMouseOut(element)
 
     doMouseOut: (element) ->
-      str = @elements[element]
+      str = element.fullName
       $(element).html(str.substr(0, @length - 3) + "...")
 
     doMouseOver: (element) ->
-      str = @elements[element]
+      str = element.fullName
       $(element).html(str)
 
+  class @LegendHelper
+    @storeState: (legend, cookieKey) ->
+      graph = legend.graph
+      if(@hasDisabledElements(legend))
+        items = _.chain(graph.series).select((serie) -> serie.disabled).pluck("name").value()
+        console.log("storing", cookieKey, items)
+        $.cookie(cookieKey, items.join(","))
+      else
+        console.log("dropping", cookieKey)
+        $.removeCookie(cookieKey)
 
+    @restoreState: (legend, cookieKey) ->
+      graph = legend.graph
+      $toggle = $('.all-toggle', legend.element)
+      if $.cookie(cookieKey)
+        items = $.cookie(cookieKey).split(",")
+        console.log("restoring", cookieKey, items)
+        _(items).each (item) =>
+          element = @elementForItem(legend, item)
+          serie = @seriesForItem(legend, item)
+          if !element || !serie
+            console.log("ERROR: element or serie not found for item", item, element, serie)
+          else
+            $(element).addClass('disabled')
+            serie.disable()
+            $toggle.addClass('disabled')
+
+    @toggleAll: (legend) ->
+      graph = legend.graph
+      if(@hasDisabledElements(legend))
+        $('.line.disabled', legend.element).removeClass('disabled')
+        _.chain(graph.series)
+          .select((serie) -> serie.disabled)
+          .invoke('enable')
+      else
+        $('.line', legend.element).addClass('disabled')
+        _.chain(graph.series)
+          .invoke('disable')
+
+    @hasDisabledElements: (legend) ->
+      graph = legend.graph
+      _(graph.series).select((serie) -> serie.disabled).length > 0
+
+    @elementForItem: (legend, item) ->
+      found = null
+      $('.line', legend.element).each (index, element) ->
+        label = $(".label", element)[0]
+        name = label.fullName || $(label).html()
+        if(name == item)
+          found = element
+      found
+
+    @seriesForItem: (legend, item) ->
+      _(legend.graph.series).find((serie) -> serie.name == item)

@@ -60,3 +60,10 @@ class @AbstractServerChartView extends Backbone.View
     @legendShortener = new RickshawUtil.LegendShortener
       length: 15
       el: @$(".legend")
+    @restoreLegendState()
+
+  storeLegendState: () ->
+    RickshawUtil.LegendHelper.storeState(@graphComponents.legend, "cluster.legend.disabledTables")
+
+  restoreLegendState: () ->
+    RickshawUtil.LegendHelper.restoreState(@graphComponents.legend, "cluster.legend.disabledTables")
