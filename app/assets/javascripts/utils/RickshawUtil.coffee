@@ -219,3 +219,28 @@ class @RickshawUtil
 
   @getHumanReadableExponent: (bytes) ->
     Math.floor(Math.log(bytes) / Math.log(1024))
+
+  class @LegendShortener extends Backbone.View
+    initialize: ->
+      @length = @options.length
+      @elements = {}
+      @$(".label").each((idx,  element) =>
+        if($(element).html().length > @length)
+          @add(element)
+      )
+
+    add: (element) ->
+      @elements[element] = $(element).html()
+      $(element).bind("mouseover", _.bind(@doMouseOver, @, element))
+      $(element).bind("mouseout", _.bind(@doMouseOut, @, element))
+      @doMouseOut(element)
+
+    doMouseOut: (element) ->
+      str = @elements[element]
+      $(element).html(str.substr(0, @length - 3) + "...")
+
+    doMouseOver: (element) ->
+      str = @elements[element]
+      $(element).html(str)
+
+

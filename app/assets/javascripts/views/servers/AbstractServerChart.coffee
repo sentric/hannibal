@@ -57,3 +57,6 @@ class @AbstractServerChartView extends Backbone.View
     @$el.html(klass.chartContent)
     @graphComponents = @createGraphComponents()
     @graphComponents.graph.render()
+    @legendShortener = new RickshawUtil.LegendShortener
+      length: 15
+      el: @$(".legend")
