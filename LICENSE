@@ -185,3 +185,8 @@ This project incorporates third-party libraries, which are published under the f
     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
     OTHER DEALINGS IN THE SOFTWARE.
 
+- jquery.cookie.js:
+
+    Copyright 2011, Klaus Hartl
+
+    http://www.opensource.org/licenses/mit-license.php

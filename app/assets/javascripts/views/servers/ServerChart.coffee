@@ -31,8 +31,7 @@ class @ServerChartView extends  AbstractServerChartView
     super
 
     @collection.on "reset", _.bind(@render, @)
-    @on "table:click", -> document.location.href = Routes.Tables.show
-      name: arguments[0].name
+    @on "table:click", _.bind(@onTableClick, @)
 
   getChartSeries: ->
     hostNames = @hostNames
@@ -56,6 +55,7 @@ class @ServerChartView extends  AbstractServerChartView
         data: values
         color: @getColor(tableName)
 
+    series.sort( (a, b) -> a.name < b.name )
 
   createGraphComponents: ->
     components = super()
@@ -100,3 +100,8 @@ class @ServerChartView extends  AbstractServerChartView
       toggleText: "All tables"
 
     _.extend(components, {xAxis, yAxis, @hoverDetail, stackingToggle, allSeriesToggle})
+
+  onTableClick: ->
+    @storeLegendState()
+    document.location.href = Routes.Tables.show
+      name: arguments[0].name
