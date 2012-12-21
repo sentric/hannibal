@@ -60,7 +60,6 @@ class @Metrics extends Backbone.Collection
       '#56AFB1', # not used
       '#B1A667', # not used
     ] } )
-#    @on "reset", _.bind(@populateSeries, @)
 
   populateSeries: () ->
     @each((metric) => @findOrCreateSeries(metric.getName()).populate(metric))
