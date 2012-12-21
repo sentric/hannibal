@@ -2,9 +2,12 @@
 
 class @MetricSeries
 
-  constructor: (metric, color) ->
-    @name = metric.getHumanReadableName()
+  constructor: (metricName, color) ->
+    @metricName = metricName
     @color = color
+
+  populate: (metric) ->
+    @name = metric.getHumanReadableName()
     @metric = metric
 
     step = Math.round(metric.getStep() / 1000)

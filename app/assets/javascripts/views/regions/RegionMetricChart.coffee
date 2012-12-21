@@ -8,18 +8,21 @@ class @RegionMetricChartView extends Backbone.View
   render: ->
 
     if(@collection.isEmpty())
-      @$el.html("No Data recorded yet for MetricDef #{@metricNames}")
+      @$el.html("No Data recorded yet for MetricDef #{@collection}")
     else
-      @series = @collection
-        .filter((metric) => !metric.isEmpty())
-        .map((metric) => new MetricSeries(metric, @palette.color()))
-      compactionsSeries = @findSeries("compactions")
-      compactionsSeries.disabled = true if compactionsSeries && @series.length > 1
+      @collection.populateSeries()
+      compactionsSeries = @collection.findSeries("compactions")
+      compactionsSeries.disabled = true if compactionsSeries && @collection.series.length > 1
+
+      if @graph
+        @graph.update()
+        # TODO also update Compaction Metrics
+        return
 
       @graph =  new Rickshaw.Graph
         element: @$(".chart")[0],
         renderer: 'line',
-        series: @series
+        series: @collection.series
         interpolation: 'linear'
 
       @hoverDetail = new Rickshaw.Graph.HoverDetail
@@ -90,5 +93,3 @@ class @RegionMetricChartView extends Backbone.View
       annotation.boxes.forEach( (box) ->
         if box.rangeElement then box.rangeElement.style.backgroundColor = color;
       )
-
-  findSeries: (name) -> _(@series).find((series) -> series.metric.getName() == name)
