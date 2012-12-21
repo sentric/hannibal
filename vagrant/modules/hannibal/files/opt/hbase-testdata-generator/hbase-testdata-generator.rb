@@ -46,24 +46,28 @@ def createTable(table, cf, splits)
     conf.set('hbase.rootdir', 'file:///tmp/hbase-hbase/hbase')
     admin = HBaseAdmin.new(conf)
 
-    puts "dropping table #{table} ...."
-    disable table
-    drop table
+#    puts "dropping table #{table} ...."
+#    disable table
+#    drop table
 
     puts "creating table #{table} with cf #{cf} and #{splits.size} splits ..."
 
-    desc = HTableDescriptor.new( Bytes.toBytes( table ) )
-    desc.addFamily(HColumnDescriptor.new( Bytes.toBytes( cf ) ))
+    begin
+        desc = HTableDescriptor.new( Bytes.toBytes( table ) )
+        desc.addFamily(HColumnDescriptor.new( Bytes.toBytes( cf ) ))
 
-    java_splits = Java::byte[][splits.size].new
-    splits.each_index { |i| java_splits[i] = Bytes.toBytes(splits[i]) }
+        java_splits = Java::byte[][splits.size].new
+        splits.each_index { |i| java_splits[i] = Bytes.toBytes(splits[i]) }
 
-    admin.createTable(desc, java_splits)
+        admin.createTable(desc, java_splits)
 
-    disable table
-    alter table, {METHOD => 'table_att', MAX_FILESIZE => "#{1024*1024*1024*10}"}
-    alter table, {METHOD => 'table_att', MEMSTORE_FLUSHSIZE => "#{1024*1024*5}"}
-    enable table
+        disable table
+        alter table, {METHOD => 'table_att', MAX_FILESIZE => "#{1024*1024*1024*10}"}
+        alter table, {METHOD => 'table_att', MEMSTORE_FLUSHSIZE => "#{1024*1024*5}"}
+        enable table
+    rescue org.apache.hadoop.hbase.TableExistsException => e
+        puts "table already exist ..."
+    end
 end
 
 main()
