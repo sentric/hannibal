@@ -2,8 +2,6 @@
 
 class @RegionMetricChartView extends Backbone.View
   initialize: ->
-    @regionIdTimestamp = @$el.data("region-id-timestamp")
-    @metricNames = @$el.data("metric-names")
     @palette = @options.palette
     @collection.on "reset", _.bind(@render, @)
 
@@ -81,7 +79,8 @@ class @RegionMetricChartView extends Backbone.View
         start = v.ts
       else
         time = Math.round(start / 1000)
-        @annotator.add(time, "Compaction (#{v.ts - start}ms)", Math.round(v.ts / 1000))
+        duration = Math.round((v.ts - start) / 1000)
+        @annotator.add(time, "Compaction (#{duration}s)", Math.round(v.ts / 1000))
 
   colorizeAnnotations: (color) ->
     for ts, annotation of @annotator.data
