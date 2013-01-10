@@ -14,6 +14,7 @@ class @AbstractServerChartView extends Backbone.View
   """
 
   initialize: ->
+    @series = []
     @tableColors = {}
     @palette = new RickshawUtil.TablePalette()
 
@@ -31,7 +32,7 @@ class @AbstractServerChartView extends Backbone.View
     graph = new Rickshaw.Graph
       element: @$('.chart').get(0)
       renderer: 'bar'
-      series: @getChartSeries()
+      series: @series
 
     legend = new Rickshaw.Graph.Legend
       element: @$('.legend').get(0)
@@ -54,13 +55,19 @@ class @AbstractServerChartView extends Backbone.View
     @hostNames[i]
 
   render: ->
-    @$el.html(klass.chartContent)
-    @graphComponents = @createGraphComponents()
-    @graphComponents.graph.render()
-    @legendShortener = new RickshawUtil.LegendShortener
-      length: 15
-      el: @$(".legend")
-    @restoreLegendState()
+    RickshawUtil.mergeSeriesData(@getChartSeries(), @series)
+
+    if(!@graphComponents)
+      @$el.html(klass.chartContent)
+      @graphComponents = @createGraphComponents()
+      @graphComponents.graph.render()
+      @legendShortener = new RickshawUtil.LegendShortener
+        length: 15
+        el: @$(".legend")
+      @restoreLegendState()
+    else
+      @graphComponents.graph.update()
+      @graphComponents.graph.render()
 
   storeLegendState: () ->
     RickshawUtil.LegendHelper.storeState(@graphComponents.legend, "cluster.legend.disabledTables")
