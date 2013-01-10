@@ -293,3 +293,11 @@ class @RickshawUtil
 
     @seriesForItem: (legend, item) ->
       _(legend.graph.series).find((serie) -> serie.name == item)
+
+  @mergeSeriesData: (source, target) ->
+    _(source).each((serie, index) ->
+      if(!target[index])
+        target[index] = source[index];
+      else
+        target[index].data = source[index].data
+    )

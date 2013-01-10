@@ -50,7 +50,3 @@ class @Metrics extends Backbone.Collection
   isEmpty: ->
     @all((metric) -> metric.isEmpty())
 
-  findByNames: (names) ->
-    @select (metric) -> _(names).contains(metric.getName())
-
-  findByName: (name) -> @findByNames([name])[0]

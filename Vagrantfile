@@ -8,7 +8,7 @@ Vagrant::Config.run do |config|
 
   config.vm.define :hbase090 do |vm_conf|
     vm_conf.vm.host_name = "dev.hbase-0-90.hannibal"
-    vm_conf.vm.customize ["modifyvm", :id, "--memory", 2048]
+    vm_conf.vm.customize ["modifyvm", :id, "--memory", 3072]
     vm_conf.vm.network :hostonly, "192.168.80.90"
     vm_conf.vm.provision :puppet do |puppet|
       puppet.manifests_path = "vagrant/manifests"
@@ -20,7 +20,7 @@ Vagrant::Config.run do |config|
 
   config.vm.define :hbase092 do |vm_conf|
     vm_conf.vm.host_name = "dev.hbase-0-92.hannibal"
-    vm_conf.vm.customize ["modifyvm", :id, "--memory", 2048]
+    vm_conf.vm.customize ["modifyvm", :id, "--memory", 3072]
     vm_conf.vm.network :hostonly, "192.168.80.92"
     vm_conf.vm.provision :puppet do |puppet|
       puppet.manifests_path = "vagrant/manifests"
@@ -32,7 +32,7 @@ Vagrant::Config.run do |config|
 
   config.vm.define :hbase094 do |vm_conf|
     vm_conf.vm.host_name = "dev.hbase-0-94.hannibal"
-    vm_conf.vm.customize ["modifyvm", :id, "--memory", 2048]
+    vm_conf.vm.customize ["modifyvm", :id, "--memory", 3072]
     vm_conf.vm.network :hostonly, "192.168.80.94"
     vm_conf.vm.provision :puppet do |puppet|
       puppet.manifests_path = "vagrant/manifests"
