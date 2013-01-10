@@ -17,7 +17,7 @@
 @content = {
     <div id="show-table-view">
         <div class="widget">
-            <div class="title">Region Sizes for Table @table.name</div>
+            <div class="title">Region Sizes for Table @table.name <span class="refresh-text"></span></div>
             <div class="content">
                 @tableRegionsChart()
             </div>
@@ -36,6 +36,7 @@
   <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/table_regions_chart_view.css")">
   <script src="@routes.Assets.at("javascripts/views/tables/TableRegionsChart.js")" type="text/javascript"></script>
   <script src="@routes.Assets.at("javascripts/views/tables/ShowTable.js")" type="text/javascript"></script>
+  <script src="@routes.Assets.at("javascripts/views/common/VisualCountDown.js")" type="text/javascript"></script>
   <script src="@routes.Assets.at("javascripts/models/Region.js")" type="text/javascript"></script>
   <script src="@routes.Assets.at("javascripts/main/tables/show_table.js")" type="text/javascript"></script>
 }
