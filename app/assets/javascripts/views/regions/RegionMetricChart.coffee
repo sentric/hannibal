@@ -4,12 +4,13 @@ class @RegionMetricChartView extends Backbone.View
   initialize: ->
     @palette = @options.palette
     @collection.on "reset", _.bind(@render, @)
+    @metricsSeries = new MetricsSeries
 
   render: ->
     if(@collection.isEmpty())
       @$el.html("No Data recorded yet for MetricDef #{@collection}")
     else
-      @collection.populateSeries()
+      @metricsSeries.populate(@collection)
       if !@graph
         @createGraph()
       else
@@ -20,7 +21,7 @@ class @RegionMetricChartView extends Backbone.View
     @graph =  new Rickshaw.Graph
       element: @$(".chart")[0],
       renderer: 'line',
-      series: @collection.series
+      series: @metricsSeries.series
       interpolation: 'linear'
 
     @hoverDetail = new Rickshaw.Graph.HoverDetail
@@ -47,8 +48,8 @@ class @RegionMetricChartView extends Backbone.View
       element: @$('.timeline')[0]
 
     @lastAddedCompactionAnnotation = 0
-    @compactionsSeries = @collection.findSeries("compactions")
-    @compactionsSeries.disabled = true if @compactionsSeries && @collection.series.length > 1
+    @compactionsSeries = @metricsSeries.findSeries("compactions")
+    @compactionsSeries.disabled = true if @compactionsSeries && @metricsSeries.series.length > 1
     @createCompactionAnnotations(@compactionsSeries) if @compactionsSeries
 
     @legend = new Rickshaw.Graph.Legend

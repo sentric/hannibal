@@ -50,25 +50,3 @@ class @Metrics extends Backbone.Collection
   isEmpty: ->
     @all((metric) -> metric.isEmpty())
 
-  initialize: (options) ->
-    @series = []
-    @palette = new Rickshaw.Color.Palette( { scheme: [
-      '#B1354A', # Storefiles
-      '#B12BA0', # Compactions
-      '#68B15D', # Memstore Size
-      '#4E5FB1', # Storefile Size
-      '#56AFB1', # not used
-      '#B1A667', # not used
-    ] } )
-
-  populateSeries: () ->
-    @each((metric) => @findOrCreateSeries(metric.getName()).populate(metric))
-
-  findOrCreateSeries: (name) ->
-    found = @findSeries(name)
-    if(!found)
-      found = new MetricSeries(name, @palette.color())
-      @series.push(found)
-    found
-
-  findSeries: (name) -> _(@series).find((series) -> series.metricName == name)
