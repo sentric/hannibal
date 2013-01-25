@@ -5,12 +5,12 @@ class @MetricsSeries
   constructor: () ->
     @series = []
     @palette = new Rickshaw.Color.Palette( { scheme: [
-      '#B1354A', # Storefiles
-      '#B12BA0', # Compactions
-      '#68B15D', # Memstore Size
-      '#4E5FB1', # Storefile Size
+      '#B1354A',
+      '#B12BA0',
+      '#68B15D',
+      '#4E5FB1',
+      '#B1A667',
       '#56AFB1', # not used
-      '#B1A667', # not used
     ] } )
 
   populate: (metrics) ->
