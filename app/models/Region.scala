@@ -12,22 +12,28 @@ import org.apache.hadoop.hbase.{HRegionInfo, HRegionLocation, HServerLoad}
 import play.api.libs.concurrent.Promise
 import play.api.libs.concurrent.Akka
 import play.api.Play.current
+import org.codehaus.jackson.annotate.JsonIgnore
 
-case class Region(serverName       : String,
-                      serverHostName   : String,
-                      serverPort       : Int,
-                      serverInfoPort   : Int,
-                      
-                      regionName       : String,
-                      storefiles       : Int,
-                      stores           : Int,
-                      storefileSizeMB  : Int,
-                      memstoreSizeMB   : Int,
-                      
-                      tableName        : String,
-                      startKey         : String,
-                      regionIdTimestamp: Long)
-{
+case class Region(private val regionServer:RegionServer,  private val regionLoad:HServerLoad.RegionLoad) {
+
+  val regionName = regionLoad.getNameAsString()
+
+  @JsonIgnore
+  private val parsedRegionName = RegionName(regionName)
+
+  val serverName        = regionServer.serverName
+  val serverHostName    = regionServer.hostName
+  val serverPort        = regionServer.port
+  val serverInfoPort    = regionServer.infoPort
+
+  val storefiles        = regionLoad.getStorefiles()
+  val stores            = regionLoad.getStores()
+  val storefileSizeMB   = regionLoad.getStorefileSizeMB()
+  val memstoreSizeMB    = regionLoad.getMemStoreSizeMB()
+
+  val tableName         = RegionName(regionName).tableName
+  val startKey          = RegionName(regionName).startKey
+  val regionIdTimestamp = RegionName(regionName).regionIdTimestamp
 
   def getRegionInfo() = {
     var loc:HRegionLocation = null;
@@ -55,26 +61,6 @@ case class Region(serverName       : String,
 }
 
 object Region {
-  def apply(regionServer: RegionServer, regionLoad: HServerLoad.RegionLoad) : Region = {
-    val regionName = regionLoad.getNameAsString()
-    val parsedRegionName = RegionName(regionName)
-
-    Region(
-               serverName        = regionServer.serverName,
-               serverHostName    = regionServer.hostName,
-               serverPort        = regionServer.port,
-               serverInfoPort    = regionServer.infoPort,
-               
-               regionName        = regionName,
-               stores            = regionLoad.getStores(),
-               storefiles        = regionLoad.getStorefiles(),
-               storefileSizeMB   = regionLoad.getStorefileSizeMB(),
-               memstoreSizeMB    = regionLoad.getMemStoreSizeMB(),
-               
-               tableName         = parsedRegionName.tableName,
-               startKey          = parsedRegionName.startKey,
-               regionIdTimestamp = parsedRegionName.regionIdTimestamp)
-  }
 
   def allAsync(): Promise[Seq[Region]] = {
     Akka.future { all() }
@@ -122,6 +108,7 @@ object RegionName {
    * Region name in HBase is composed of "<tableName>,<startKey>,<regionIdTimestamp>.<encodedName>."
    */
   def apply(regionName: String) : RegionName = {
+
     // Parse out comma separated components
     val commaParts = regionName.split(",")
 
