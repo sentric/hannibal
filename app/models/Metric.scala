@@ -27,6 +27,9 @@ object MetricDef {
   val STOREFILES  = "storefiles"
   def STOREFILES(region:String) : MetricDef  = findRegionMetricDef(region, STOREFILES)
 
+  val REQUEST_COUNT  = "requestCount"
+  def REQUEST_COUNT(region:String) : MetricDef  = findRegionMetricDef(region, REQUEST_COUNT)
+
   val COMPACTIONS = "compactions"
   def COMPACTIONS(region: String) : MetricDef = findRegionMetricDef(region, COMPACTIONS)
 

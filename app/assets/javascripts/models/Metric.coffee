@@ -18,6 +18,7 @@ class @Metric extends Backbone.Model
       when "storefileSizeMB" then "Storefile Size (MB)"
       when "memstoreSizeMB" then "Memstore Size (MB)"
       when "compactions" then "Compactions"
+      when "requestCount" then "Request Count"
 
   getStep: ->
     60000

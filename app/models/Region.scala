@@ -30,6 +30,7 @@ case class Region(private val regionServer:RegionServer,  private val regionLoad
   val stores            = regionLoad.getStores()
   val storefileSizeMB   = regionLoad.getStorefileSizeMB()
   val memstoreSizeMB    = regionLoad.getMemStoreSizeMB()
+  val requestsCount     = regionLoad.getRequestsCount()
 
   val tableName         = RegionName(regionName).tableName
   val startKey          = RegionName(regionName).startKey
