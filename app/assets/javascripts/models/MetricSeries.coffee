@@ -31,6 +31,8 @@ class @MetricSeries
   constructor: (metricName, color) ->
     @metricName = metricName
     @color = color
+    @max = -1;
+    @min = 99999999;
 
   populate: (metric) ->
     @name = metric.getHumanReadableName()
@@ -57,6 +59,9 @@ class @MetricSeries
          ts > Math.round(values[pointIndex+1].ts / 1000))
         pointIndex = pointIndex + 1
         pointValue = values[pointIndex].v
+
+      @max = Math.max(pointValue, @max)
+      @min = Math.min(pointValue, @min)
 
       return {
         x: ts

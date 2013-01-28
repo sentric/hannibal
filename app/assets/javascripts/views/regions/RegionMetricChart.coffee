@@ -71,12 +71,14 @@ class @RegionMetricChartView extends Backbone.View
     ));
 
     @colorizeAnnotations(@compactionsSeries.color) if @compactionsSeries
+    @labelYAxes()
 
   updateGraph: ->
     @createCompactionAnnotations(@compactionsSeries) if @compactionsSeries
     @graph.update()
     @graph.render()
     @colorizeAnnotations(@compactionsSeries.color) if @compactionsSeries
+    @labelYAxes()
 
   createCompactionAnnotations: (compactions) ->
     compactions.noLegend = true
@@ -104,3 +106,13 @@ class @RegionMetricChartView extends Backbone.View
         annotation.boxes.forEach( (box) ->
           if box.rangeElement then box.rangeElement.style.backgroundColor = color;
         )
+
+  labelYAxes: ->
+    maxlist = []
+    minlist = []
+    _(@metricsSeries.series).each (metricSeries) ->
+      if metricSeries.metricName != "compactions"
+        maxlist.push("<span style='color: #{metricSeries.color};'>#{metricSeries.max}</span>")
+        minlist.push("<span style='color: #{metricSeries.color};'>#{metricSeries.min}</span>")
+    @$(".y-axis-label.min").html("#{minlist.join(" | ")}")
+    @$(".y-axis-label.max").html("#{maxlist.join(" | ")}")
