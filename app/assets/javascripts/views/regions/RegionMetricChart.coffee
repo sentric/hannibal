@@ -28,7 +28,7 @@ class @RegionMetricChartView extends Backbone.View
       graph: @graph
       yFormatter: ((y) => y)
       formatter: ((series, x, y, formattedX, formattedY, d) =>
-        "#{series.name} : #{series.denormalize(y)}"
+        "#{series.name} : #{series.denormalize(y)} #{series.unit}"
       )
 
     time = new Rickshaw.Fixtures.Time()
@@ -108,11 +108,8 @@ class @RegionMetricChartView extends Backbone.View
         )
 
   labelYAxes: ->
-    maxlist = []
-    minlist = []
     _(@metricsSeries.series).each (metricSeries) ->
+      name = metricSeries.name
       if metricSeries.metricName != "compactions"
-        maxlist.push("<span style='color: #{metricSeries.color};'>#{metricSeries.max}</span>")
-        minlist.push("<span style='color: #{metricSeries.color};'>#{metricSeries.min}</span>")
-    @$(".y-axis-label.min").html("#{minlist.join(" | ")}")
-    @$(".y-axis-label.max").html("#{maxlist.join(" | ")}")
+        $("span:contains('#{name}')").html("#{name}: <br><span class='labelindent'>#{metricSeries.min} - #{metricSeries.max} #{metricSeries.unit}</span>")
+

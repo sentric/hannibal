@@ -12,13 +12,6 @@ class @Metric extends Backbone.Model
   getTarget: ->
     @get('target')
 
-  getHumanReadableName: ->
-    switch @getName()
-      when "storefiles" then "Storefiles"
-      when "storefileSizeMB" then "Storefile Size (MB)"
-      when "memstoreSizeMB" then "Memstore Size (MB)"
-      when "compactions" then "Compactions"
-
   getStep: ->
     60000
 

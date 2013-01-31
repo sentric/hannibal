@@ -35,7 +35,8 @@ class @MetricSeries
     @min = 99999999;
 
   populate: (metric) ->
-    @name = metric.getHumanReadableName()
+    @name = @getHumanReadableName()
+    @unit = @getHumanReadableUnit()
     @metric = metric
 
     step = Math.round(metric.getStep() / 1000)
@@ -74,3 +75,17 @@ class @MetricSeries
 
   normalize: (v) ->
     (v - @min) / @mm + 0.025
+
+  getHumanReadableName: ->
+    switch @metricName
+      when "storefiles" then "Storefiles"
+      when "storefileSizeMB" then "Storefile Size"
+      when "memstoreSizeMB" then "Memstore Size"
+      when "compactions" then "Compactions"
+
+  getHumanReadableUnit: ->
+    switch @metricName
+      when "storefiles" then ""
+      when "storefileSizeMB" then "MB"
+      when "memstoreSizeMB" then "MB"
+      when "compactions" then ""
