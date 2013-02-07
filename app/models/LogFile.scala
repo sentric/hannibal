@@ -50,9 +50,11 @@ case class LogFile(regionServer:RegionServer) {
   def recentLogContent(url: String, offset: Long) = {
     Logger.debug("... fetching Logfile from %s with range [%d-]".format(url, offset))
     val response = WS.url(url).withHeaders(("Range", "bytes=%d-".format(offset))).get().await(logFetchTimeout * 1000).get
-    if (!List(200, 206).contains(response.ahcResponse.getStatusCode)) {
-      throw new Exception("couldn't load Compaction Metrics from URL: '" +
-        url + "', please check compactions.logfile_pattern in application.conf")
+    val ahcResponse = response.ahcResponse
+    val statusCode = ahcResponse.getStatusCode
+    if (!List(200, 206).contains(statusCode)) {
+        throw new Exception("couldn't load Compaction Metrics from URL: '" +
+          url + " (statusCode was: "+statusCode+")")
     }
 
     response
