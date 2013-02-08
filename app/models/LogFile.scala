@@ -11,7 +11,8 @@ import play.api.libs.concurrent.NotWaiting
 import org.apache.commons.lang.StringUtils
 import models.LogFile._
 import collection.mutable.ListBuffer
-import java.text.SimpleDateFormat
+import scala.util.control.Breaks._
+import java.util.regex._
 
 case class LogFile(regionServer:RegionServer) {
 
@@ -52,7 +53,7 @@ case class LogFile(regionServer:RegionServer) {
     val response = WS.url(url).withHeaders(("Range", "bytes=%d-".format(offset))).get().await(logFetchTimeout * 1000).get
     if (!List(200, 206).contains(response.ahcResponse.getStatusCode)) {
       throw new Exception("couldn't load Compaction Metrics from URL: '" +
-        url + "', please check compactions.logfile_pattern in application.conf")
+        url + "', please check compactions.logfile-path-pattern in application.conf")
     }
 
     response
@@ -76,6 +77,7 @@ object LogFile {
   private var logFetchTimeout: Int = 5
   private var initialLogLookBehindSizeInKBs: Long = 1024
   private var logFileUrlPattern: String = null
+  private var logFilePathPattern: Pattern = null
   private var logLevelUrlPattern: String = null
   private var setLogLevelsOnStartup: Boolean = false
   private var logFileDateFormat: SimpleDateFormat = null
@@ -84,20 +86,45 @@ object LogFile {
   val NEWLINE = "\n".getBytes("UTF-8")(0)
 
   def configure(setLogLevelsOnStartup: Boolean = false,
-                logFileUrlPattern: String = null,
                 logLevelUrlPattern: String = null,
+                logFilePathPattern: String = null,
                 logFileDateFormat: String = null,
                 logFetchTimeout: Int = 5,
                 initialLookBehindSizeInKBs: Long = 1024) = {
     this.setLogLevelsOnStartup = setLogLevelsOnStartup
-    this.logFileUrlPattern = logFileUrlPattern
     this.logLevelUrlPattern = logLevelUrlPattern
+    this.logFilePathPattern = Pattern.compile(logFilePathPattern)
     this.logFileDateFormat = new java.text.SimpleDateFormat(logFileDateFormat)
     this.logFetchTimeout = logFetchTimeout
     this.initialLogLookBehindSizeInKBs = initialLogLookBehindSizeInKBs
   }
 
-  def init() = {
+  def discoverLogFileUrlPattern = {
+    var logFilePattern: String  = null
+    breakable {
+      HBase.eachRegionServer {
+        regionServer =>
+          val url = logRootUrl(regionServer)
+          val response = WS.url(url).get().value.get
+          val logFileMatcher = logFilePathPattern.matcher(response.body)
+
+          if (logFileMatcher.find()) {
+            val path = logFileMatcher.group(1)
+            // We assume that all region servers use the same pattern so once we've got the pattern for one of them,
+            // we stop
+            Logger.info("Found path matching compactions.logfile-path-pattern: %s".format(path))
+            logFilePattern = (url + path).replaceAll(regionServer.hostName, "%hostname%")
+              .replaceAll(regionServer.infoPort.toString, "%infoport%")
+              .replaceAll(regionServer.hostName.split("\\.")(0), "%hostname-without-domain%")
+            break()
+          }
+      }
+    }
+
+    logFilePattern
+  }
+
+  def init() {
     if (setLogLevelsOnStartup) {
       Logger.info("setting Loglevels for the Regionservers")
       HBase.eachRegionServer {
@@ -111,6 +138,9 @@ object LogFile {
           }
       }
     }
+
+    logFileUrlPattern = discoverLogFileUrlPattern
+    Logger.info("Discovered log file url pattern: [%s]".format(logFileUrlPattern))
   }
 
   def all() = {
@@ -129,4 +159,6 @@ object LogFile {
   def logFileUrl(regionServer: RegionServer) = regionServer.infoUrl(logFileUrlPattern)
 
   def logLevelUrl(regionServer: RegionServer) = regionServer.infoUrl(logLevelUrlPattern)
+
+  def logRootUrl(regionServer: RegionServer) = regionServer.infoUrl("http://%hostname%:%infoport%/logs/")
 }
