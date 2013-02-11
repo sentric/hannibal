@@ -9,6 +9,8 @@ import play.api.Logger
 import java.util.Date
 import models.{LogFile, Compaction, MetricDef}
 import actors.UpdateMetricsActor._
+import play.libs.Akka
+import akka.util.duration._
 
 object UpdateMetricsActor {
   val UPDATE_REGION_INFO_METRICS = "updateRegionInfoMetrics"
@@ -37,9 +39,11 @@ class UpdateMetricsActor extends Actor {
 
     case INIT_COMPACTION_METRICS =>
       LogFile.init()
+      Akka.system.scheduler.scheduleOnce(10 seconds, context.self, UpdateMetricsActor.UPDATE_COMPACTION_METRICS)
 
     case UPDATE_COMPACTION_METRICS =>
       updateMetrics("CompactionMetrics", () => {
+        try {
         var updated = 0
         var compactions = models.Compaction.all
         val regions = models.Region.all
@@ -59,6 +63,10 @@ class UpdateMetricsActor extends Actor {
           }
         }
         updated
+        } finally {
+           Akka.system.scheduler.scheduleOnce(30 seconds, context.self, UpdateMetricsActor.UPDATE_COMPACTION_METRICS)
+        }
+
       })
 
     case CLEAN_OLD_METRICS =>
