@@ -38,8 +38,9 @@ class UpdateMetricsActor extends Actor {
       })
 
     case INIT_COMPACTION_METRICS =>
-      LogFile.init()
-      Akka.system.scheduler.scheduleOnce(10 seconds, context.self, UpdateMetricsActor.UPDATE_COMPACTION_METRICS)
+      if(LogFile.init()) {
+        Akka.system.scheduler.scheduleOnce(10 seconds, context.self, UpdateMetricsActor.UPDATE_COMPACTION_METRICS)
+      }
 
     case UPDATE_COMPACTION_METRICS =>
       updateMetrics("CompactionMetrics", () => {

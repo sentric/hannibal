@@ -141,7 +141,7 @@ object LogFile {
     logFilePattern
   }
 
-  def init() {
+  def init():Boolean = {
     if (setLogLevelsOnStartup) {
       Logger.info("setting Loglevels for the Regionservers")
       HBase.eachRegionServer {
@@ -157,7 +157,13 @@ object LogFile {
     }
 
     logFileUrlPattern = discoverLogFileUrlPattern
-    Logger.info("Discovered log file url pattern: [%s]".format(logFileUrlPattern))
+    if(logFileUrlPattern != null) {
+      Logger.info("Discovered log file url pattern: [%s]".format(logFileUrlPattern))
+      return true
+    } else {
+      Logger.warn("Could not discover log file url pattern, please check compactions.logfile-path-pattern in application.conf")
+      return false
+    }
   }
 
   def all() = {
