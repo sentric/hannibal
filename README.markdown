@@ -74,22 +74,21 @@ For information about the usage, check out [the Usage page on our Wiki][Wiki-Usa
 
 ## How to display compactions
 HBase 0.90.x's API doesn't allow you to query information on running compactions directly, so what we do is to parse
-the RegionServers' log files directly, which are available through the service interface. HBase 0.92 allows to query
-compactions directly, but we still collect compactions using the logfile-parsing way, because this way we don't miss 
+the RegionServers' log files directly, which are available through the service interface. HBase 0.92 allows you to query
+compactions directly, but we still collect compactions using the logfile-parsing technique, because this way we don't miss 
 any short running compactions.
 The downside is that this doesn't work out of the box for all HBase clusters because either, the path-pattern or the
 date-pattern can differ from system to system. Another problem can be, that the compaction-information isn't logged at
-all in your setup, because your LogLevel is set to high.
+all in your setup, because your LogLevel is set too high.
 
-If you consider problems with the the compaction-metrics, you should check the following parameters in [conf/application.conf](blob/master/conf/application.conf).
+If you run into problems with the the compaction-metrics, you should check the following parameters in [conf/application.conf](blob/master/conf/application.conf).
 
 ### 1. compactions.logfile-path-pattern
-
 The default of the logfile-path-pattern is 
 
     compactions.logfile-path-pattern = "(?i)\"/logs/(.*regionserver.*[.].*)\""
  
-The defaults should work for the most setups in distributed mode. For standalone-mode you will need change the pattern to
+The defaults should work for most setups in distributed mode. For standalone mode you will need change the pattern to
 
 	compactions.logfile-path-pattern = (?i)\"/logs/(.*master.*[.].*)\"
 	
@@ -97,7 +96,6 @@ If you are still unsure about the correct path-pattern, you can get a hint for t
 log-listing ```http://<<some-regionserver>>:60030/logs/```.
 
 ### 2. compactions.logfile-date-format
-
 The default logfile-date-format is 
 
     compactions.logfile-date-format = "yyyy-MM-dd HH:mm:ss,SSS"
