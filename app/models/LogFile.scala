@@ -29,21 +29,20 @@ case class LogFile(regionServer:RegionServer) {
 
     var response: Response = recentLogContent(url, logOffsets(regionServer.serverName))
 
-    val contentRange = response.getAHCResponse.getHeader("Content-Range")
-    val rangeValue = StringUtils.substringBetween(contentRange, "bytes", "/").trim()
-    if (rangeValue eq "*") {
-      // The offset doesn't match the file content because, presumably, of log file rotation,
-      // reset the offset to 0
+    if(wasRotated(response)) {
       logOffsets(regionServer.serverName) = 0l
-      Logger.info("Log file [%s] seems to have rotated, resetting offset to 0".format(url))
+      Logger.info("Log file [%s] seems to have rotated (server returned 416), resetting offset to 0".format(url))
       response = recentLogContent(url, logOffsets(regionServer.serverName))
-    } else {
-      // Set the next offset to the base offset + the offset matching the last newline found
-      logOffsets(regionServer.serverName) = logOffsets(regionServer.serverName) + offsetOfLastNewline(response.body)
-
-      Logger.debug("Updating logfile offset to [%d] for server %s".
-        format(logOffsets(regionServer.serverName), regionServer))
+      if(wasRotated(response)) {
+        throw new Exception("Could not load logfile from server even after resetting logOffset to 0")
+      }
     }
+
+    // Set the next offset to the base offset + the offset matching the last newline found
+    logOffsets(regionServer.serverName) = logOffsets(regionServer.serverName) + offsetOfLastNewline(response.body)
+
+    Logger.debug("Updating logfile offset to [%d] for server %s".
+      format(logOffsets(regionServer.serverName), regionServer))
 
     response.body
   }
@@ -51,14 +50,29 @@ case class LogFile(regionServer:RegionServer) {
   def recentLogContent(url: String, offset: Long) = {
     Logger.debug("... fetching Logfile from %s with range [%d-]".format(url, offset))
     val response = WS.url(url).withHeaders(("Range", "bytes=%d-".format(offset))).get().await(logFetchTimeout * 1000).get
-    val ahcResponse = response.ahcResponse
-    val statusCode = ahcResponse.getStatusCode
-    if (!List(200, 206).contains(statusCode)) {
-        throw new Exception("couldn't load Compaction Metrics from URL: '" +
-          url + " (statusCode was: "+statusCode+")")
+    val statusCode = response.ahcResponse.getStatusCode
+    if (!List(200, 206, 416).contains(response.ahcResponse.getStatusCode)) {
+      throw new Exception("couldn't load Compaction Metrics from URL: '" +
+        url + " (statusCode was: "+statusCode+")")
+    }
+    response
+  }
+
+  def wasRotated(response:Response):Boolean = {
+    if(response.ahcResponse.getStatusCode == 416) {
+      Logger.debug("Log file [%s] seems to have rotated (StatusCode = 416)")
+      return true
     }
 
-    response
+    val contentRange = response.getAHCResponse.getHeader("Content-Range")
+    val rangeValue = StringUtils.substringBetween(contentRange, "bytes", "/").trim()
+
+    if (rangeValue eq "*") {
+      Logger.debug("Log file [%s] seems to have rotated (RangeValue is *)")
+      return true
+    }
+
+    return false
   }
 
   def offsetOfLastNewline(body: String):Long = {
