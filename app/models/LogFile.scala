@@ -13,6 +13,7 @@ import models.LogFile._
 import collection.mutable.ListBuffer
 import scala.util.control.Breaks._
 import java.util.regex._
+import java.text.SimpleDateFormat
 
 case class LogFile(regionServer:RegionServer) {
 
