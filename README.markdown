@@ -73,30 +73,45 @@ For information about the usage, check out [the Usage page on our Wiki][Wiki-Usa
  [Wiki-Usage]: https://github.com/sentric/hannibal/wiki/Usage
 
 ## How to display compactions
-
 HBase 0.90.x's API doesn't allow you to query information on running compactions directly, so what we do is to parse
 the RegionServers' log files directly, which are available through the service interface. HBase 0.92 allows to query
 compactions directly, but we still collect compactions using the logfile-parsing way, because this way we don't miss 
 any short running compactions.
-The downside is that this doesn't work without further configuration because either, the url-pattern and the 
-date pattern can differ from system to system. Regardless of which version of HBase you use, you should check those 
-parameters in [conf/application.conf](blob/master/conf/application.conf):
+The downside is that this doesn't work out of the box for all HBase clusters because either, the path-pattern or the
+date-pattern can differ from system to system. Another problem can be, that the compaction-information isn't logged at
+all in your setup, because your LogLevel is set to high.
 
-    compactions.logfile-url-pattern = "..."
+If you consider problems with the the compaction-metrics, you should check the following parameters in [conf/application.conf](blob/master/conf/application.conf).
+
+### 1. compactions.logfile-path-pattern
+
+The default of the logfile-path-pattern is 
+
+    compactions.logfile-path-pattern = "(?i)\"/logs/(.*regionserver.*[.].*)\""
+ 
+The defaults should work for the most setups in distributed mode. For standalone-mode you will need change the pattern to
+
+	compactions.logfile-path-pattern = (?i)\"/logs/(.*master.*[.].*)\"
+	
+If you are still unsure about the correct path-pattern, you can get a hint for the correct pattern by looking at your 
+log-listing ```http://<<some-regionserver>>:60030/logs/```.
+
+### 2. compactions.logfile-date-format
+
+The default logfile-date-format is 
+
     compactions.logfile-date-format = "yyyy-MM-dd HH:mm:ss,SSS"
-    
-Informations about compactions are logged with `INFO`-Level, so the log levels need to be set at least to `INFO`.
+
+You can figure out the correct date-format by looking inside a logfile within your log-listing at ```http://<<some-regionserver>>:60030/logs/```
+
+### 3. compactions.set-loglevels-on-startup
+Informations about compactions are logged by HBase with `INFO`-Level, so the log-level for your HBase-Regionservers need to be set at least to `INFO`.
 
 Hannibal can set the log level to `INFO` for you, just edit [conf/application.conf](blob/master/conf/application.conf)
 and set
 
     compactions.set-loglevels-on-startup = true
-if you have problems, please make sure that the url-pattern is correct
-
-    compactions.loglevel-url-pattern = "..." 
-
-Please let [me][Nils Kübler] know if you have trouble with this, or have an idea how we could record information more
-easily.
+If this doesn't work for you, you should try to manually change the loglevel on your regionservers.
 
 ## More Information
 
