@@ -13,6 +13,7 @@ import models.LogFile._
 import collection.mutable.ListBuffer
 import scala.util.control.Breaks._
 import java.util.regex._
+import java.text.SimpleDateFormat
 
 case class LogFile(regionServer:RegionServer) {
 
@@ -124,7 +125,7 @@ object LogFile {
     logFilePattern
   }
 
-  def init() {
+  def init(): Boolean = {
     if (setLogLevelsOnStartup) {
       Logger.info("setting Loglevels for the Regionservers")
       HBase.eachRegionServer {
@@ -141,6 +142,8 @@ object LogFile {
 
     logFileUrlPattern = discoverLogFileUrlPattern
     Logger.info("Discovered log file url pattern: [%s]".format(logFileUrlPattern))
+
+    logFileUrlPattern != null
   }
 
   def all() = {
