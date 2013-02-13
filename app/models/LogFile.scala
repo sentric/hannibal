@@ -161,7 +161,7 @@ object LogFile {
       Logger.info("Discovered log file url pattern: [%s]".format(logFileUrlPattern))
       return true
     } else {
-      Logger.warn("Could not discover log file url pattern, please check compactions.logfile-path-pattern in application.conf")
+      Logger.warn("Could not discover log file url pattern using pathPattern: [%s]".format(logFilePathPattern))
       return false
     }
   }

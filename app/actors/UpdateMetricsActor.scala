@@ -40,6 +40,9 @@ class UpdateMetricsActor extends Actor {
     case INIT_COMPACTION_METRICS =>
       if(LogFile.init()) {
         Akka.system.scheduler.scheduleOnce(10 seconds, context.self, UpdateMetricsActor.UPDATE_COMPACTION_METRICS)
+      } else {
+        Logger.error("Compaction metrics update disabled because discovery of the log file url pattern failed. "+
+          "Please check your compactions.logfile-path-pattern in application.conf.")
       }
 
     case UPDATE_COMPACTION_METRICS =>
