@@ -35,7 +35,7 @@ object ApplicationBuild extends Build {
     })
 
     val appResolvers = Seq(
-      "Cloudera Public Repository" at "http://repository.cloudera.com/artifactory/cloudera-repos/",
+      "Cloudera Public Repository" at "https://repository.cloudera.com/artifactory/cloudera-repos/",
       "Mockito Core" at "http://repo2.maven.org/maven2/org/mockito/mockito-core",
       "Mockito All" at "http://repo2.maven.org/maven2/org/mockito/mockito-all"
     ) 
