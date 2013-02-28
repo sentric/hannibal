@@ -17,8 +17,10 @@ object ApplicationBuild extends Build {
     println("Configuring for HBase Version: %s".format(hBaseVersion))
 
     val appDependencies = Seq(
-       "org.mockito" % "mockito-core" % "1.9.0" % "test",
-       "org.mockito" % "mockito-all" % "1.9.0" % "test"
+//       "org.mockito" % "mockito-core" % "1.9.0" % "test",
+//       "org.mockito" % "mockito-all" % "1.9.0" % "test",
+        "org.slf4j" % "slf4j-log4j12" % "1.6.0"
+//       "org.slf4j" % "slf4j-api" % "1.5.8"
     ) ++ (hBaseVersion match {
       case "0.90" => Seq(
         "org.apache.hadoop" % "hadoop-core" % "0.20.2-cdh3u4",
@@ -44,6 +46,9 @@ object ApplicationBuild extends Build {
       ivyXML :=
     		<dependencies>
     			<exclude module="thrift"/>
+                  <dependency org="org.apache.hbase" name="hbase" rev="0.90.6-cdh3u4">
+                    <exclude module="slf4j-log4j12"/>
+		  </dependency> 
     		</dependencies>
     )
 

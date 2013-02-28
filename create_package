@@ -1,0 +1,13 @@
+#!/bin/sh
+tmpdir=`mktemp -d -t hannibal`
+./sbt stage
+cwd=$PWD
+mkdir -p $tmpdir/hannibal/target
+cp -r $cwd/target/staged $tmpdir/hannibal/target
+cp $cwd/target/start $tmpdir/hannibal/target
+cp -r $cwd/conf $tmpdir/hannibal
+cd $tmpdir
+tar -czf $cwd/hannibal.tgz hannibal
+cd $cwd
+rm -rf $tmpdir
+echo "package created: $cwd/hannibal.tbz"
