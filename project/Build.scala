@@ -17,34 +17,31 @@ object ApplicationBuild extends Build {
     println("Configuring for HBase Version: %s".format(hBaseVersion))
 
     val appDependencies = Seq(
-       "org.mockito" % "mockito-core" % "1.9.0" % "test",
-       "org.mockito" % "mockito-all" % "1.9.0" % "test"
+        "org.slf4j" % "slf4j-log4j12" % "1.6.0"
     ) ++ (hBaseVersion match {
       case "0.90" => Seq(
-        "org.apache.hadoop" % "hadoop-core" % "0.20.2-cdh3u4",
-        "org.apache.hbase" % "hbase" % "0.90.6-cdh3u4"
+        "org.apache.hadoop" % "hadoop-core" % "0.20.205.0",
+        "org.apache.hbase" % "hbase" % "0.90.5"
       )
       case "0.92" => Seq(
-        "org.apache.hadoop" % "hadoop-common" % "2.0.0-cdh4.1.2",
-        "org.apache.hbase" % "hbase" % "0.92.1-cdh4.1.2"
+        "org.apache.hadoop" % "hadoop-core" % "0.20.205.0",
+        "org.apache.hbase" % "hbase" % "0.92.2"
       )
       case "0.94" => Seq(
-        "org.apache.hadoop" % "hadoop-core" % "1.0.3",
-        "org.apache.hbase" % "hbase" % "0.94.1"
+        "org.apache.hadoop" % "hadoop-core" % "0.20.205.0",
+        "org.apache.hbase" % "hbase" % "0.94.3"
       )
     })
 
     val appResolvers = Seq(
-      "Cloudera Public Repository" at "https://repository.cloudera.com/artifactory/cloudera-repos/",
-      "Mockito Core" at "http://repo2.maven.org/maven2/org/mockito/mockito-core",
-      "Mockito All" at "http://repo2.maven.org/maven2/org/mockito/mockito-all"
     ) 
     
     val projectSettings = Seq( 
       ivyXML :=
-    		<dependencies>
-    			<exclude module="thrift"/>
-    		</dependencies>
+    	<dependencies>
+          <exclude module="thrift" />
+          <exclude module="slf4j-log4j12" />
+    	</dependencies>
     )
 
     val hBaseSourceDirectory = (hBaseVersion match {
