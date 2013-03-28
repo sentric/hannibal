@@ -111,6 +111,13 @@ and set
     compactions.set-loglevels-on-startup = true
 If this doesn't work for you, you should try to manually change the loglevel on your regionservers.
 
+## Deployment
+If you intent to run Hannibal on a different host where you want to build it, then you can run
+
+	build_package
+
+This scripts generates a tgz-Package inside the target-folder, which you can then deploy on your target server. The HBase version can be set with the HANNIBAL_HBASE_VERSION environment variable, as described in the quickstart section.
+
 ## More Information
 
 More information about the tool can be found in the [Wiki][]
