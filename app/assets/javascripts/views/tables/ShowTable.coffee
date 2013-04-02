@@ -11,6 +11,8 @@ class @ShowTableView extends Backbone.View
       pattern: "(next refresh in %delay% seconds)"
     @visualCountDown.on "done", _.bind(@updateTableRegions, @)
 
+    @$(".sort-options ul li").click(_.bind(@sortItemClicked, @))
+
     @updateTableRegions()
 
   createTableRegionsChartView: ($el) ->
@@ -26,4 +28,17 @@ class @ShowTableView extends Backbone.View
   updateTableRegions: ->
     @tableRegionsChartView.collection.fetch()
     @visualCountDown.startCountDown(30, 1, 1000)
+
+  sortItemClicked: (evt) ->
+    $element = $(evt.target);
+    sort = $element.data('sort')
+    @tableRegionsChartView.collection.setSort(sort)
+    @tableRegionsChartView.collection.sort()
+    @$(".sort-options ul li").each(() ->
+      $this = $(@)
+      if($this.data('sort') == sort)
+        $this.addClass('checked')
+      else
+        $this.removeClass('checked')
+    )
 

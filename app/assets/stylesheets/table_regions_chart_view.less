@@ -33,6 +33,53 @@
     .legend-container {
         position: absolute;
         right: 0;
+        top: 69px;
         vertical-align: top;
+
+        .legend {
+          width: @legend-width - 10;
+        }
+    }
+
+    .sort-options {
+      position: absolute;
+      width: @legend-width;
+      right: 0;
+      top: 0;
+
+      color: white;
+      background-color: #404040;
+
+      font-family: Arial;
+      font-size: 12px;
+
+      ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 5px;
+        li {
+          cursor: pointer;
+          padding-left: 21px;
+          position: relative;
+
+          &:hover {
+            background-color: rgba(255, 255, 255, 0.08);
+          }
+          &:before {
+            font-size: 17px;
+            content: "○";
+            opacity: 0.2;
+
+            display: block;
+            position: absolute;
+            left: 4px;
+            top: -3px;
+          }
+          &.checked:before {
+            content: "●";
+            opacity: 1;
+          }
+        }
+      }
     }
 }
