@@ -28,7 +28,7 @@ You will also need a browser with [SVG][]-Support to display Hannibal's graphs.
 
 ### HBase Compatibilty
 
-Hannibal currently supports HBase versions 0.90 to 0.94. Be sure to set the environment-variable HANNIBAL_HBASE_VERSION for your version, as described in the Quickstart-section. The Scala-sources are currently compiled with Cloudera's HBase versions wherever possible, you can try to alter the version in project/Build.scala if you wish to.
+Hannibal currently supports HBase versions 0.90 to 0.94. Be sure to set the environment-variable HANNIBAL_HBASE_VERSION for your version, as described in the Quickstart-section. The Scala-sources are currently compiled with Apache HBase versions wherever possible, you can try to alter the version in project/Build.scala if you wish to.
 
 ## Video Tutorial
 
