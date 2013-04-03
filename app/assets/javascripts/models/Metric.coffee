@@ -65,16 +65,21 @@ class @Metric extends Backbone.Model
 class @Metrics extends Backbone.Collection
   model: Metric
 
-  @byNames: (target, names) ->
+  @byTargetAndNames: (target, names) ->
     metrics = new Metrics([])
-    metrics.url = Routes.Metrics.listJson
+    metrics.url = Routes.Metrics.listByTargetJson
       target: target
       metric: names
     metrics
 
-  isEmpty: ->
-    @all(metric -> metric.isEmpty())
+  @byName: (name) ->
+    metrics = new Metrics([])
+    metrics.url = Routes.Metrics.listByNameJson
+      name: name
+    metrics
 
+  isEmpty: ->
+    @all((metric) -> metric.isEmpty())
 
 class @MetricGroup
   constructor: (name, metrics) ->
@@ -94,13 +99,13 @@ class @MetricGroup
     @metrics[0].getBegin()
 
   isEmpty: ->
-    _(@metrics).all(m -> m.isEmpty())
+    _(@metrics).all((m) -> m.isEmpty())
 
   getMax: ->
-    _(@metrics).max(m -> m.getMax())
+    _(@metrics).max((m) -> m.getMax())
 
   getMin: ->
-    _(@metrics).min(m -> m.getMin())
+    _(@metrics).min((m) -> m.getMin())
 
   getSeriesValues: ->
     step = Math.round(@getStep() / 1000)
@@ -109,7 +114,7 @@ class @MetricGroup
     emptyResult = _.range(begin, end + step, step).map((ts) => {x: ts, y: 0})
 
     _(@metrics)
-      .map(m -> m.getSeriesValues())
+      .map((m) -> m.getSeriesValues())
       .reduce(((memo, seriesValues) ->
         memo.map((val, idx) ->
           {x: val.x, y: val.y + seriesValues[idx].y}

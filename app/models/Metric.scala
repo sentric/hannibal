@@ -53,7 +53,7 @@ object MetricDef {
     }
   }
 
-  def findAll(name: String):Seq[MetricDef] = {
+  def findByName(name: String):Seq[MetricDef] = {
     DB.withConnection { implicit c =>
       val stream = SQL_FIND_METRIC_ALL.on("name" -> name)()
 

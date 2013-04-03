@@ -33,10 +33,10 @@ class MetricSpec extends Specification  {
       }
     }
 
-    "provide a method: #findAll" >> {
+    "provide a method: #findByName" >> {
       "returning an empty list when no metricDef by the given 'name' exist" >> {
         running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
-          val metricDefs = MetricDef.findAll("some-name")
+          val metricDefs = MetricDef.findByName("some-name")
           metricDefs.size must equalTo(0)
         }
       }
@@ -48,7 +48,7 @@ class MetricSpec extends Specification  {
           MetricDef.find("some-target-3", "some-name")
           MetricDef.find("some-target-3", "some-name")
 
-          val metricDefs = MetricDef.findAll("some-name")
+          val metricDefs = MetricDef.findByName("some-name")
           metricDefs.size must equalTo(3)
         }
       }

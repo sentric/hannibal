@@ -14,7 +14,7 @@ class @ShowRegionView extends Backbone.View
     @updateMetrics()
 
   createRegionMetricChartView: ($el) ->
-    metrics = Metrics.byNames($el.data("region-name"), $el.data("metric-names"))
+    metrics = Metrics.byTargetAndNames($el.data("region-name"), $el.data("metric-names"))
     view = new RegionMetricChartView
       el: $el
       collection: metrics

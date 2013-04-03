@@ -15,7 +15,8 @@
             listJson: route("@routes.Regions.listJson()")
         },
         Metrics: {
-            listJson: route("@routes.Metrics.listJson("%target%")"),
+            listByNameJson: route("@routes.Metrics.listByNameJson("%name%")"),
+            listByTargetJson: route("@routes.Metrics.listByTargetJson("%target%")"),
             showJson: route("@routes.Metrics.showJson("%target%", "%name%")")
         }
     }

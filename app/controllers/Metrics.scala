@@ -13,7 +13,7 @@ import play.api.libs.concurrent.Akka
 import play.api.Play.current
 
 object Metrics extends Controller {
-  def listJson(target: String) = Action { implicit request =>
+  def listByTargetJson(target: String) = Action { implicit request =>
     val until = MetricDef.now()
     val since = until - 1000 * 60 * 60 * 24
     val metricNames = if (request.queryString.contains("metric")) request.queryString("metric") else MetricDef.ALL_REGION_METRICS
@@ -24,6 +24,21 @@ object Metrics extends Controller {
           MetricDef.findRegionMetricDef(target, metricName).metric(since, until)
         }
         
+        Ok(generate(metrics)).as("application/json")
+      }
+    }
+  }
+
+  def listByNameJson(name: String) = Action { implicit request =>
+    val until = MetricDef.now()
+    val since = until - 1000 * 60 * 60 * 24
+
+    Async {
+      Akka.future {
+        val metrics = MetricDef.findByName(name).map { metricDef =>
+          metricDef.metric(since, until)
+        }
+
         Ok(generate(metrics)).as("application/json")
       }
     }
