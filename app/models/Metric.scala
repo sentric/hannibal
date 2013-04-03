@@ -53,6 +53,27 @@ object MetricDef {
     }
   }
 
+  def findAll(name: String):Seq[MetricDef] = {
+    DB.withConnection { implicit c =>
+      val stream = SQL_FIND_METRIC_ALL.on("name" -> name)()
+
+      if(stream.isEmpty) {
+        Logger.info("no metrics found for : " + name)
+        List()
+      } else {
+        stream.map( row => {
+          MetricDef(
+            row[Long]("id"),
+            row[String]("target"),
+            row[String]("name"),
+            row[Double]("last_value"),
+            row[Long]("last_update")
+          )
+        }).toList
+      }
+    }
+  }
+
   def clean(until: Long = now() - 1000 * 3600 * 24 * 7) = {
     var recordsCleaned = 0;
     var metricsCleaned = 0;
@@ -66,6 +87,15 @@ object MetricDef {
   def now() = new java.util.Date().getTime()
 
   def hash(value:String) = ByteUtil.toHexString(MessageDigest.getInstance("MD5").digest(Bytes.toBytes(value)))
+
+  val SQL_FIND_METRIC_ALL = SQL("""
+    SELECT
+      id, target, name, last_value, last_update
+    FROM
+      metric
+    WHERE
+      name={name}
+  """)
 
   val SQL_FIND_METRIC = SQL("""
     SELECT
