@@ -1,4 +1,4 @@
-node "dev.hbase-0-90" {
+node "hbase090" {
   class { "apache::hbase::standalone":
     version => "0.90.6"
   }
@@ -8,7 +8,7 @@ node "dev.hbase-0-90" {
   }
 }
 
-node "dev.hbase-0-92" {
+node "hbase092" {
   class { "apache::hbase::standalone":
     version => "0.92.2"
   }
@@ -18,7 +18,7 @@ node "dev.hbase-0-92" {
   }
 }
 
-node "dev.hbase-0-94" {
+node "hbase094" {
   class { "apache::hbase::standalone":
     version => "0.94.1"
   }
