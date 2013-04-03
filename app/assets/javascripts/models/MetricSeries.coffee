@@ -38,29 +38,19 @@ class @MetricSeries
     @name = @getHumanReadableName()
     @unit = @getHumanReadableUnit()
     @metric = metric
-
-    step = Math.round(metric.getStep() / 1000)
-    values = metric.getValues()
-    begin = Math.round(metric.getBegin() / 1000)
-    end = Math.round(metric.getEnd() / 1000)
-    pointIndex = -1
-    pointValue = metric.getPrevValue()
-
     @min = metric.getMin()
     @max = metric.getMax()
+
     @mm = @max - @min
     if @mm == 0.0
       console.log ("min-max difference is 0, setting to 1.0")
       @mm = 1.0
 
-    @data = _.range(begin, end + step, step).map((ts) =>
-      if(pointIndex < values.length - 1 && ts > Math.round(values[pointIndex+1].ts / 1000))
-        pointIndex = pointIndex + 1
-        pointValue = values[pointIndex].v
-
-      return {
-        x: ts
-        y: @normalize(pointValue)
+    values = metric.getSeriesValues()
+    @data = _(values).map((v) =>
+      {
+        x: v.x,
+        y: @normalize(v.y)
       }
     );
 

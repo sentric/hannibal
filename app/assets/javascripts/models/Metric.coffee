@@ -3,14 +3,11 @@
 class @Metric extends Backbone.Model
   url: ->
     Routes.Metric.showJson
-      target: @getTarget()
+      target: @get('target')
       name: @getName()
 
   getName: ->
     @get('name')
-
-  getTarget: ->
-    @get('target')
 
   getStep: ->
     60000
@@ -46,6 +43,25 @@ class @Metric extends Backbone.Model
     if(prevValue < min) then min = prevValue
     min
 
+  getSeriesValues: ->
+    step = Math.round(@getStep() / 1000)
+    begin = Math.round(@getBegin() / 1000)
+    end = Math.round(@getEnd() / 1000)
+    values = @getValues()
+    pointIndex = -1
+    pointValue = @getPrevValue()
+
+    _.range(begin, end + step, step).map((ts) =>
+      if(pointIndex < values.length - 1 && ts > Math.round(values[pointIndex+1].ts / 1000))
+        pointIndex = pointIndex + 1
+        pointValue = values[pointIndex].v
+      return {
+        x: ts
+        y: pointValue
+      }
+    );
+
+
 class @Metrics extends Backbone.Collection
   model: Metric
 
@@ -57,5 +73,45 @@ class @Metrics extends Backbone.Collection
     metrics
 
   isEmpty: ->
-    @all((metric) -> metric.isEmpty())
+    @all(metric -> metric.isEmpty())
 
+
+class @MetricGroup
+  constructor: (name, metrics) ->
+    @name = name
+    @metrics = metrics
+
+  getName: ->
+    @name
+
+  getStep: ->
+    60000
+
+  getBegin: ->
+    @metrics[0].getBegin()
+
+  getEnd: ->
+    @metrics[0].getBegin()
+
+  isEmpty: ->
+    _(@metrics).all(m -> m.isEmpty())
+
+  getMax: ->
+    _(@metrics).max(m -> m.getMax())
+
+  getMin: ->
+    _(@metrics).min(m -> m.getMin())
+
+  getSeriesValues: ->
+    step = Math.round(@getStep() / 1000)
+    begin = Math.round(@getBegin() / 1000)
+    end = Math.round(@getEnd() / 1000)
+    emptyResult = _.range(begin, end + step, step).map((ts) => {x: ts, y: 0})
+
+    _(@metrics)
+      .map(m -> m.getSeriesValues())
+      .reduce(((memo, seriesValues) ->
+        memo.map((val, idx) ->
+          {x: val.x, y: val.y + seriesValues[idx].y}
+        )
+      ), emptyResult)
