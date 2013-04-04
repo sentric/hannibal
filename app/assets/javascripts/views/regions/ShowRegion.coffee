@@ -15,13 +15,14 @@ class @ShowRegionView extends Backbone.View
 
   createRegionMetricChartView: ($el) ->
     metrics = Metrics.byTargetAndNames($el.data("region-name"), $el.data("metric-names"))
-    view = new RegionMetricChartView
+    view = new MetricChartView
       el: $el
       collection: metrics
+      annotatedMetricName: "compactions"
+      annotationLabel: "Compaction"
     view
 
   updateMetrics: ->
-    @regionMetricCharts
     view.collection.fetch() for view in @regionMetricCharts
     @visualCountDown.startCountDown(60, 1, 1000)
 

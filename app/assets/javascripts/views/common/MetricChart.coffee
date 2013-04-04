@@ -1,14 +1,16 @@
 # Copyright 2012 Sentric. See LICENSE for details.
 
-class @RegionMetricChartView extends Backbone.View
+class @MetricChartView extends Backbone.View
   initialize: ->
     @palette = @options.palette
+    @annotatedMetricName = @options.annotatedMetricName
+    @annotationLabel = @options.annotationLabel
     @collection.on "reset", _.bind(@render, @)
     @metricsSeries = new MetricsSeries
 
   render: ->
     if(@collection.isEmpty())
-      @$el.html("No Data recorded yet for MetricDef #{@collection}")
+      @$el.html("No Data recorded yet.")
     else
       @metricsSeries.populate(@collection)
       if !@graph
@@ -47,10 +49,7 @@ class @RegionMetricChartView extends Backbone.View
       graph: @graph,
       element: @$('.timeline')[0]
 
-    @lastAddedCompactionAnnotation = 0
-    @compactionsSeries = @metricsSeries.findSeries("compactions")
-    @compactionsSeries.disabled = true if @compactionsSeries && @metricsSeries.series.length > 1
-    @createCompactionAnnotations(@compactionsSeries) if @compactionsSeries
+    @createAnnotations()
 
     @legend = new Rickshaw.Graph.Legend
       graph: @graph
@@ -70,19 +69,26 @@ class @RegionMetricChartView extends Backbone.View
       $(this).trigger("click")
     ));
 
-    @colorizeAnnotations(@compactionsSeries.color) if @compactionsSeries
+    @colorizeAnnotations(@annotatedSeries.color) if @annotatedSeries
     @labelYAxes()
+
+  createAnnotations: () ->
+    @lastAddedAnnotation = 0
+    if @annotatedMetricName
+      @annotatedSeries = @metricsSeries.findSeries(@annotatedMetricName)
+    @annotatedSeries.disabled = true if @annotatedSeries
+    @addAnnotations(@annotatedSeries) if @annotatedSeries
 
   updateGraph: ->
-    @createCompactionAnnotations(@compactionsSeries) if @compactionsSeries
+    @addAnnotations(@annotatedSeries) if @annotatedSeries
     @graph.update()
     @graph.render()
-    @colorizeAnnotations(@compactionsSeries.color) if @compactionsSeries
+    @colorizeAnnotations(@annotatedSeries.color) if @annotatedSeries
     @labelYAxes()
 
-  createCompactionAnnotations: (compactions) ->
-    compactions.noLegend = true
-    metric = compactions.metric
+  addAnnotations: (series) ->
+    series.noLegend = true
+    metric = series.metric
     values = metric.getValues()
     start = Math.round(metric.getBegin())
     _(values).each (v) =>
@@ -90,10 +96,10 @@ class @RegionMetricChartView extends Backbone.View
         start = v.ts
       else
         time = Math.round(start / 1000)
-        if time > @lastAddedCompactionAnnotation
-          @lastAddedCompactionAnnotation = time
+        if time > @lastAddedAnnotation
+          @lastAddedAnnotation = time
           duration = Math.round((v.ts - start) / 1000)
-          @annotator.add(time, "Compaction (#{duration}s)", Math.round(v.ts / 1000))
+          @annotator.add(time, "#{@annotationLabel} (#{duration}s)", Math.round(v.ts / 1000))
 
   colorizeAnnotations: (color) ->
     for ts, annotation of @annotator.data
@@ -110,6 +116,6 @@ class @RegionMetricChartView extends Backbone.View
   labelYAxes: ->
     _(@metricsSeries.series).each (metricSeries) ->
       name = metricSeries.name
-      if metricSeries.metricName != "compactions"
+      if metricSeries.metricName != @annotatedMetricName
         $("span:contains('#{name}')").html("#{name}: <br><span class='labelindent'>#{metricSeries.min} - #{metricSeries.max} #{metricSeries.unit}</span>")
 
