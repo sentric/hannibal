@@ -3,7 +3,7 @@
 @import helpers.Referer
 
 @regionMetricChart(metricNames: Seq[String]) = {
-    <div class="region-metric-chart-view" data-region-name="@region.regionName" data-metric-names="@com.codahale.jerkson.Json.generate(metricNames)">
+    <div class="metric-chart-view region-metric-chart-view" data-region-name="@region.regionName" data-metric-names="@com.codahale.jerkson.Json.generate(metricNames)">
         <div class="x-axis"></div>
         <div class="chart"></div>
         <div class="legend-container">
@@ -58,9 +58,9 @@
 }
 
 @includes = {
-  <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/region_metric_chart_view.css")">
+  <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/metric_chart_view.css")">
   <script src="@routes.Assets.at("javascripts/views/common/VisualCountDown.js")" type="text/javascript"></script>
-  <script src="@routes.Assets.at("javascripts/views/regions/RegionMetricChart.js")" type="text/javascript"></script>
+  <script src="@routes.Assets.at("javascripts/views/common/MetricChart.js")" type="text/javascript"></script>
   <script src="@routes.Assets.at("javascripts/views/regions/ShowRegion.js")" type="text/javascript"></script>
   <script src="@routes.Assets.at("javascripts/models/Metric.js")" type="text/javascript"></script>
   <script src="@routes.Assets.at("javascripts/models/MetricSeries.js")" type="text/javascript"></script>

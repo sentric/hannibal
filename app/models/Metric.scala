@@ -30,25 +30,53 @@ object MetricDef {
   val COMPACTIONS = "compactions"
   def COMPACTIONS(region: String) : MetricDef = findRegionMetricDef(region, COMPACTIONS)
 
-  def findRegionMetricDef(region: String, name: String) = find(hash(region), name)
+  def findRegionMetricDef(region: String, name: String) = find(hash(region), name, region)
 
-  def find(target: String, name: String)  = {
+  def find(target: String, name: String, targetDesc: String)  = {
     DB.withConnection { implicit c =>
       val stream = SQL_FIND_METRIC.on("target" -> target, "name" -> name)()
 
       if(stream.isEmpty) {
         Logger.info("creating new metric for " + target + " : " + name)
-        val id = SQL_INSERT_METRIC.on("target" -> target, "name" -> name).executeInsert()
-        MetricDef(id.get, target, name, 0.0, 0)
+        val id = SQL_INSERT_METRIC.on("target" -> target, "name" -> name, "target_desc" -> targetDesc).executeInsert()
+        MetricDef(id.get, target, name, 0.0, 0, targetDesc)
       } else {
         val row = stream.head
+        if(row[String]("target_desc") != targetDesc)
+        {
+          Logger.info("updating metric targetDesc in old metric '" + target +"' for " + name)
+          SQL_MIGRATE_METRIC_3.on("id" -> row[Long]("id"), "target_desc" -> targetDesc).executeUpdate()
+        }
         MetricDef(
           row[Long]("id"),
           row[String]("target"),
           row[String]("name"),
           row[Double]("last_value"),
-          row[Long]("last_update")
+          row[Long]("last_update"),
+          targetDesc
         )
+      }
+    }
+  }
+
+  def findByName(name: String):Seq[MetricDef] = {
+    DB.withConnection { implicit c =>
+      val stream = SQL_FIND_METRIC_ALL.on("name" -> name)()
+
+      if(stream.isEmpty) {
+        Logger.info("no metrics found for : " + name)
+        List()
+      } else {
+        stream.map( row => {
+          MetricDef(
+            row[Long]("id"),
+            row[String]("target"),
+            row[String]("name"),
+            row[Double]("last_value"),
+            row[Long]("last_update"),
+            row[String]("target_desc")
+          )
+        }).toList
       }
     }
   }
@@ -67,9 +95,18 @@ object MetricDef {
 
   def hash(value:String) = ByteUtil.toHexString(MessageDigest.getInstance("MD5").digest(Bytes.toBytes(value)))
 
+  val SQL_FIND_METRIC_ALL = SQL("""
+    SELECT
+      id, target, name, last_value, last_update, target_desc
+    FROM
+      metric
+    WHERE
+      name={name}
+  """)
+
   val SQL_FIND_METRIC = SQL("""
     SELECT
-      id, target, name, last_value, last_update
+      id, target, name, last_value, last_update, target_desc
     FROM
       metric
     WHERE
@@ -78,12 +115,14 @@ object MetricDef {
 
   val SQL_INSERT_METRIC = SQL("""
     INSERT INTO
-      metric(target, name, last_value, last_update)
+      metric(target, name, last_value, last_update, target_desc)
     VALUES
-      ({target}, {name}, 0.0, 0)
+      ({target}, {name}, 0.0, 0, {target_desc})
   """)
 
   val SQL_UPDATE_METRIC = SQL("UPDATE metric SET last_value={last_value}, last_update={last_update} WHERE id={id}")
+
+  val SQL_MIGRATE_METRIC_3 = SQL("UPDATE metric SET target_desc={target_desc} WHERE id={id}")
 
   val SQL_INSERT_RECORD = SQL("""
     INSERT INTO
@@ -118,7 +157,7 @@ object MetricDef {
   """)
 }
 
-case class MetricDef(id: Long, target: String, name: String, var lastValue: Double, var lastUpdate: Long) {
+case class MetricDef(id: Long, target: String, name: String, var lastValue: Double, var lastUpdate: Long, targetDesc:String) {
   def update(value: Double, timestamp:Long = now) = {
     var updated = false
     DB.withConnection { implicit c =>
@@ -147,13 +186,13 @@ case class MetricDef(id: Long, target: String, name: String, var lastValue: Doub
       }).toList
     }
     if(values.size < 1)
-      Metric(name, target, since, until, values, lastValue, lastUpdate == 0)
+      Metric(name, target, since, until, values, lastValue, lastUpdate == 0, targetDesc)
     else
-      Metric(name, target, since, until, values, prevValue.get, lastUpdate == 0)
+      Metric(name, target, since, until, values, prevValue.get, lastUpdate == 0, targetDesc)
   }
 }
 
-case class Metric(name: String, target: String, begin: Long, end: Long, values: Seq[MetricRecord], prevValue: Double, isEmpty: Boolean)
+case class Metric(name: String, target: String, begin: Long, end: Long, values: Seq[MetricRecord], prevValue: Double, isEmpty: Boolean, targetDesc:String)
 
 case class MetricRecord(ts: Long, v: Double)
 
