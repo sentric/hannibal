@@ -37,6 +37,7 @@ class @ShowClusterView extends Backbone.View
       metricFilter: (collection) -> collection.groupedByTable()
       doNormalize: false
       renderer: 'area'
+      palette: new RickshawUtil.TablePalette()
     view
 
   updateMetrics: ->

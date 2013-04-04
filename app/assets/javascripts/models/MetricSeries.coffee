@@ -2,17 +2,19 @@
 
 class @MetricsSeries
 
-  constructor: (doNormalize = true) ->
+  constructor: (doNormalize = true, palette = null) ->
     @doNormalize = doNormalize
     @series = []
-    @palette = new Rickshaw.Color.Palette( { scheme: [
-      '#B1354A',
-      '#B12BA0',
-      '#68B15D',
-      '#4E5FB1',
-      '#B1A667',
-      '#56AFB1', # not used
-    ] } )
+    @palette = palette
+    if !@palette
+      @palette = new Rickshaw.Color.Palette( { scheme: [
+        '#B1354A',
+        '#B12BA0',
+        '#68B15D',
+        '#4E5FB1',
+        '#B1A667',
+        '#56AFB1', # not used
+      ] } )
 
   populate: (metrics) ->
     _(metrics).each((metric) => @findOrCreateSeries(metric.getName()).populate(metric))
@@ -20,7 +22,7 @@ class @MetricsSeries
   findOrCreateSeries: (name) ->
     found = @findSeries(name)
     if(!found)
-      found = new MetricSeries(name, @palette.color(), @doNormalize)
+      found = new MetricSeries(name, @palette.color(name), @doNormalize)
       @series.push(found)
     found
 

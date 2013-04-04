@@ -8,7 +8,7 @@ class @MetricChartView extends Backbone.View
     @collection.on "reset", _.bind(@render, @)
 
     @doNormalize = @options.doNormalize
-    @metricsSeries = new MetricsSeries(@doNormalize)
+    @metricsSeries = new MetricsSeries(@doNormalize, @palette)
 
     if @options.metricFilter
       @metricFilter = @options.metricFilter
