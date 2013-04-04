@@ -20,6 +20,7 @@ class @ShowRegionView extends Backbone.View
       collection: metrics
       annotatedMetricName: "compactions"
       annotationLabel: "Compaction"
+      doNormalize: true
     view
 
   updateMetrics: ->

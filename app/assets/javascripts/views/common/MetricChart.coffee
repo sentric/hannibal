@@ -5,16 +5,26 @@ class @MetricChartView extends Backbone.View
     @palette = @options.palette
     @annotatedMetricName = @options.annotatedMetricName
     @annotationLabel = @options.annotationLabel
-    @collectionFilter = @options.collectionFilter
     @collection.on "reset", _.bind(@render, @)
-    @metricsSeries = new MetricsSeries(@options.doNormalize)
+
+    @doNormalize = @options.doNormalize
+    @metricsSeries = new MetricsSeries(@doNormalize)
+
+    if @options.metricFilter
+      @metricFilter = @options.metricFilter
+    else
+      @metricFilter = ((collection) -> collection.models)
+
+    if @options.renderer
+      @renderer = @options.renderer
+    else
+      @renderer = 'line'
 
   render: ->
     if(@collection.isEmpty())
       @$el.html("No Data recorded yet.")
     else
-      metrics = @collection.models
-      metrics = @options.collectionFilter(@collection) if @options.collectionFilter
+      metrics = @metricFilter(@collection)
       @metricsSeries.populate(metrics)
 
       if !@graph
@@ -26,7 +36,7 @@ class @MetricChartView extends Backbone.View
   createGraph: ->
     @graph =  new Rickshaw.Graph
       element: @$(".chart")[0],
-      renderer: 'line',
+      renderer: @renderer,
       series: @metricsSeries.series
       interpolation: 'linear'
 
@@ -118,8 +128,9 @@ class @MetricChartView extends Backbone.View
         )
 
   labelYAxes: ->
-    _(@metricsSeries.series).each (metricSeries) ->
-      name = metricSeries.name
-      if metricSeries.metricName != @annotatedMetricName
-        $("span:contains('#{name}')").html("#{name}: <br><span class='labelindent'>#{metricSeries.min} - #{metricSeries.max} #{metricSeries.unit}</span>")
+    if @doNormalize
+      _(@metricsSeries.series).each (metricSeries) ->
+        name = metricSeries.name
+        if metricSeries.metricName != @annotatedMetricName
+          $("span:contains('#{name}')").html("#{name}: <br><span class='labelindent'>#{metricSeries.min} - #{metricSeries.max} #{metricSeries.unit}</span>")
 

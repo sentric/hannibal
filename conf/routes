@@ -17,7 +17,7 @@ GET     /regions/.json                                              controllers.
 GET     /regions/:regionName                                        controllers.Regions.redirectToShow(regionName : String)
 GET     /regions/:regionName/                                       controllers.Regions.show(regionName : String)
 
-GET     /metrics/byName/:name/.json                                 controllers.Metrics.listByNameJson(name : String)
+GET     /metrics/.json                                              controllers.Metrics.listJson()
 GET     /metrics/byTarget/:target/.json                             controllers.Metrics.listByTargetJson(target : String)
 GET     /metrics/byTarget/:target/:metric/.json                     controllers.Metrics.showJson(target : String, metric: String)
 

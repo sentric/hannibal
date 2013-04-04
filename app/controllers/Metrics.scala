@@ -29,17 +29,19 @@ object Metrics extends Controller {
     }
   }
 
-  def listByNameJson(name: String) = Action { implicit request =>
+  def listJson() = Action { implicit request =>
     val until = MetricDef.now()
     val since = until - 1000 * 60 * 60 * 24
+    val metricNames = if (request.queryString.contains("metric")) request.queryString("metric") else MetricDef.ALL_REGION_METRICS
 
     Async {
       Akka.future {
-        val metrics = MetricDef.findByName(name).map { metricDef =>
-          metricDef.metric(since, until)
+        val metrics =  metricNames.map { metricName =>
+          MetricDef.findByName(metricName).map { metricDef =>
+            metricDef.metric(since, until)
+          }
         }
-
-        Ok(generate(metrics)).as("application/json")
+        Ok(generate(metrics.flatten)).as("application/json")
       }
     }
   }
@@ -49,8 +51,8 @@ object Metrics extends Controller {
     val since = until - 1000 * 60 * 60 * 24
     Async {
       Akka.future {
-	    val metric = MetricDef.findRegionMetricDef(target, metricName).metric(since, until)
-	    Ok(generate(metric)).as("application/json")
+        val metric = MetricDef.findRegionMetricDef(target, metricName).metric(since, until)
+        Ok(generate(metric)).as("application/json")
       }
     }
   }

@@ -27,6 +27,9 @@ class @Metric extends Backbone.Model
   isEmpty: ->
     @get('isEmpty')
 
+  getTargetDesc: ->
+    @get('targetDesc')
+
   getMax: ->
     values = @get('values')
     prevValue = @get('prevValue')
@@ -72,14 +75,17 @@ class @Metrics extends Backbone.Collection
       metric: names
     metrics
 
-  @byName: (name) ->
+  @byNames: (names) ->
     metrics = new Metrics([])
-    metrics.url = Routes.Metrics.listByNameJson
-      name: name
+    metrics.url = Routes.Metrics.listJson
+      metric: names
     metrics
 
   groupedByName: () ->
     _(@groupBy((metric) -> metric.getName())).map((metrics, metricName) -> new MetricGroup(metricName, metrics))
+
+  groupedByTable: () ->
+    _(@groupBy((metric) -> metric.getTargetDesc().split(",")[0])).map((metrics, tableName) -> new MetricGroup(tableName, metrics))
 
   isEmpty: ->
     @all((metric) -> metric.isEmpty())
