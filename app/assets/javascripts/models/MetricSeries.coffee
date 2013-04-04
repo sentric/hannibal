@@ -80,6 +80,8 @@ class @MetricSeries
 
   getHumanReadableUnit: ->
     switch @metricName
+      when "storefiles" then ""
       when "storefileSizeMB" then "MB"
       when "memstoreSizeMB" then "MB"
-      else ""
+      when "compactions" then ""
+      else "Compactions"
