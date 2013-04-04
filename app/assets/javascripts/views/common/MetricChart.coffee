@@ -5,14 +5,18 @@ class @MetricChartView extends Backbone.View
     @palette = @options.palette
     @annotatedMetricName = @options.annotatedMetricName
     @annotationLabel = @options.annotationLabel
+    @collectionFilter = @options.collectionFilter
     @collection.on "reset", _.bind(@render, @)
-    @metricsSeries = new MetricsSeries
+    @metricsSeries = new MetricsSeries(@options.doNormalize)
 
   render: ->
     if(@collection.isEmpty())
       @$el.html("No Data recorded yet.")
     else
-      @metricsSeries.populate(@collection)
+      metrics = @collection.models
+      metrics = @options.collectionFilter(@collection) if @options.collectionFilter
+      @metricsSeries.populate(metrics)
+
       if !@graph
         @createGraph()
       else

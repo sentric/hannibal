@@ -78,6 +78,9 @@ class @Metrics extends Backbone.Collection
       name: name
     metrics
 
+  groupedByName: () ->
+    _(@groupBy((metric) -> metric.getName())).map((metrics, metricName) -> new MetricGroup(metricName, metrics))
+
   isEmpty: ->
     @all((metric) -> metric.isEmpty())
 
@@ -96,27 +99,36 @@ class @MetricGroup
     @metrics[0].getBegin()
 
   getEnd: ->
-    @metrics[0].getBegin()
+    @metrics[0].getEnd()
 
   isEmpty: ->
     _(@metrics).all((m) -> m.isEmpty())
 
   getMax: ->
-    _(@metrics).max((m) -> m.getMax())
+    values = @getSeriesValues()
+    _(values).max((v) -> v.y).y
 
   getMin: ->
-    _(@metrics).min((m) -> m.getMin())
+    values = @getSeriesValues()
+    _(values).min((v) -> v.y).y
 
   getSeriesValues: ->
-    step = Math.round(@getStep() / 1000)
-    begin = Math.round(@getBegin() / 1000)
-    end = Math.round(@getEnd() / 1000)
-    emptyResult = _.range(begin, end + step, step).map((ts) => {x: ts, y: 0})
+    if !@seriesValues
+      step = Math.round(@getStep() / 1000)
+      begin = Math.round(@getBegin() / 1000)
+      end = Math.round(@getEnd() / 1000)
+      result = _.range(begin, end + step, step).map((ts) => {x: ts, y: 0})
+      _(@metrics).each (m) ->
+        seriesValues = m.getSeriesValues()
+        _(seriesValues).each (element, index) ->
+          result[index].y = result[index].y + element.y
+      @seriesValues = result
+    @seriesValues
 
-    _(@metrics)
-      .map((m) -> m.getSeriesValues())
-      .reduce(((memo, seriesValues) ->
-        memo.map((val, idx) ->
-          {x: val.x, y: val.y + seriesValues[idx].y}
-        )
-      ), emptyResult)
+#    _(@metrics)
+#      .map((m) -> m.getSeriesValues())
+#      .reduce(((memo, seriesValues) ->
+#        memo.map((val, idx) ->
+#          {x: val.x, y: val.y + seriesValues[idx].y}
+#        )
+#      ), emptyResult)

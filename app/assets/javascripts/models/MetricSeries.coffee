@@ -2,7 +2,8 @@
 
 class @MetricsSeries
 
-  constructor: () ->
+  constructor: (doNormalize = true) ->
+    @doNormalize = doNormalize
     @series = []
     @palette = new Rickshaw.Color.Palette( { scheme: [
       '#B1354A',
@@ -14,12 +15,12 @@ class @MetricsSeries
     ] } )
 
   populate: (metrics) ->
-    metrics.each((metric) => @findOrCreateSeries(metric.getName()).populate(metric))
+    _(metrics).each((metric) => @findOrCreateSeries(metric.getName()).populate(metric))
 
   findOrCreateSeries: (name) ->
     found = @findSeries(name)
     if(!found)
-      found = new MetricSeries(name, @palette.color())
+      found = new MetricSeries(name, @palette.color(), @doNormalize)
       @series.push(found)
     found
 
@@ -28,11 +29,12 @@ class @MetricsSeries
 
 class @MetricSeries
 
-  constructor: (metricName, color) ->
+  constructor: (metricName, color, doNormalize = true) ->
     @metricName = metricName
     @color = color
     @max = -1;
     @min = 99999999;
+    @doNormalize = doNormalize
 
   populate: (metric) ->
     @name = @getHumanReadableName()
@@ -55,10 +57,16 @@ class @MetricSeries
     );
 
   denormalize: (v) ->
-    Math.round((v - 0.025) * @mm + @min)
+    if @doNormalize
+      Math.round((v - 0.025) * @mm + @min)
+    else
+      v
 
   normalize: (v) ->
-    (v - @min) / @mm + 0.025
+    if @doNormalize
+      (v - @min) / @mm + 0.025
+    else
+      v
 
   getHumanReadableName: ->
     switch @metricName
