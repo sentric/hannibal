@@ -50,6 +50,9 @@
                     <li @if(request.path.toString().startsWith(routes.Regions.index().toString())){ class="active"}>
                         <a href="@routes.Regions.index()">Regions</a>
                     </li>
+                    <li @if(request.path.toString().startsWith(routes.Compactions.index().toString())){ class="active"}>
+                        <a href="@routes.Compactions.index()">Compactions</a>
+                    </li>
                 </ul>
             </div>
         </div>

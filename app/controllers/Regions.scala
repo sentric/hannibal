@@ -14,6 +14,7 @@ import com.codahale.jerkson.Json
 import play.api.libs.concurrent.Akka
 import play.api.Play.current
 import models.{Table, Metric, MetricDef}
+import utils.MetricUtil
 
 object Regions extends Controller {
 
@@ -36,7 +37,7 @@ object Regions extends Controller {
         else {
       	  val info = region.getRegionInfo()
           val table = Table.findByName(region.tableName)
-          Ok(views.html.regions.show(region, info, table, region.findLongestCompactionInLastWeek()))
+          Ok(views.html.regions.show(region, info, table, MetricUtil.findLongestCompactionInLastWeek(region.regionName)))
         }
       }
     }

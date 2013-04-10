@@ -1,6 +1,7 @@
-@(region: models.Region, info: models.RegionInfo, table: models.Table, longestCompaction: Long)(implicit request: play.api.mvc.Request[Any])
+@(region: models.Region, info: models.RegionInfo, table: models.Table, longestCompaction: (Long, java.util.Date))(implicit request: play.api.mvc.Request[Any])
 
 @import helpers.Referer
+@import java.text.DateFormat
 
 @regionMetricChart(metricNames: Seq[String]) = {
     <div class="metric-chart-view region-metric-chart-view" data-region-name="@region.regionName" data-metric-names="@com.codahale.jerkson.Json.generate(metricNames)">
@@ -28,7 +29,7 @@
                     <li>Deployed on: <a href="@region.serverInfoUrl"><b>@region.serverHostName</b></a></li>
                     <li>Storefile Size : <b>@(region.storefileSizeMB)MB</b></li>
                     <li>Memstore Flush Size: <b>@(table.memstoreFlushSize/(1024*1024))MB</b></li>
-                    <li>Longest Compaction during last 7 Days: <b>@(longestCompaction/1000.0)s</b></li>
+                    <li>Longest Compaction during last 7 Days: <span><b>@(longestCompaction._1/1000.0)s at @(DateFormat.getInstance().format(longestCompaction._2))</b></span></li>
                 </ul>
             </div>
             <div>

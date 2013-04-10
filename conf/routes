@@ -7,6 +7,8 @@ GET     /                                                           controllers.
 
 GET     /servers                                                    controllers.Servers.index
 
+GET     /compactions                                                controllers.Compactions.index
+
 GET     /tables                                                     controllers.Tables.index()
 GET     /tables/                                                    controllers.Tables.index()
 GET     /tables/:tableName                                          controllers.Tables.show(tableName: String)

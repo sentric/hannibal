@@ -45,19 +45,6 @@ case class Region(private val regionServer:RegionServer,  private val regionLoad
   }
 
   def serverInfoUrl() = "http://" + serverHostName + ":" + serverInfoPort
-
-  def findLongestCompactionInLastWeek() = {
-    val metric = MetricDef.COMPACTIONS(regionName).metric(MetricDef.now()-1000*3600*24*7, MetricDef.now())
-    var begin = metric.begin;
-    var max = 0L;
-    metric.values.foreach { record =>
-      if(record.v > 0)
-        begin = record.ts
-      else
-        max = scala.math.max(max, record.ts - begin)
-    }
-    max
-  }
 }
 
 object Region {
