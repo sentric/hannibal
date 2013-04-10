@@ -4,7 +4,7 @@ import models.MetricDef
 import java.util.Date
 
 /*
- * Copyright 2012 Sentric. See LICENSE for details.
+ * Copyright 2013 Sentric. See LICENSE for details.
  */
 object MetricUtil {
 

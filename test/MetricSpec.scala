@@ -1,5 +1,5 @@
 /*
-* Copyright 2012 Sentric. See LICENSE for details.
+* Copyright 2013 Sentric. See LICENSE for details.
 */
 
 import models.MetricDef
@@ -8,7 +8,7 @@ import play.api.test._
 import play.api.test.Helpers._
 
 /*
- * Copyright 2012 Sentric. See LICENSE for details.
+ * Copyright 2013 Sentric. See LICENSE for details.
  */
 class MetricSpec extends Specification  {
 
