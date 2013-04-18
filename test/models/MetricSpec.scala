@@ -1,3 +1,5 @@
+package models
+
 /*
 * Copyright 2013 Sentric. See LICENSE for details.
 */
@@ -7,9 +9,6 @@ import org.specs2.mutable._
 import play.api.test._
 import play.api.test.Helpers._
 
-/*
- * Copyright 2013 Sentric. See LICENSE for details.
- */
 class MetricSpec extends Specification  {
 
   "MetricDef" should {
@@ -17,7 +16,7 @@ class MetricSpec extends Specification  {
     "provide a method: #find" >> {
       "creating new metricDef when 'target-name'-combination does not yet exist" >> {
         running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
-          val metricDef = MetricDef.find("some-target", "some-name")
+          val metricDef = MetricDef.find("some-target", "some-name", "desc")
           metricDef.target must equalTo("some-target")
           metricDef.name must equalTo("some-name")
         }
@@ -25,10 +24,10 @@ class MetricSpec extends Specification  {
 
       "returning the existing metricDef when 'target-name'-combination already exist" >> {
         running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
-          val metricDef = MetricDef.find("some-target", "some-name")
+          val metricDef = MetricDef.find("some-target", "some-name", "desc")
           metricDef.update(99)
 
-          MetricDef.find("some-target", "some-name").lastValue must equalTo(99)
+          MetricDef.find("some-target", "some-name", "desc").lastValue must equalTo(99)
         }
       }
     }
@@ -43,10 +42,10 @@ class MetricSpec extends Specification  {
 
       "returning a list of metricDefs when the given 'name' exists" >> {
         running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
-          MetricDef.find("some-target-1", "some-name")
-          MetricDef.find("some-target-2", "some-name")
-          MetricDef.find("some-target-3", "some-name")
-          MetricDef.find("some-target-3", "some-name")
+          MetricDef.find("some-target-1", "some-name", "desc")
+          MetricDef.find("some-target-2", "some-name", "desc")
+          MetricDef.find("some-target-3", "some-name", "desc")
+          MetricDef.find("some-target-3", "some-name", "desc")
 
           val metricDefs = MetricDef.findByName("some-name")
           metricDefs.size must equalTo(3)
@@ -57,14 +56,14 @@ class MetricSpec extends Specification  {
     "provide a method: #update" >> {
       "setting not to new value when != previous value" >> {
         running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
-          val metricDef = MetricDef.find("some-target", "some-name")
+          val metricDef = MetricDef.find("some-target", "some-name", "desc")
           metricDef.update(0) must equalTo(false)
         }
       }
 
       "setting to new value when == previous value" >> {
         running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
-          val metricDef = MetricDef.find("some-target", "some-name")
+          val metricDef = MetricDef.find("some-target", "some-name", "desc")
           metricDef.update(1) must equalTo(true)
           metricDef.update(0) must equalTo(true)
         }
@@ -74,7 +73,7 @@ class MetricSpec extends Specification  {
     "provide a method: #metric" >> {
       "returning a metric-object even when there are no recorded values" >> {
         running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
-          val metricDef = MetricDef.find("some-target", "some-name")
+          val metricDef = MetricDef.find("some-target", "some-name", "desc")
           val now = MetricDef.now()
           val metric = metricDef.metric(0, now)
           metric.target must equalTo("some-target")
@@ -89,7 +88,7 @@ class MetricSpec extends Specification  {
 
       "returning a metric-object with empty values when the given range is before recorded values" >> {
         running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
-          val metricDef = MetricDef.find("some-target", "some-name")
+          val metricDef = MetricDef.find("some-target", "some-name", "desc")
           metricDef.update(1)
           metricDef.update(2)
           val metric = metricDef.metric(0, 1)
@@ -105,7 +104,7 @@ class MetricSpec extends Specification  {
 
       "returning a metric-object with empty values when the given range is after recorded values" >> {
         running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
-          val metricDef = MetricDef.find("some-target", "some-name")
+          val metricDef = MetricDef.find("some-target", "some-name", "desc")
           metricDef.update(1)
           metricDef.update(2)
           val now = MetricDef.now()
