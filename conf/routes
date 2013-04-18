@@ -28,3 +28,5 @@ GET     /assets/img/glyphicons-halflings.png                        controllers.
 GET     /assets/img/glyphicons-halflings-white.png                  controllers.Assets.at(path="/public", file="images/glyphicons-halflings.png-white")
 # Assets from /public folder
 GET     /assets/*file                                               controllers.Assets.at(path="/public", file)
+
+GET     /api/heartbeat                                              controllers.Api.heartbeat()
