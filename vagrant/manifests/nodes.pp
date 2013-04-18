@@ -20,7 +20,7 @@ node "hbase092" {
 
 node "hbase094" {
   class { "apache::hbase::standalone":
-    version => "0.94.1"
+    version => "0.94.6.1"
   }
 
   class { "hannibal":
