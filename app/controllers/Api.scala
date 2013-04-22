@@ -30,7 +30,7 @@ object Api extends Controller {
           "duration" -> toJson(longestCompaction._1),
           "timestamp" -> toJson(longestCompaction._2.getTime),
           "region" -> toJson(longestCompaction._3),
-          "regionName" -> toJson(regionName)
+          "table" -> toJson(regionName.tableName)
         ))
       case None =>
         toJson("none")

@@ -40,11 +40,11 @@ class ApiSpec extends Specification  {
           val result = routeAndCall(FakeRequest(GET, "/api/dashboard"));
           status(result.get) must equalTo(200)
 
-          contentAsString(result.get) must equalTo("{\"compaction_duration\":{\"duration\":%d,\"timestamp\":%d,\"region\":\"%s\",\"regionName\":%s}}".format(
+          contentAsString(result.get) must equalTo("{\"compaction_duration\":{\"duration\":%d,\"timestamp\":%d,\"region\":\"%s\",\"table\":\"%s\"}}".format(
             1000,
             anchor - 2000,
             region,
-            stringify(toJson(RegionName(region)))
+            RegionName(region).tableName
           ))
         }
       }
