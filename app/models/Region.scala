@@ -13,6 +13,9 @@ import play.api.libs.concurrent.Promise
 import play.api.libs.concurrent.Akka
 import play.api.Play.current
 import org.codehaus.jackson.annotate.JsonIgnore
+import play.api.libs.json.{JsObject, Writes}
+import play.api.libs.json.Json._
+import play.api.mvc._
 
 case class Region(private val regionServer:RegionServer,  private val regionLoad:HServerLoad.RegionLoad) {
 
@@ -89,7 +92,10 @@ case class RegionInfo(wrapped:HRegionInfo) {
 }
 
 
-case class RegionName(tableName: String, startKey: String, regionIdTimestamp: Long, encodedName: String)
+case class RegionName(tableName: String, startKey: String, regionIdTimestamp: Long, encodedName: String) {
+
+}
+
 object RegionName {
   /**
    * Region name in HBase is composed of "<tableName>,<startKey>,<regionIdTimestamp>.<encodedName>."
@@ -111,5 +117,16 @@ object RegionName {
       regionIdTimestamp = regionIdTimestampAndEncodedName.head.toLong,
       encodedName = regionIdTimestampAndEncodedName.last
     )
+  }
+
+  implicit def regionNameWrites : Writes[RegionName] = new Writes[RegionName] {
+     def writes(rn: RegionName) = {
+      toJson(JsObject(Seq(
+        "tableName" -> toJson(rn.tableName),
+        "startKey" -> toJson(rn.startKey),
+        "regionIdTimestamp" -> toJson(rn.regionIdTimestamp),
+        "encodedName" -> toJson(rn.encodedName)
+      )))
+    }
   }
 }

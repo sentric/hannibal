@@ -8,32 +8,51 @@ import java.util.Date
  */
 object MetricUtil {
 
-  def findLongestCompactionInLastWeek(regionName:String) : (Long, Date) = {
+  def findLongestCompactionInLastWeek(regionName:String) : Option[(Long, Date)] = {
     findLongestCompactionInLastWeek(MetricDef.COMPACTIONS(regionName))
   }
 
-  def findLongestCompactionInLastWeek(metricDef:MetricDef) : (Long, Date) = {
-    val metric = metricDef.metric(MetricDef.now()-1000*3600*24*7, MetricDef.now())
-    var begin = metric.begin;
-    var max = 0L;
+  def findLongestCompactionInLastWeek(metricDef:MetricDef) : Option[(Long, Date)] = {
+    var timestamp = MetricDef.now()-1000*3600*24*7;
+    val metric = metricDef.metric(timestamp, MetricDef.now())
+    var result:(Long, Date) = (0L, null)
+
     metric.values.foreach { record =>
       if(record.v > 0)
-        begin = record.ts
-      else
-        max = scala.math.max(max, record.ts - begin)
-    }
-    (max, new Date(begin))
-  }
-
-  def findLongestCompactionInLastWeek() : (Long, Date, String) = {
-    val metrics = MetricDef.findByName(MetricDef.COMPACTIONS)
-    var result = (0L, new Date(), "")
-    metrics.foreach { metricDef =>
-      val longest = findLongestCompactionInLastWeek(metricDef)
-      if(longest._1 > result._1) {
-        result = (longest._1, longest._2, metricDef.targetDesc)
+        timestamp = record.ts
+      else {
+        val duration = record.ts - timestamp
+        if(duration > result._1) {
+          result = (duration, new Date(timestamp))
+        }
       }
     }
-    result
+
+    if(result._1 > 0L) {
+      Some(result)
+    } else {
+      None
+    }
+  }
+
+  def findLongestCompactionInLastWeek() : Option[(Long, Date, String)] = {
+    val metrics = MetricDef.findByName(MetricDef.COMPACTIONS)
+    var result:(Long, Date, String) = (0L, null, "")
+
+    metrics.foreach { metricDef =>
+      findLongestCompactionInLastWeek(metricDef) match {
+        case Some(longestCompaction) =>
+          if(longestCompaction._1 > result._1) {
+            result = (longestCompaction._1, longestCompaction._2, metricDef.targetDesc)
+          }
+        case None =>
+      }
+    }
+
+    if(result._1 > 0L) {
+      Some(result)
+    } else {
+      None
+    }
   }
 }

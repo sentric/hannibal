@@ -4,7 +4,6 @@ package models
 * Copyright 2013 Sentric. See LICENSE for details.
 */
 
-import models.MetricDef
 import org.specs2.mutable._
 import play.api.test._
 import play.api.test.Helpers._
