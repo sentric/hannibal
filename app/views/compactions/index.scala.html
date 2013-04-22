@@ -1,4 +1,4 @@
-@(longestCompaction: (Long, java.util.Date, String))(implicit request: play.api.mvc.Request[Any])
+@(longestCompactionString:String)(implicit request: play.api.mvc.Request[Any])
 
 @import java.text.DateFormat
 
@@ -19,7 +19,7 @@
           <div class="content">
               <ul>
                   <li>Longest Compaction during last 24 Hours: <span class="longest-compaction">-please wait-</span></li>
-                  <li>Longest Compaction during last 7 Days: <span><b>@(longestCompaction._1/1000.0)s</b> at @(DateFormat.getInstance().format(longestCompaction._2)) on <a href='@routes.Regions.show(longestCompaction._3)'>on Region</a></span></li>
+                  <li>Longest Compaction during last 7 Days: <span>@Html(longestCompactionString)</span></li>
               </ul>
           </div>
           <div>

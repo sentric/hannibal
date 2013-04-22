@@ -15,6 +15,8 @@ import play.api.libs.concurrent.Akka
 import play.api.Play.current
 import models.{Table, Metric, MetricDef}
 import utils.MetricUtil
+import java.util.Date
+import java.text.DateFormat
 
 object Regions extends Controller {
 
@@ -37,7 +39,14 @@ object Regions extends Controller {
         else {
       	  val info = region.getRegionInfo()
           val table = Table.findByName(region.tableName)
-          Ok(views.html.regions.show(region, info, table, MetricUtil.findLongestCompactionInLastWeek(region.regionName)))
+          val longestCompactionString = MetricUtil.findLongestCompactionInLastWeek(region.regionName) match {
+            case Some(longestCompaction) =>
+              "%.1fs at %s".format(longestCompaction._1/1000.0, DateFormat.getInstance().format(longestCompaction._2))
+            case None =>
+              "None"
+          }
+
+          Ok(views.html.regions.show(region, info, table, longestCompactionString))
         }
       }
     }
