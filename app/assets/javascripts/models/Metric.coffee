@@ -55,6 +55,8 @@ class @Metric extends Backbone.Model
     pointValue = @getPrevValue()
 
     _.range(begin, end + step, step).map((ts) =>
+      # NOTE: this is actually not quite correct, but ensures we don't leave out any data.
+      #       correct way would be to use a while-loop (like Hannibal Mobile) and use some kind of smoothing
       if(pointIndex < values.length - 1 && ts > Math.round(values[pointIndex+1].ts / 1000))
         pointIndex = pointIndex + 1
         pointValue = values[pointIndex].v
