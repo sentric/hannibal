@@ -57,13 +57,12 @@ class MetricsSpec extends Specification  {
           val result = routeAndCall(FakeRequest(GET, "/metrics/.json?metric=compactions")).get.asInstanceOf[AsyncResult].result.value
           status(result.get) must equalTo(200)
 
-          contentAsString(result.get) must contain("\"values\":[{\"ts\":%d,\"v\":%.1f},{\"ts\":%d,\"v\":%.1f}],\"prevValue\":%.1f,\"isEmpty\":false,\"targetDesc\":\"%s\"".format(
+          contentAsString(result.get) must contain("\"values\":[{\"ts\":%d,\"v\":%.1f},{\"ts\":%d,\"v\":%.1f}],\"prevValue\":%.1f,\"isEmpty\":false".format(
             anchor - 2000,
-            0.0,
-            anchor - 1000,
             1.0,
+            anchor - 1000,
             0.0,
-            RegionName(region).tableName
+            0.0
           ))
         }
       }
