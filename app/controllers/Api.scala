@@ -42,7 +42,7 @@ object Api extends Controller {
   private def regionBalance = {
     var max = "none" -> 0.0;
     var min = "none" -> Double.MaxValue;
-    var stdDeriv = 0.0;
+    var stdDev = 0.0
 
     RegionUtil.regionSizes.foreach { entry =>
       if(entry._2 > max._2) {
@@ -59,7 +59,7 @@ object Api extends Controller {
         "min_size" -> toJson(min._2),
         "max_host" -> toJson(max._1),
         "max_size" -> toJson(max._2),
-        "std_deriv" -> toJson(stdDeriv)
+        "std_dev" -> toJson(stdDev)
       ))
     } else {
       toJson("none")
@@ -69,7 +69,7 @@ object Api extends Controller {
   private def regionSize = {
     var max = "none" -> 0.0;
     var min = "none" -> Double.MaxValue;
-    var stdDeriv = "none" -> 0.0;
+    var stdDev = "none" -> 0.0;
 
     RegionUtil.regionStatisticsByTable.foreach { entry =>
       val table = entry._1
@@ -80,8 +80,8 @@ object Api extends Controller {
       if(values._2 < min._2) {
         min = (table, values._2)
       }
-      if(values._3 > stdDeriv._2) {
-        stdDeriv = (table, values._3)
+      if(values._3 > stdDev._2) {
+        stdDev = (table, values._3)
       }
     }
     if (max._2 > 0 && min._2 < Int.MaxValue) {
@@ -90,8 +90,8 @@ object Api extends Controller {
         "min_size" -> toJson(min._2),
         "max_table" -> toJson(max._1),
         "max_size" -> toJson(max._2),
-        "std_deriv_table" -> toJson(stdDeriv._1),
-        "std_deriv_value" -> toJson(stdDeriv._2)
+        "std_dev_table" -> toJson(stdDev._1),
+        "std_dev_value" -> toJson(stdDev._2)
       ))
     } else {
       toJson("none")
