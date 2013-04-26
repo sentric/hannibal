@@ -5,6 +5,10 @@
 import models._
 import models.hbase.HBaseContext
 import play.api._
+import play.api.mvc._
+import play.api.mvc.Results._
+import play.core.StaticApplication
+import play.db.DB
 import play.libs.Akka
 import akka.util.duration._
 import akka.actor.Props

@@ -12,19 +12,19 @@ import org.apache.hadoop.hbase.{HRegionInfo, HRegionLocation, HServerLoad}
 import play.api.libs.concurrent.Promise
 import play.api.libs.concurrent.Akka
 import play.api.Play.current
-import org.codehaus.jackson.annotate.JsonIgnore
+import org.codehaus.jackson.annotate.{JsonIgnoreProperties, JsonIgnore}
 import play.api.libs.json.{JsObject, Writes}
 import play.api.libs.json.Json._
 import play.api.mvc._
 import globals.hBaseContext
 import models.hbase.RegionServer
 
-case class Region(private val regionServer:RegionServer,  private val regionLoad:HServerLoad.RegionLoad) {
+@JsonIgnoreProperties(Array("parsedRegionName", "regionServer", "regionLoad"))
+case class Region(val regionServer:RegionServer,  val regionLoad:HServerLoad.RegionLoad) {
 
   val regionName = regionLoad.getNameAsString()
 
-  @JsonIgnore
-  private val parsedRegionName = RegionName(regionName)
+  val parsedRegionName = RegionName(regionName)
 
   val serverName        = regionServer.serverName
   val serverHostName    = regionServer.hostName
@@ -36,9 +36,9 @@ case class Region(private val regionServer:RegionServer,  private val regionLoad
   val storefileSizeMB   = regionLoad.getStorefileSizeMB()
   val memstoreSizeMB    = regionLoad.getMemStoreSizeMB()
 
-  val tableName         = RegionName(regionName).tableName
-  val startKey          = RegionName(regionName).startKey
-  val regionIdTimestamp = RegionName(regionName).regionIdTimestamp
+  val tableName         = parsedRegionName.tableName
+  val startKey          = parsedRegionName.startKey
+  val regionIdTimestamp = parsedRegionName.regionIdTimestamp
 
   def getRegionInfo() = {
     var loc:HRegionLocation = null;
