@@ -5,9 +5,10 @@
 package models.hbase090
 
 import scala.collection.JavaConversions._
+import models.hbase.{HBase, RegionServer}
 
-class HBase090 extends models.HBase {
-  override def eachRegionServer(functionBlock: (models.RegionServer) => Unit) = {
+class HBase090 extends HBase {
+  override def eachRegionServer(functionBlock: (RegionServer) => Unit) = {
     withAdmin { hbaseAdmin =>
       val status = hbaseAdmin.getClusterStatus()
       val serverInfos = status.getServerInfo()
@@ -16,6 +17,4 @@ class HBase090 extends models.HBase {
       }
     }
   }
-
-  override val logFileParser = new LogFileParser090
 }

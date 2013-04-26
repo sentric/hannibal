@@ -7,12 +7,13 @@ package models
 import collection.mutable.ListBuffer
 import org.apache.hadoop.hbase.util.Bytes
 import org.apache.hadoop.hbase.HTableDescriptor
+import globals.hBaseContext
 
 object Table {
 
   def all(): Seq[Table] = {
     val list = new ListBuffer[Table]()
-    HBase.eachTableDescriptor { desc =>
+    hBaseContext.hBase.eachTableDescriptor { desc =>
       list += Table(desc)
     }
     list.toList
@@ -20,7 +21,7 @@ object Table {
 
   def findByName(name: String): Table = {
     var desc:HTableDescriptor = null
-    HBase.withAdmin { admin =>
+    hBaseContext.hBase.withAdmin { admin =>
       desc = admin.getTableDescriptor(Bytes.toBytes(name))
     }
     if(desc != null)
