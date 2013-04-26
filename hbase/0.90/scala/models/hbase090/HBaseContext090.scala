@@ -1,4 +1,4 @@
-package models.hbase092
+package models.hbase090
 
 import models.hbase.{HBase, HBaseContext}
 

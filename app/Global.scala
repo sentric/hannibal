@@ -2,8 +2,6 @@
  * Copyright 2013 Sentric. See LICENSE for details.
  */
 
-import models.hbase092.HBaseContext092
-import scala.Predef.Class
 import models._
 import models.hbase.HBaseContext
 import play.api._
@@ -11,19 +9,18 @@ import play.libs.Akka
 import akka.util.duration._
 import akka.actor.Props
 import actors.UpdateMetricsActor
-import scala.Predef.Class
-import scala.reflect.New
 import scala.Some
 
 object Global extends GlobalSettings {
 
   override def onStart(app: Application) {
 
-    var hBaseContextClass= Class.forName("models.hbase092.HBaseContext092")
-    if (hBaseContextClass == null) {
-      hBaseContextClass = Class.forName("models.hbase090.HBaseContext090")
+    try {
+      globals.hBaseContext  = Class.forName("models.hbase092.HBaseContext092").newInstance.asInstanceOf[HBaseContext]
+    } catch {
+      case e: java.lang.ClassNotFoundException =>
+        globals.hBaseContext  = Class.forName("models.hbase090.HBaseContext090").newInstance.asInstanceOf[HBaseContext]
     }
-    globals.hBaseContext = hBaseContextClass.newInstance.asInstanceOf[HBaseContext]
 
     if (app.mode != Mode.Test) {
       Logger.info("Application has started in " + app.mode + "-Mode with " + globals.hBaseContext.toString + ", starting Update-Metrics-Actor")
@@ -54,5 +51,5 @@ object Global extends GlobalSettings {
 }
 
 package object globals {
-  var hBaseContext: HBaseContext = null;// = new HBaseContext092()
+  var hBaseContext: HBaseContext = null;
 }
