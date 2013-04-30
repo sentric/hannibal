@@ -7,32 +7,22 @@ import java.util.Date
  * Copyright 2013 Sentric. See LICENSE for details.
  */
 object RegionUtil {
+  case class TableSizeStatistics(var min:Double, var max:Double, var stdDev:Double)
 
-  def regionStatisticsByTable:Map[String, (Double, Double, Double)] = {
-    var sizes = new scala.collection.mutable.HashMap[String, (Double, Double, Double)]();
-    Region.all.foreach { region =>
-      if(!sizes.contains(region.tableName)) {
-        sizes += (region.tableName -> (Double.MaxValue, 0.0, 0.0))
-      }
-      val old = sizes(region.tableName)
-      sizes(region.tableName) = (
-        math.min(old._1, region.storefileSizeMB),
-        math.max (old._2, region.storefileSizeMB), 0.0)
+  def regionStatisticsByTable:Map[String, TableSizeStatistics] = {
+    Region.all.groupBy(_.tableName).mapValues { regions =>
+      val sizes = regions.map(_.storefileSizeMB)
+      TableSizeStatistics(
+        sizes.min,
+        sizes.max,
+        stats.stdDev(sizes)
+      )
     }
-    sizes.toMap
   }
-
 
   def regionSizes:Map[String, Double] = {
-    var sizes = new scala.collection.mutable.HashMap[String, Double]();
-    Region.all.foreach { region =>
-      if(!sizes.contains(region.serverName)) {
-        sizes += (region.serverName -> 0.0)
-      }
-      sizes(region.serverName) = sizes(region.serverName) + region.storefileSizeMB
-      region.serverName
+    Region.all.groupBy(_.serverName).mapValues { regions =>
+      regions.map(_.storefileSizeMB).sum
     }
-    sizes.toMap
   }
-
 }

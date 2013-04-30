@@ -40,11 +40,13 @@ object Api extends Controller {
   }
 
   private def regionBalance = {
+    val regionSizes: Map[String, Double] = RegionUtil.regionSizes
+
     var max = "none" -> 0.0;
     var min = "none" -> Double.MaxValue;
-    var stdDev = 0.0
+    val stdDev = utils.stats.stdDevBy(regionSizes)(_._2)
 
-    RegionUtil.regionSizes.foreach { entry =>
+    regionSizes.foreach { entry =>
       if(entry._2 > max._2) {
         max = entry
       }
@@ -72,16 +74,16 @@ object Api extends Controller {
     var stdDev = "none" -> 0.0;
 
     RegionUtil.regionStatisticsByTable.foreach { entry =>
-      val table = entry._1
-      val values = entry._2
-      if(values._2 > max._2) {
-        max = (table, values._2)
+      val (table, stats) = entry
+
+      if(stats.max > max._2) {
+        max = (table, stats.max)
       }
-      if(values._2 < min._2) {
-        min = (table, values._2)
+      if(stats.min < min._2) {
+        min = (table, stats.min)
       }
-      if(values._3 > stdDev._2) {
-        stdDev = (table, values._3)
+      if(stats.stdDev > stdDev._2) {
+        stdDev = (table, stats.stdDev)
       }
     }
     if (max._2 > 0 && min._2 < Int.MaxValue) {
