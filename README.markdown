@@ -163,4 +163,4 @@ With help from:
  [Vadim Kisselmann]: https://twitter.com/vkisselmann
  [Alexandre Normand]: https://github.com/alexandre-normand
 
-[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/ed9e66b101612798e3e015369f86b502 "githalytics.com")](http://githalytics.com/sentric/hannibal)
+[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/51d84bade798b5b08bd69a6704be9315 "githalytics.com")](http://githalytics.com/sentric/hannibal)
