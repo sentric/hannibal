@@ -133,7 +133,14 @@ out.
 
 Hannibal is released under MIT License, see [LICENSE][] for details.
 
- [LICENSE]: https://github.com/sentric/hannibal/blob/master/LICENSE
+ [LICENSE]: https://github.com/sentric/hannibal/blob/master/LICENSE      
+ 
+## Contact
+
+You can subscribe to the [Hannibal][] mailing list as well as follow the [Hannibal App][] Twitter Account.        
+
+[Hannibal App]: https://twitter.com/Hannibal_App            
+[Hannibal]: https://groups.google.com/forum/#!forum/hannibal-app
 
 ## Contributors
 
