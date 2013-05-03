@@ -33,7 +33,7 @@ Hannibal currently supports HBase versions 0.90 to 0.94. Be sure to set the envi
 ## Video Tutorial
 
 There is also a tutorial video on [YouTube][yt], that shows how to install and use Hannibal for HBase 0.90.
-[yt]: http://www.youtube.com/watch?v=I4Kto41a5kE&hd=1
+[yt]: http://www.youtube.com/watch?v=gu0lGAf7JO8
 
 ## Quickstart
 
