@@ -124,20 +124,15 @@ More information about the tool can be found in the [Wiki][]
 
  [Wiki]: https://github.com/sentric/hannibal/wiki
 
-## Additional Features
-
-If you need additional features please get in [touch with us](http://sentric.ch/contact), maybe we can work something
-out.
-
 ## License
 
 Hannibal is released under MIT License, see [LICENSE][] for details.
 
  [LICENSE]: https://github.com/sentric/hannibal/blob/master/LICENSE      
  
-## Contact
+## Contact   
 
-You can subscribe to the [Hannibal][] mailing list as well as follow the [Hannibal App][] Twitter Account.        
+If you need additional features or help please get in touch with us. Subscribe to the [Hannibal][] mailing list or follow [Hannibal App][] on Twitter.
 
 [Hannibal App]: https://twitter.com/Hannibal_App            
 [Hannibal]: https://groups.google.com/forum/#!forum/hannibal-app
