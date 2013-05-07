@@ -33,7 +33,7 @@ Hannibal currently supports HBase versions 0.90 to 0.94. Be sure to set the envi
 ## Video Tutorial
 
 There is also a tutorial video on [YouTube][yt], that shows how to install and use Hannibal for HBase 0.90.
-[yt]: http://www.youtube.com/watch?v=I4Kto41a5kE&hd=1
+[yt]: http://www.youtube.com/watch?v=gu0lGAf7JO8
 
 ## Quickstart
 
@@ -124,16 +124,18 @@ More information about the tool can be found in the [Wiki][]
 
  [Wiki]: https://github.com/sentric/hannibal/wiki
 
-## Additional Features
-
-If you need additional features please get in [touch with us](http://sentric.ch/contact), maybe we can work something
-out.
-
 ## License
 
 Hannibal is released under MIT License, see [LICENSE][] for details.
 
- [LICENSE]: https://github.com/sentric/hannibal/blob/master/LICENSE
+ [LICENSE]: https://github.com/sentric/hannibal/blob/master/LICENSE      
+ 
+## Contact   
+
+If you need additional features or help please get in touch with us. Subscribe to the [Hannibal][] mailing list or follow [Hannibal App][] on Twitter.
+
+[Hannibal App]: https://twitter.com/Hannibal_App            
+[Hannibal]: https://groups.google.com/forum/#!forum/hannibal-app
 
 ## Contributors
 
@@ -156,4 +158,4 @@ With help from:
  [Vadim Kisselmann]: https://twitter.com/vkisselmann
  [Alexandre Normand]: https://github.com/alexandre-normand
 
-[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/ed9e66b101612798e3e015369f86b502 "githalytics.com")](http://githalytics.com/sentric/hannibal)
+[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/51d84bade798b5b08bd69a6704be9315 "githalytics.com")](http://githalytics.com/sentric/hannibal)
