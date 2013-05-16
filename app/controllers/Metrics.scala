@@ -46,6 +46,7 @@ object Metrics extends Controller {
     }
   }
 
+  // Never Called?
   def showJson(target: String, metricName: String) = Action { implicit request =>
     val until = MetricDef.now()
     val since = until - (if (request.queryString.contains("range")) request.queryString("range")(0).toLong else 1000 * 60 * 60 * 24)

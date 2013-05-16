@@ -33,7 +33,8 @@ object Table {
   def apply(wrapped: HTableDescriptor): Table = Table(
     name = Bytes.toString(wrapped.getName()),
     maxFileSize = wrapped.getMaxFileSize(),
-    memstoreFlushSize = wrapped.getMemStoreFlushSize()
+    memstoreFlushSize = wrapped.getMemStoreFlushSize(),
+    color = Palette.getColor(Bytes.toString(wrapped.getName())).toInt
   )
   
   def getTableColors(): Map[String, String] = {
@@ -44,4 +45,4 @@ object Table {
   }
 }
 
-case class Table(name:String, maxFileSize:Long, memstoreFlushSize:Long)
+case class Table(name:String, maxFileSize:Long, memstoreFlushSize:Long, color:Int)

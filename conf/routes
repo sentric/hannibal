@@ -30,4 +30,5 @@ GET     /assets/img/glyphicons-halflings-white.png                  controllers.
 GET     /assets/*file                                               controllers.Assets.at(path="/public", file)
 
 GET     /api/heartbeat                                              controllers.Api.heartbeat()
+GET     /api/tables                                                 controllers.Api.tables()
 GET     /api/dashboard                                              controllers.Api.dashboard()

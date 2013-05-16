@@ -6,7 +6,7 @@ package controllers
 import play.api.mvc._
 import play.api.libs.json.Json._
 import utils.{RegionUtil, MetricUtil}
-import models.{Region, MetricDef, RegionName}
+import models.{Table, Region, MetricDef, RegionName}
 
 object Api extends Controller {
 
@@ -14,6 +14,12 @@ object Api extends Controller {
     Ok(stringify(toJson(Map(
       "status" -> toJson("OK")
     )))).as("application/json")
+  }
+
+  def tables = Action { implicit request =>
+   Ok(com.codahale.jerkson.Json.generate(
+     Table.all
+   )).as("application/json")
   }
 
   def dashboard = Action { implicit request =>
