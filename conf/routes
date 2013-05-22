@@ -15,13 +15,8 @@ GET     /tables/:tableName                                          controllers.
 
 GET     /regions                                                    controllers.Regions.index()
 GET     /regions/                                                   controllers.Regions.index()
-GET     /regions/.json                                              controllers.Regions.listJson()
 GET     /regions/:regionName                                        controllers.Regions.redirectToShow(regionName : String)
 GET     /regions/:regionName/                                       controllers.Regions.show(regionName : String)
-
-GET     /metrics/.json                                              controllers.Metrics.listJson()
-GET     /metrics/byTarget/:target/.json                             controllers.Metrics.listByTargetJson(target : String)
-GET     /metrics/byTarget/:target/:metric/.json                     controllers.Metrics.showJson(target : String, metric: String)
 
 # Bootstrap image assets (they're references as url('../img/$name.png') in bootstrap.css)
 GET     /assets/img/glyphicons-halflings.png                        controllers.Assets.at(path="/public", file="images/glyphicons-halflings.png")
@@ -29,6 +24,9 @@ GET     /assets/img/glyphicons-halflings-white.png                  controllers.
 # Assets from /public folder
 GET     /assets/*file                                               controllers.Assets.at(path="/public", file)
 
+# JSon API
 GET     /api/heartbeat                                              controllers.Api.heartbeat()
 GET     /api/tables                                                 controllers.Api.tables()
-GET     /api/dashboard                                              controllers.Api.dashboard()
+GET     /api/regions                                                controllers.Api.regions()
+GET     /api/metrics                                                controllers.Api.metrics()
+GET     /api/metrics/byTarget/:target                               controllers.Api.metricsByTarget(target : String)

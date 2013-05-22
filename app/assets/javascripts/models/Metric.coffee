@@ -2,9 +2,7 @@
 
 class @Metric extends Backbone.Model
   url: ->
-    Routes.Metric.showJson
-      target: @get('target')
-      name: @getName()
+    throw "not supported"
 
   getName: ->
     @get('name')
@@ -72,14 +70,14 @@ class @Metrics extends Backbone.Collection
 
   @byTargetAndNames: (target, names) ->
     metrics = new Metrics([])
-    metrics.url = Routes.Metrics.listByTargetJson
+    metrics.url = Routes.Api.metricsByTarget
       target: target
       metric: names
     metrics
 
   @byNames: (names) ->
     metrics = new Metrics([])
-    metrics.url = Routes.Metrics.listJson
+    metrics.url = Routes.Api.metrics
       metric: names
     metrics
 

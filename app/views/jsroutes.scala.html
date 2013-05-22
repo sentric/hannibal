@@ -14,13 +14,14 @@
         },
         Regions: {
             index: route("@routes.Regions.index()"),
-            show: route("@routes.Regions.show("%name%")"),
-            listJson: route("@routes.Regions.listJson()")
+            show: route("@routes.Regions.show("%name%")")
         },
-        Metrics: {
-            listJson: route("@routes.Metrics.listJson()"),
-            listByTargetJson: route("@routes.Metrics.listByTargetJson("%target%")"),
-            showJson: route("@routes.Metrics.showJson("%target%", "%name%")")
+        Api: {
+            heartbeat: route("@routes.Api.heartbeat()"),
+            tables: route("@routes.Api.tables()"),
+            regions: route("@routes.Api.regions()"),
+            metrics: route("@routes.Api.metrics()"),
+            metricsByTarget: route("@routes.Api.metricsByTarget("%target%")")
         }
     }
 

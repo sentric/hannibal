@@ -5,7 +5,7 @@ class @Region extends Backbone.Model
     @get('storefileSizeMB') == 0
 
 class @Regions extends Backbone.Collection
-  url: Routes.Regions.listJson()
+  url: Routes.Api.regions()
   model: Region
 
   @sortFunctions =
@@ -24,7 +24,7 @@ class @Regions extends Backbone.Collection
 
   @byTable: (tableName) ->
     regions = new Regions([])
-    regions.url = Routes.Regions.listJson
+    regions.url = Routes.Api.regions
       table: tableName
     regions
 
