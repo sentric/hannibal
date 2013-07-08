@@ -55,7 +55,7 @@ Please note that history data about regions is only collected while the applicat
 For information about the usage, check out [the Usage page on our Wiki][Wiki-Usage].
 
  [Wiki-Usage]: https://github.com/sentric/hannibal/wiki/Usage
- [Release-Page]: https://github.com/sentric/hannibal/releases/v.0.8.0
+ [Release-Page]: https://github.com/sentric/hannibal/releases/v.0.9.0
 
 ### Variant 2: From Source
 
