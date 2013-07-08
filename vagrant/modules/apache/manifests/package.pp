@@ -2,7 +2,7 @@ define apache::package(
     $target = "/opt",
     $version = "",
     $symlink = true,
-    $mirror = "http://mirror.switch.ch/mirror/apache/",
+    $mirror = "http://archive.apache.org/",
 ) {
     $folder = "${name}-${version}"
     $archive = "${folder}.tar.gz"
