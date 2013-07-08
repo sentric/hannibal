@@ -7,8 +7,9 @@ package models.hbase090
 import models.LogFile
 import java.util.regex._
 import java.util.Date
+import models.hbase.LogFileParser
 
-class LogFileParser090 extends models.LogFileParser {
+class LogFileParser090 extends LogFileParser {
 
   val COMPACTION = Pattern.compile(
     """^(.*) INFO (.*).HRegion: completed compaction on region (.*\.) after (.*)$""",

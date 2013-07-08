@@ -14,6 +14,8 @@ import collection.mutable.ListBuffer
 import scala.util.control.Breaks._
 import java.util.regex._
 import java.text.SimpleDateFormat
+import globals.hBaseContext
+import models.hbase.RegionServer
 
 case class LogFile(regionServer:RegionServer) {
 
@@ -119,7 +121,7 @@ object LogFile {
   def discoverLogFileUrlPattern = {
     var logFilePattern: String  = null
     breakable {
-      HBase.eachRegionServer {
+      globals.hBaseContext.hBase.eachRegionServer {
         regionServer =>
           val url = logRootUrl(regionServer)
           val response = WS.url(url).get().value.get
@@ -144,7 +146,7 @@ object LogFile {
   def init():Boolean = {
     if (setLogLevelsOnStartup) {
       Logger.info("setting Loglevels for the Regionservers")
-      HBase.eachRegionServer {
+      hBaseContext.hBase.eachRegionServer {
         regionServer =>
           val url = logLevelUrl(regionServer)
           val response = WS.url(url).get().value.get
@@ -168,7 +170,7 @@ object LogFile {
 
   def all() = {
     val list = new ListBuffer[LogFile]()
-    HBase.eachRegionServer {
+    hBaseContext.hBase.eachRegionServer {
       regionServer =>
         list += LogFile(regionServer)
     }

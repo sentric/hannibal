@@ -2,10 +2,11 @@
  * Copyright 2013 Sentric. See LICENSE for details.
  */
 
-package models
+package models.hbase
 
 import java.util.Date
 import java.util.regex._
+import models.LogFile
 
 trait LogFileParser {
 

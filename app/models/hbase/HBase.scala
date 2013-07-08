@@ -2,7 +2,7 @@
  * Copyright 2013 Sentric. See LICENSE for details.
  */
 
-package models
+package models.hbase
 
 import scala.collection.JavaConversions._
 import org.apache.hadoop.hbase.client.{HBaseAdmin, HTable}
@@ -16,8 +16,6 @@ import org.apache.hadoop.hbase.util.Bytes
  */
 trait HBase {
   def eachRegionServer(functionBlock: (RegionServer) => Unit)
-
-  val logFileParser:LogFileParser
 
   def withHTable(tableName:String, functionBlock: (HTable) => Unit) = {
     val conf = HBaseConfiguration.create()

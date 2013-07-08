@@ -2,9 +2,7 @@
 
 class @Metric extends Backbone.Model
   url: ->
-    Routes.Metric.showJson
-      target: @get('target')
-      name: @getName()
+    throw "not supported"
 
   getName: ->
     @get('name')
@@ -55,6 +53,8 @@ class @Metric extends Backbone.Model
     pointValue = @getPrevValue()
 
     _.range(begin, end + step, step).map((ts) =>
+      # NOTE: this is actually not quite correct, but ensures we don't leave out any data.
+      #       correct way would be to use a while-loop (like Hannibal Mobile) and use some kind of smoothing
       if(pointIndex < values.length - 1 && ts > Math.round(values[pointIndex+1].ts / 1000))
         pointIndex = pointIndex + 1
         pointValue = values[pointIndex].v
@@ -70,14 +70,14 @@ class @Metrics extends Backbone.Collection
 
   @byTargetAndNames: (target, names) ->
     metrics = new Metrics([])
-    metrics.url = Routes.Metrics.listByTargetJson
+    metrics.url = Routes.Api.metricsByTarget
       target: target
       metric: names
     metrics
 
   @byNames: (names) ->
     metrics = new Metrics([])
-    metrics.url = Routes.Metrics.listJson
+    metrics.url = Routes.Api.metrics
       metric: names
     metrics
 

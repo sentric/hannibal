@@ -2,7 +2,8 @@
  * Copyright 2013 Sentric. See LICENSE for details.
  */
 
-import models.{HBase, LogFile, Compaction, MetricDef}
+import models._
+import models.hbase.HBaseContext
 import play.api._
 import play.api.mvc._
 import play.api.mvc.Results._
@@ -12,21 +13,29 @@ import play.libs.Akka
 import akka.util.duration._
 import akka.actor.Props
 import actors.UpdateMetricsActor
+import scala.Some
 
 object Global extends GlobalSettings {
 
   override def onStart(app: Application) {
 
-    if(app.mode != Mode.Test) {
-      Logger.info("Application has started in "+app.mode+"-Mode, starting Update-Metrics-Actor")
+    try {
+      globals.hBaseContext  = Class.forName("models.hbase092.HBaseContext092").newInstance.asInstanceOf[HBaseContext]
+    } catch {
+      case e: java.lang.ClassNotFoundException =>
+        globals.hBaseContext  = Class.forName("models.hbase090.HBaseContext090").newInstance.asInstanceOf[HBaseContext]
+    }
+
+    if (app.mode != Mode.Test) {
+      Logger.info("Application has started in " + app.mode + "-Mode with " + globals.hBaseContext.toString + ", starting Update-Metrics-Actor")
 
       LogFile.configure(
         setLogLevelsOnStartup = app.configuration.getBoolean("compactions.set-loglevels-on-startup") == Some(true),
         logLevelUrlPattern = app.configuration.getString("compactions.loglevel-url-pattern").get,
         logFilePathPattern = app.configuration.getString("compactions.logfile-path-pattern").get,
         logFileDateFormat = app.configuration.getString("compactions.logfile-date-format").get,
-        logFetchTimeout =  app.configuration.getInt("compactions.logfile-fetch-timeout-in-seconds").get,
-        initialLookBehindSizeInKBs =  app.configuration.getInt("compactions.logfile-initial-look-behind-size-in-kb").get
+        logFetchTimeout = app.configuration.getInt("compactions.logfile-fetch-timeout-in-seconds").get,
+        initialLookBehindSizeInKBs = app.configuration.getInt("compactions.logfile-initial-look-behind-size-in-kb").get
       )
 
       val updateMetricsActor = Akka.system.actorOf(Props[UpdateMetricsActor], name = "updateMetricsActor")
@@ -35,7 +44,7 @@ object Global extends GlobalSettings {
       Akka.system.scheduler.schedule(90 seconds, 1 days, updateMetricsActor, UpdateMetricsActor.CLEAN_OLD_METRICS)
 
     } else {
-      Logger.info("Application has started in "+app.mode+"\"-Mode, do not start Update-Metrics-Actor")
+      Logger.info("Application has started in " + app.mode + "\"-Mode, do not start Update-Metrics-Actor")
     }
   }
 
@@ -43,4 +52,8 @@ object Global extends GlobalSettings {
     Logger.info("Application shutdown...")
   }
 
+}
+
+package object globals {
+  var hBaseContext: HBaseContext = null;
 }

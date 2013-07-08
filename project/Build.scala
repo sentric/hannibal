@@ -34,7 +34,7 @@ object ApplicationBuild extends Build {
     })
 
     val appResolvers = Seq(
-    ) 
+    )
     
     val projectSettings = Seq( 
       ivyXML :=

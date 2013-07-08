@@ -12,4 +12,6 @@ case class Color(red: Float, green: Float, blue: Float) {
   def greenInt: Int = (green * 255).round
 
   def toHtmlCode = "#%02x%02x%02x".format(redInt, blueInt, greenInt)
+
+  def toInt = (redInt << 16) | (blueInt << 8) | greenInt
 }

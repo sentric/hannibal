@@ -2,7 +2,7 @@
  * Copyright 2013 Sentric. See LICENSE for details.
  */
 
-package models
+package models.hbase
 
 import org.apache.hadoop.hbase.{HServerLoad, HServerInfo}
 import org.apache.hadoop.hbase.HServerLoad.RegionLoad

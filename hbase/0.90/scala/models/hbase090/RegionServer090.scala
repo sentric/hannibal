@@ -7,8 +7,9 @@ package models.hbase090
 import org.apache.hadoop.hbase.HServerLoad.RegionLoad
 import org.apache.hadoop.hbase.HServerInfo
 import scala.collection.JavaConversions._
+import models.hbase.RegionServer
 
-class RegionServer090(val serverInfo: HServerInfo) extends models.RegionServer {
+class RegionServer090(val serverInfo: HServerInfo) extends RegionServer {
   override def serverName = {
     serverInfo.getServerName
   }
