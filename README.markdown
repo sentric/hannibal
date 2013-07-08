@@ -2,8 +2,7 @@
 
  [Hannibal-Logo]: https://github.com/sentric/hannibal/blob/master/public/images/hannibal-logo-large-white.png?raw=true
 
-Hannibal is a tool to help monitor and maintain [HBase][]-Clusters that are configured for
-[manual splitting][].
+Hannibal is a tool to help monitor and maintain [HBase][]-Clusters that are configured for [manual splitting][].
 
  [HBase]: http://hbase.apache.org
  [manual splitting]: http://hbase.apache.org/book/important_configurations.html#disable.splitting
@@ -28,14 +27,37 @@ You will also need a browser with [SVG][]-Support to display Hannibal's graphs.
 
 ### HBase Compatibilty
 
-Hannibal currently supports HBase versions 0.90 to 0.94. Be sure to set the environment-variable HANNIBAL_HBASE_VERSION for your version, as described in the Quickstart-section. The Scala-sources are currently compiled with Apache HBase versions wherever possible, you can try to alter the version in project/Build.scala if you wish to.
-
-## Video Tutorial
-
-There is also a tutorial video on [YouTube][yt], that shows how to install and use Hannibal for HBase 0.90.
-[yt]: http://www.youtube.com/watch?v=gu0lGAf7JO8
+Hannibal currently supports HBase versions 0.90 to 0.94. The Scala-sources are currently compiled with Apache HBase versions wherever possible, you can try to alter the version in project/Build.scala if you wish to.
 
 ## Quickstart
+
+### Variant 1: From Binary Package
+
+ 1. Download and extract the package according to your HBase version. Grab the Download-URL for the correct HBase-Version from the [Release-Page][Release-Page] and extract it:
+
+        $ wget <URL-TO-PACKAGE>
+        $ tar -xf "hannibal-hbase*.tgz"
+        $ cd hannibal
+	
+ 2. Copy `conf/hbase-site.template.xml` to `conf/hbase-site.xml` and adjust it:
+
+ 		$ cp conf/hbase-site.template.xml conf/hbase-site.xml
+ 		$ vi conf/hbase-site.xml
+ 		
+ 3. Run the start script inside the root folder of the project:
+ 
+        $ ./start
+
+When the application has started, you can access the web UI at: <http://localhost:9000>
+
+Please note that history data about regions is only collected while the application is running, it will need to run for some time until the region detail graphs fill up. 
+
+For information about the usage, check out [the Usage page on our Wiki][Wiki-Usage].
+
+ [Wiki-Usage]: https://github.com/sentric/hannibal/wiki/Usage
+ [Release-Page]: https://github.com/sentric/hannibal/releases/v.0.8.0
+
+### Variant 2: From Source
 
  1. Grab the sources from github: 
  
@@ -46,7 +68,8 @@ There is also a tutorial video on [YouTube][yt], that shows how to install and u
 
         $ export HANNIBAL_HBASE_VERSION=0.92
     
-    Other possible values are "0.90" or "0.94"
+    Other possible values are "0.90" or "0.94". Be sure to always have this environment-variable set before executing any of the scripts: `build`, `start` or `sbt`. 
+
 
  3. Copy `conf/hbase-site.template.xml` to `conf/hbase-site.xml` and adjust it.
 
@@ -71,6 +94,9 @@ some time until the region detail graphs fill up.
 For information about the usage, check out [the Usage page on our Wiki][Wiki-Usage].
 
  [Wiki-Usage]: https://github.com/sentric/hannibal/wiki/Usage
+
+There is also a tutorial video on [YouTube][yt], that shows how to install and use Hannibal for HBase 0.90.
+[yt]: http://www.youtube.com/watch?v=gu0lGAf7JO8
 
 ## How to display compactions
 HBase 0.90.x's API doesn't allow you to query information on running compactions directly, so what we do is to parse
@@ -114,7 +140,7 @@ If this doesn't work for you, you should try to manually change the loglevel on 
 ## Deployment
 If you intend to run Hannibal on a different host from where you want to build it, then you can run
 
-build_package
+	./build_package
 
 This script generates a tgz-package inside the target folder, which you can then deploy on your target server. The HBase version can be set with the HANNIBAL_HBASE_VERSION environment variable, as described in the quickstart section.
 
