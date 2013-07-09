@@ -98,6 +98,17 @@ For information about the usage, check out [the Usage page on our Wiki][Wiki-Usa
 There is also a tutorial video on [YouTube][yt], that shows how to install and use Hannibal for HBase 0.90.
 [yt]: http://www.youtube.com/watch?v=gu0lGAf7JO8
 
+## Hannibal Mobile
+If you have an Android Device, you might be interested in the Mobile App. The App which can be downloaded from [Google Play][gp]. Further details can be found in the [Wiki][Wiki-Mobile].
+
+[gp]: https://play.google.com/store/apps/details?id=ch.ymc.hannibal.mobile
+[Wiki-Mobile]: https://github.com/sentric/hannibal/wiki/Mobile
+
+## Authentication 
+If you want to make Hannibal reachable from the Internet, it's recommended to put a web server in front of it that takes care of handling authentication. Instructions can be found [in the Wiki][auth]. 
+ 
+[auth]: https://github.com/sentric/hannibal/wiki/Auth
+
 ## How to display compactions
 HBase 0.90.x's API doesn't allow you to query information on running compactions directly, so what we do is to parse
 the RegionServers' log files directly, which are available through the service interface. HBase 0.92 allows you to query
