@@ -32,6 +32,8 @@ fi
 mkdir -p $temp_dir/hannibal/target
 cp -r $hannibal_dir/target/staged $temp_dir/hannibal/target
 cp -r $hannibal_dir/conf $temp_dir/hannibal
+cp $hannibal_dir/README.markdown $temp_dir/hannibal
+cp $hannibal_dir/LICENSE $temp_dir/hannibal
 
 echo "3. generting startscript ..."
 touch $temp_dir/hannibal/start
