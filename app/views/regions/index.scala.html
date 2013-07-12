@@ -4,7 +4,7 @@
 
 <ul>
 	@regionList.map { region =>
-	<li><a href="@routes.Regions.show(java.net.URLEncoder.encode(region.regionName, "UTF-8"))">@region.regionName</a></li> }
+	<li><a href="@routes.Regions.show(java.net.URLEncoder.encode(region.regionURI, "UTF-8"))">@region.regionName</a></li> }
 </ul>
 
 } { } {
