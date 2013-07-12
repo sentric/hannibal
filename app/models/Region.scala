@@ -22,7 +22,7 @@ import models.hbase.RegionServer
 @JsonIgnoreProperties(Array("parsedRegionName", "regionServer", "regionLoad"))
 case class Region(val regionServer:RegionServer,  val regionLoad:HServerLoad.RegionLoad) {
 
-  val regionName = regionLoad.getNameAsString()
+  val regionName = Bytes.toStringBinary(regionLoad.getName())
 
   val parsedRegionName = RegionName(regionName)
 
@@ -36,15 +36,22 @@ case class Region(val regionServer:RegionServer,  val regionLoad:HServerLoad.Reg
   val storefileSizeMB   = regionLoad.getStorefileSizeMB()
   val memstoreSizeMB    = regionLoad.getMemStoreSizeMB()
 
+  val parsedElements    = HRegionInfo.parseRegionName(regionLoad.getName())
+
   val tableName         = parsedRegionName.tableName
   val startKey          = parsedRegionName.startKey
   val regionIdTimestamp = parsedRegionName.regionIdTimestamp
+
+  // Kind ot regionName, without the startKey, to avoid strange routing issues.
+  // This might be safely used within URIs
+  val regionURI         = tableName + ",," + regionIdTimestamp + "." +
+                            parsedRegionName.encodedName
 
   def getRegionInfo() = {
     var loc:HRegionLocation = null;
     hBaseContext.hBase.withAdmin { admin =>
       val connection = admin.getConnection()
-      loc = connection.getRegionLocation(Bytes.toBytes(tableName), Bytes.toBytes(startKey), false)
+      loc = connection.getRegionLocation(Bytes.toBytes(tableName), parsedElements(1), false)
     }
     RegionInfo(loc.getRegionInfo())
   }
@@ -72,11 +79,15 @@ object Region {
   def findByNameAsync(regionName: String): Promise[Region] = {
     allAsync().map { infos =>
       infos.find { ri =>
-        ri.regionName == regionName
+        RegionName(ri.regionName) == RegionName(regionName)
       }.getOrElse(null)
     }
+
   }
-  def findByName(regionName: String): Region = findByNameAsync(regionName).value.get
+
+  def findByName(regionName: String): Region = {
+    findByNameAsync(regionName).value.get
+  }
 
   def forTableAsync(tableName: String): Promise[Seq[Region]] = {
     allAsync().map{ regions => regions.filter(_.tableName == tableName) }
@@ -86,8 +97,8 @@ object Region {
 
 
 case class RegionInfo(wrapped:HRegionInfo) {
-  def endKey() = Bytes.toString(wrapped.getEndKey())
-  def startKey() = Bytes.toString(wrapped.getStartKey())
+  def endKey() = Bytes.toStringBinary(wrapped.getEndKey())
+  def startKey() = Bytes.toStringBinary(wrapped.getStartKey())
   def version() = wrapped.getVersion()
   def regionId() = wrapped.getRegionId()
   def regionName() = wrapped.getRegionNameAsString()
@@ -95,6 +106,14 @@ case class RegionInfo(wrapped:HRegionInfo) {
 
 
 case class RegionName(tableName: String, startKey: String, regionIdTimestamp: Long, encodedName: String) {
+
+  override def equals(that: Any): Boolean =
+    that match {
+      case r: RegionName => r.encodedName == this.encodedName &&
+                              r.tableName == this.tableName &&
+                              r.regionIdTimestamp == this.regionIdTimestamp
+      case _ => false
+    }
 
 }
 
@@ -110,7 +129,7 @@ object RegionName {
     // Last comma separated components contains <regionIdTimestamp>.<encodedName>."
     // We only need the first two dot splitted components sicne the last one is empty
     // (note the dot at the end...)
-    val regionIdTimestampAndEncodedName = commaParts.last.split("\\.").view(0, 1)
+    val regionIdTimestampAndEncodedName = commaParts.last.split("\\.").view(0, 2)
 
     RegionName(
       tableName = commaParts.head,
