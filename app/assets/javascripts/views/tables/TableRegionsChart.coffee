@@ -11,7 +11,7 @@ class @TableRegionsChartView extends Backbone.View
   render: ->
     if @collection.isZeroLength()
       regions = @collection.reduce((memo, region) ->
-        "#{memo}<li><a href=\"#{Routes.Regions.show({name:region.get('regionName')})}\">#{region.get('regionName')}<a/></li>"
+        "#{memo}<li><a href=\"#{Routes.Regions.show({name:region.get('regionURI')})}\">#{region.get('regionName')}<a/></li>"
       , "" )
       @$el.html("The table #{@table.name} seems to have not any data yet, it contains the regions:<ul>#{regions}</ul>")
     else
@@ -79,7 +79,7 @@ class @TableRegionsChartView extends Backbone.View
       )
       onClick: (series) =>
         document.location.href = Routes.Regions.show
-          name: series.value.region.get('regionName')
+          name: series.value.region.get('regionURI')
 
     @graph.render()
 
