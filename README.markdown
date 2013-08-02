@@ -120,33 +120,51 @@ all in your setup, because your LogLevel is set too high.
 
 If you run into problems with the the compaction-metrics, you should check the following parameters in [conf/application.conf](blob/master/conf/application.conf).
 
-### 1. compactions.logfile-path-pattern
-The default of the logfile-path-pattern is 
+### 1. logfile.path-pattern
+The default of the `logfile.path-pattern` is 
 
-    compactions.logfile-path-pattern = "(?i)\"/logs/(.*regionserver.*[.].*)\""
+    logfile.path-pattern = "(?i)\"/logs/(.*regionserver.*[.].*)\""
  
 The defaults should work for most setups in distributed mode. For standalone mode you will need change the pattern to
 
-	compactions.logfile-path-pattern = (?i)\"/logs/(.*master.*[.].*)\"
+	logfile.path-pattern = (?i)\"/logs/(.*master.*[.].*)\"
 	
 If you are still unsure about the correct path-pattern, you can get a hint for the correct pattern by looking at your 
 log-listing ```http://<<some-regionserver>>:60030/logs/```.
 
-### 2. compactions.logfile-date-format
-The default logfile-date-format is 
+### 2. logfile.date-format
+The default `logfile.date-format` is 
 
-    compactions.logfile-date-format = "yyyy-MM-dd HH:mm:ss,SSS"
+    logfile.date-format = "yyyy-MM-dd HH:mm:ss,SSS"
 
 You can figure out the correct date-format by looking inside a logfile within your log-listing at ```http://<<some-regionserver>>:60030/logs/```
 
-### 3. compactions.set-loglevels-on-startup
+### 3. logfile.set-loglevels-on-startup
 Informations about compactions are logged by HBase with `INFO`-Level, so the log-level for your HBase-Regionservers need to be set at least to `INFO`.
 
-Hannibal can set the log level to `INFO` for you, just edit [conf/application.conf](blob/master/conf/application.conf)
+Hannibal can set the log level to `INFO` for you, just edit [conf/application.conf][]
 and set
 
-    compactions.set-loglevels-on-startup = true
+    logfile.set-loglevels-on-startup = true
 If this doesn't work for you, you should try to manually change the loglevel on your regionservers.
+
+
+## Tuning for large clusters
+Hannibal is not yet ready to be used on large clusters (say about more than 100 machines), however some work has been done (thanks to [Alexandre Normand][] and [churrodog][]) to make it at least possible to run it without crashing on mid-sized clusters. If Hannibal's performance is not sufficient with your HBase setup, it may help to tune the following parameters in [conf/application.conf][].
+
+### metrics.logfile-fetch-interval
+This defaults to 300 seconds and it defines how often logfiles are collected from the different region servers. This process is quite heavy and for big clusters you should consider either to increase the interval or to disable it altogether by setting it to `0`
+
+	metrics.logfile-fetch-interval = 0 # Disables compaction-metrics
+
+### metrics.regions-fetch-interval 
+This defaults to 60 seconds and you usually want to keep the update-interval high, because this way the UI will present you the most recent values and also will the region-history graph. However if you have many regions and it takes long to update the region metrics you may set this one to a value up to about 1800 (= 30 Minutes).
+
+	metrics.regions-fetch-interval = 600 # 10 Minutes
+
+### metrics.clean-threshold and metrics.clean-interval
+Old metrics are cleaned after one day by default and it makes sense since the region history graphs are presenting data up to one day. However if you have a very large number of regions and your H2 database just explodes you may consider to reduce them.
+
 
 ## Deployment
 If you intend to run Hannibal on a different host from where you want to build it, then you can run
@@ -186,6 +204,7 @@ With help from:
  * Ben Taylor
  * Stephanie Höhn
  * [Alexandre Normand][]
+ * [churrodog][]
 
  [Sentric]: http://www.sentric.ch
  [Nils Kübler]: https://twitter.com/nkuebler
@@ -194,5 +213,9 @@ With help from:
  [Christian Gügi]: https://twitter.com/chrisgugi
  [Vadim Kisselmann]: https://twitter.com/vkisselmann
  [Alexandre Normand]: https://github.com/alexandre-normand
+ [churrodog]: https://github.com/churrodog
 
 [![githalytics.com alpha](https://cruel-carlota.pagodabox.com/51d84bade798b5b08bd69a6704be9315 "githalytics.com")](http://githalytics.com/sentric/hannibal)
+
+[conf/application.conf]: blob/master/conf/application.conf
+

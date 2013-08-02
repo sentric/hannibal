@@ -4,20 +4,16 @@
 
 package models
 
-import play.Logger
-import scala.collection.mutable.ListBuffer
-import org.apache.hadoop.hbase.client.HBaseAdmin
 import org.apache.hadoop.hbase.util.Bytes
 import org.apache.hadoop.hbase.{HRegionInfo, HRegionLocation, HServerLoad}
-import play.api.libs.concurrent.Promise
-import play.api.libs.concurrent.Akka
-import play.api.Play.current
-import org.codehaus.jackson.annotate.{JsonIgnoreProperties, JsonIgnore}
+import org.codehaus.jackson.annotate.JsonIgnoreProperties
 import play.api.libs.json.{JsObject, Writes}
 import play.api.libs.json.Json._
-import play.api.mvc._
 import globals.hBaseContext
 import models.hbase.RegionServer
+import scala.collection.mutable.ListBuffer
+import play.api.Logger
+
 
 @JsonIgnoreProperties(Array("parsedRegionName", "regionServer", "regionLoad"))
 case class Region(val regionServer:RegionServer,  val regionLoad:HServerLoad.RegionLoad) {
@@ -34,7 +30,7 @@ case class Region(val regionServer:RegionServer,  val regionLoad:HServerLoad.Reg
   val storefiles        = regionLoad.getStorefiles()
   val stores            = regionLoad.getStores()
   val storefileSizeMB   = regionLoad.getStorefileSizeMB()
-  val memstoreSizeMB    = regionLoad.getMemStoreSizeMB()
+  val memstoreSizeMB    = 0
 
   val parsedElements    = HRegionInfo.parseRegionName(regionLoad.getName())
 
@@ -61,38 +57,48 @@ case class Region(val regionServer:RegionServer,  val regionLoad:HServerLoad.Reg
 
 object Region {
 
-  def allAsync(): Promise[Seq[Region]] = {
-    Akka.future { all() }
-  }
+  private var cache: Map[String, ListBuffer[Region]] = null
+
   def all(): Seq[Region] = {
-    val list = new ListBuffer[Region]()
-
-    hBaseContext.hBase.eachRegionServer { regionServer =>
-      regionServer.regionsLoad.foreach { regionLoad =>
-        list += Region(regionServer, regionLoad)
-      }
+    if(cache == null) {
+      Logger.error("Region Cache not yet ready!")
+      return List()
     }
 
-    list.toList
-  }
-
-  def findByNameAsync(regionName: String): Promise[Region] = {
-    allAsync().map { infos =>
-      infos.find { ri =>
-        RegionName(ri.regionName) == RegionName(regionName)
-      }.getOrElse(null)
-    }
-
+    var result = ListBuffer[Region]()
+    cache.values.foreach(listBuffer =>
+        result  ++= listBuffer.toList
+    )
+    result.toList
   }
 
   def findByName(regionName: String): Region = {
-    findByNameAsync(regionName).value.get
+    all().find( someRegion =>
+      RegionName(someRegion.regionName) == RegionName(regionName)
+    ).getOrElse(null)
   }
 
-  def forTableAsync(tableName: String): Promise[Seq[Region]] = {
-    allAsync().map{ regions => regions.filter(_.tableName == tableName) }
+  def forTable(tableName: String): List[Region] = {
+    if(cache == null) {
+      Logger.error("Region Cache not yet ready!")
+      return List()
+    }
+
+    cache.get(tableName).get.toList
   }
-  def forTable(tableName: String): Seq[Region] = forTableAsync(tableName).value.get
+
+  def updateCache() = {
+    var newCache = Map[String, ListBuffer[Region]]()
+    hBaseContext.hBase.eachRegionServer { regionServer =>
+      regionServer.regionsLoad.foreach { regionLoad =>
+        val region: Region = Region(regionServer, regionLoad)
+        var regions: ListBuffer[Region] = newCache.get(region.tableName).getOrElse(ListBuffer[Region]())
+        regions += region
+        newCache += region.tableName -> regions
+      }
+    }
+    cache = newCache
+  }
 }
 
 

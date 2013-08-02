@@ -36,7 +36,7 @@ object MetricDef {
 
   def find(target: String, name: String, targetDesc: String)  = {
     DB.withConnection { implicit c =>
-      val stream = SQL_FIND_METRIC.on("target" -> target, "name" -> name)()
+      val stream = SQL_FIND_METRIC.on("name" -> name, "target" -> target)()
 
       val truncatedTargetDesc = if(targetDesc.length > MAX_TARGET_DESC_LENGTH) {
         Logger.warn("truncating long region-name to %d characters".format(MAX_TARGET_DESC_LENGTH))
@@ -119,7 +119,7 @@ object MetricDef {
     FROM
       metric
     WHERE
-      target={target} AND name={name}
+      name={name} AND target={target}
   """)
 
   val SQL_INSERT_METRIC = SQL("""

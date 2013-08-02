@@ -5,11 +5,11 @@ package controllers
 
 import play.api.mvc._
 import play.api.libs.json.Json._
-import models.{MetricDef, Table}
-import com.codahale.jerkson.Json
-import play.api.libs.concurrent.Akka
+import models.{Region, MetricDef, Table}
+import play.api.libs.concurrent.{Promise, Akka}
 import com.codahale.jerkson.Json._
 import play.api.Play.current
+import scala.collection.mutable.ListBuffer
 
 object Api extends Controller {
 
@@ -28,16 +28,21 @@ object Api extends Controller {
   }
 
 
-  def regions = Action { implicit request =>
-    Async {
-      models.Region.allAsync.map { regionInfos =>
-        var filteredRegionInfos = regionInfos
-        if (request.queryString.contains("table"))
-          filteredRegionInfos = regionInfos.filter(i => request.queryString("table").contains(i.tableName))
-
-        Ok(Json.generate(filteredRegionInfos)).as("application/json")
+  def regions = Action {
+    implicit request =>
+      Async {
+        Akka.future {
+          var result = ListBuffer[Region]()
+          if (request.queryString.contains("table") ) {
+            request.queryString("table").foreach(table =>
+              result ++= models.Region.forTable(table).toList
+            )
+          } else {
+             result ++= models.Region.all().toList
+          }
+          Ok(generate(result.toList)).as("application/json")
+        }
       }
-    }
   }
 
   def metrics() = Action { implicit request =>
@@ -57,20 +62,22 @@ object Api extends Controller {
     }
   }
 
-  def metricsByTarget(target: String) = Action { implicit request =>
-    val until = MetricDef.now()
-    val since = until - (if (request.queryString.contains("range")) request.queryString("range")(0).toLong else 1000 * 60 * 60 * 24)
-    val metricNames = if (request.queryString.contains("metric")) request.queryString("metric") else MetricDef.ALL_REGION_METRICS
+  def metricsByTarget(target: String) = Action {
+    implicit request =>
+      val until = MetricDef.now()
+      val since = until - (if (request.queryString.contains("range")) request.queryString("range")(0).toLong else 1000 * 60 * 60 * 24)
+      val metricNames = if (request.queryString.contains("metric")) request.queryString("metric") else MetricDef.ALL_REGION_METRICS
 
-    Async {
-      Akka.future {
-        val metrics = metricNames.map { metricName =>
-          MetricDef.findRegionMetricDef(target, metricName).metric(since, until)
+      Async {
+        Akka.future {
+          val metrics = metricNames.map {
+            metricName =>
+              MetricDef.findRegionMetricDef(target, metricName).metric(since, until)
+          }
+
+          Ok(generate(metrics)).as("application/json")
         }
-
-        Ok(generate(metrics)).as("application/json")
       }
-    }
   }
 
 }

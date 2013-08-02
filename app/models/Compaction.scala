@@ -30,9 +30,9 @@ object Compaction {
         }
         catch {
           case e: java.util.concurrent.TimeoutException => throw new Exception("'" + e.getMessage()
-            + "' please try to increase compactions.logfile-fetch-timeout-in-seconds in application.conf")
+            + "' please try to increase logfile.fetch-timeout-in-seconds in application.conf")
           case e: java.text.ParseException => throw new Exception("'" + e.getMessage()
-            + "' please check compactions.logfile-date-format in application.conf");
+            + "' please check logfile.date-format in application.conf");
         }
     }
     resultList.toList

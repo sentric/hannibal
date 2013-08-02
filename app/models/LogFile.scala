@@ -5,7 +5,7 @@
 package models
 
 import collection.mutable
-import play.api.Logger
+import play.api.{Configuration, Logger}
 import play.api.libs.ws.{Response, WS}
 import play.api.libs.concurrent.NotWaiting
 import org.apache.commons.lang.StringUtils
@@ -94,7 +94,7 @@ case class LogFile(regionServer:RegionServer) {
 object LogFile {
 
   private var logFetchTimeout: Int = 5
-  private var initialLogLookBehindSizeInKBs: Long = 1024
+  private var initialLogLookBehindSizeInKBs: Int = 1024
   private var logFileUrlPattern: String = null
   private var logFilePathPattern: Pattern = null
   private var logLevelUrlPattern: String = null
@@ -104,18 +104,13 @@ object LogFile {
 
   val NEWLINE = "\n".getBytes("UTF-8")(0)
 
-  def configure(setLogLevelsOnStartup: Boolean = false,
-                logLevelUrlPattern: String = null,
-                logFilePathPattern: String = null,
-                logFileDateFormat: String = null,
-                logFetchTimeout: Int = 5,
-                initialLookBehindSizeInKBs: Long = 1024) = {
-    this.setLogLevelsOnStartup = setLogLevelsOnStartup
-    this.logLevelUrlPattern = logLevelUrlPattern
-    this.logFilePathPattern = Pattern.compile(logFilePathPattern)
-    this.logFileDateFormat = new java.text.SimpleDateFormat(logFileDateFormat)
-    this.logFetchTimeout = logFetchTimeout
-    this.initialLogLookBehindSizeInKBs = initialLogLookBehindSizeInKBs
+  def initialize(configuration:Configuration) = {
+    this.setLogLevelsOnStartup = configuration.getBoolean("logfile.set-loglevels-on-startup").getOrElse(false)
+    this.logLevelUrlPattern = configuration.getString("logfile.loglevel-url-pattern").getOrElse("")
+    this.logFilePathPattern = Pattern.compile( configuration.getString("logfile.path-pattern").getOrElse(""))
+    this.logFileDateFormat = new java.text.SimpleDateFormat(configuration.getString("logfile.date-format").getOrElse(""))
+    this.logFetchTimeout = configuration.getInt("logfile.fetch-timeout-in-seconds").getOrElse(30)
+    this.initialLogLookBehindSizeInKBs = configuration.getInt("logfile.initial-look-behind-size-in-kb").getOrElse(1024)
   }
 
   def discoverLogFileUrlPattern = {
@@ -131,7 +126,7 @@ object LogFile {
             val path = logFileMatcher.group(1)
             // We assume that all region servers use the same pattern so once we've got the pattern for one of them,
             // we stop
-            Logger.info("Found path matching compactions.logfile-path-pattern: %s".format(path))
+            Logger.info("Found path matching logfile.path-pattern: %s".format(path))
             logFilePattern = (url + path).replaceAll(regionServer.hostName, "%hostname%")
               .replaceAll(regionServer.infoPort.toString, "%infoport%")
               .replaceAll(regionServer.hostName.split("\\.")(0), "%hostname-without-domain%")
