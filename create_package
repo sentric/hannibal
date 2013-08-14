@@ -46,7 +46,12 @@ echo 'echo "starting Hannibal for HBase '$HANNIBAL_HBASE_VERSION' on Port 9000 (
 echo 'else' >> $temp_dir/hannibal/start
 echo 'echo "starting Hannibal for HBase '$HANNIBAL_HBASE_VERSION' on Port $HANNIBAL_HTTP_PORT (as defined by HANNIBAL_HTTP_PORT)"' >> $temp_dir/hannibal/start
 echo 'fi' >> $temp_dir/hannibal/start
-echo 'exec java -DapplyEvolutions.default=true -Dhttp.port=$HANNIBAL_HTTP_PORT -cp "`dirname $0`/conf:`dirname $0`/target/staged/*" play.core.server.NettyServer `dirname $0`' >> $temp_dir/hannibal/start
+echo 'HBASE_CLASSPATH=`hbase classpath`' >> $temp_dir/hannibal/start
+echo '# Only use the hbase classpath if the command is available and ran successfully' >> $temp_dir/hannibal/start
+echo 'if [ $? -ne 0 ]; then' >> $temp_dir/hannibal/start
+echo '  HBASE_CLASSPATH=""' >> $temp_dir/hannibal/start
+echo 'fi' >> $temp_dir/hannibal/start
+echo 'exec java -DapplyEvolutions.default=true -Dhttp.port=$HANNIBAL_HTTP_PORT -cp "`dirname $0`/conf:`dirname $0`/target/staged/*:$HBASE_CLASSPATH" play.core.server.NettyServer `dirname $0`' >> $temp_dir/hannibal/start
 
 pkgname=hannibal-hbase$HANNIBAL_HBASE_VERSION.tgz
 echo "4. create package: $pkgname ..."
