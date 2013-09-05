@@ -16,6 +16,8 @@ import java.security.MessageDigest
 
 object MetricDef {
 
+  val MAX_TARGET_DESC_LENGTH = 1000
+
   val ALL_REGION_METRICS:Seq[String] = Seq("storefileSizeMB", "memstoreSizeMB", "storefiles", "compactions")
 
   val STOREFILE_SIZE_MB = "storefileSizeMB"
@@ -36,16 +38,23 @@ object MetricDef {
     DB.withConnection { implicit c =>
       val stream = SQL_FIND_METRIC.on("target" -> target, "name" -> name)()
 
+      val truncatedTargetDesc = if(targetDesc.length > MAX_TARGET_DESC_LENGTH) {
+        Logger.warn("truncating long region-name to %d characters".format(MAX_TARGET_DESC_LENGTH))
+        targetDesc.substring(0, MAX_TARGET_DESC_LENGTH)
+      } else {
+        targetDesc
+      }
+
       if(stream.isEmpty) {
         Logger.info("creating new metric for " + target + " : " + name)
-        val id = SQL_INSERT_METRIC.on("target" -> target, "name" -> name, "target_desc" -> targetDesc).executeInsert()
-        MetricDef(id.get, target, name, 0.0, 0, targetDesc)
+        val id = SQL_INSERT_METRIC.on("target" -> target, "name" -> name, "target_desc" -> truncatedTargetDesc).executeInsert()
+        MetricDef(id.get, target, name, 0.0, 0, truncatedTargetDesc)
       } else {
         val row = stream.head
-        if(row[String]("target_desc") != targetDesc)
+        if(row[String]("target_desc") != truncatedTargetDesc)
         {
           Logger.info("updating metric targetDesc in old metric '" + target +"' for " + name)
-          SQL_MIGRATE_METRIC_3.on("id" -> row[Long]("id"), "target_desc" -> targetDesc).executeUpdate()
+          SQL_MIGRATE_METRIC_3.on("id" -> row[Long]("id"), "target_desc" -> truncatedTargetDesc).executeUpdate()
         }
         MetricDef(
           row[Long]("id"),
@@ -53,7 +62,7 @@ object MetricDef {
           row[String]("name"),
           row[Double]("last_value"),
           row[Long]("last_update"),
-          targetDesc
+          truncatedTargetDesc
         )
       }
     }
