@@ -98,6 +98,12 @@ For information about the usage, check out [the Usage page on our Wiki][Wiki-Usa
 There is also a tutorial video on [YouTube][yt], that shows how to install and use Hannibal for HBase 0.90.
 [yt]: http://www.youtube.com/watch?v=gu0lGAf7JO8
 
+## Hue Integration
+There is also [Hue][hue] App to integrate Hannibal into Hue. It is available [here][hannibal-hue].
+
+[hue]: http://gethue.com/
+[hannibal-hue]: https://github.com/ymc/hannibal-hue/
+
 ## Hannibal Mobile
 If you have an Android Device, you might be interested in the Mobile App. The App which can be downloaded from [Google Play][gp]. Further details can be found in the [Wiki][Wiki-Mobile].
 
