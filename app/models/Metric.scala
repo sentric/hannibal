@@ -18,7 +18,7 @@ object MetricDef {
 
   val MAX_TARGET_DESC_LENGTH = 1000
 
-  val ALL_REGION_METRICS:Seq[String] = Seq("storefileSizeMB", "memstoreSizeMB", "storefiles", "compactions")
+  val ALL_REGION_METRICS = Set("storefileSizeMB", "memstoreSizeMB", "storefiles", "compactions")
 
   val STOREFILE_SIZE_MB = "storefileSizeMB"
   def STOREFILE_SIZE_MB(region:String) : MetricDef = findRegionMetricDef(region, STOREFILE_SIZE_MB)
