@@ -8,3 +8,8 @@ data/*.rrd
 data/*.db
 conf/hbase-site.xml
 .vagrant
+.idea
+*.iml
+*.eml
+.idea_modules
+/RUNNING_PID
