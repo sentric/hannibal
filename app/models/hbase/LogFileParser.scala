@@ -24,7 +24,7 @@ trait LogFileParser {
     if(seconds > 0) {
       seconds * 1000
     } else {
-      1
+      1L
     }
   }
 }

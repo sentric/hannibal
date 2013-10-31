@@ -15,17 +15,12 @@ trait RegionServer {
       .replaceAll("%infoport%", infoPort.toString)
       .replaceAll("%hostname-without-domain%", hostName.split("\\.")(0))
 
-  def serverName:String;
-
-  def hostName:String;
-
-  def port:Int;
-
-  def infoPort:Int;
-
-  def load:HServerLoad;
-
-  def regionsLoad:Iterable[RegionLoad];
+  def serverName: String
+  def hostName: String
+  def port: Int
+  def infoPort: Int
+  def load: HServerLoad
+  def regionsLoad: Iterable[RegionLoad]
 
   override def toString = serverName
 }

@@ -9,34 +9,15 @@ import org.apache.hadoop.hbase.{ServerName, ClusterStatus, HServerInfo}
 import scala.collection.JavaConversions._
 import models.hbase.RegionServer
 
-class RegionServer092(val clusterStatus:ClusterStatus, val serverNameObj:ServerName) extends RegionServer {
-  override def serverName = {
-    serverNameObj.getServerName()
-  }
+class RegionServer092(val clusterStatus: ClusterStatus, val serverNameObj: ServerName) extends RegionServer {
+  override val serverName = serverNameObj.getServerName
+  override val hostName = serverNameObj.getHostname
+  override val port = serverNameObj.getPort
+  override val infoPort = 60030
+  override lazy val load = clusterStatus.getLoad(serverNameObj)
+  override lazy val regionsLoad = load.getRegionsLoad().values.toIterable
 
-  override def hostName = {
-    serverNameObj.getHostname()
-  }
-
-  override def port = {
-    serverNameObj.getPort()
-  }
-
-  override def infoPort = {
-    60030
-  }
-
-  override def load = {
-    clusterStatus.getLoad(serverNameObj)
-  }
-
-  override def regionsLoad:Iterable[RegionLoad] = {
-    load.getRegionsLoad().values
-  }
-
-  override def toString = serverName
-
-  override def equals(that:Any) = {
+  override def equals(that: Any) = {
     that match {
       case other: RegionServer092 => other.serverNameObj == serverNameObj
       case _ => false

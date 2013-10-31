@@ -4,39 +4,33 @@
 
 package models
 
-import play.Logger
-import scala.collection.mutable.ListBuffer
-import org.apache.hadoop.hbase.client.HBaseAdmin
 import org.apache.hadoop.hbase.util.Bytes
 import org.apache.hadoop.hbase.{HRegionInfo, HRegionLocation, HServerLoad}
-import play.api.libs.concurrent.Promise
-import play.api.libs.concurrent.Akka
-import play.api.Play.current
 import org.codehaus.jackson.annotate.{JsonIgnoreProperties, JsonIgnore}
+import scala.collection.immutable._
 import play.api.libs.json.{JsObject, Writes}
 import play.api.libs.json.Json._
-import play.api.mvc._
-import globals.hBaseContext
 import models.hbase.RegionServer
+import globals.hBaseContext
 
-@JsonIgnoreProperties(Array("parsedRegionName", "regionServer", "regionLoad"))
-case class Region(val regionServer:RegionServer,  val regionLoad:HServerLoad.RegionLoad) {
+@JsonIgnoreProperties(Array("parsedRegionName", "regionServer", "regionLoad", "info"))
+case class Region(val regionServer: RegionServer, val regionLoad: HServerLoad.RegionLoad) {
 
-  val regionName = Bytes.toStringBinary(regionLoad.getName())
+  val regionName        = Bytes.toStringBinary(regionLoad.getName)
 
-  val parsedRegionName = RegionName(regionName)
+  val parsedRegionName  = RegionName(regionName)
 
   val serverName        = regionServer.serverName
   val serverHostName    = regionServer.hostName
   val serverPort        = regionServer.port
   val serverInfoPort    = regionServer.infoPort
 
-  val storefiles        = regionLoad.getStorefiles()
-  val stores            = regionLoad.getStores()
-  val storefileSizeMB   = regionLoad.getStorefileSizeMB()
-  val memstoreSizeMB    = regionLoad.getMemStoreSizeMB()
+  val storefiles        = regionLoad.getStorefiles
+  val stores            = regionLoad.getStores
+  val storefileSizeMB   = regionLoad.getStorefileSizeMB
+  val memstoreSizeMB    = regionLoad.getMemStoreSizeMB
 
-  val parsedElements    = HRegionInfo.parseRegionName(regionLoad.getName())
+  val parsedElements    = HRegionInfo.parseRegionName(regionLoad.getName)
 
   val tableName         = parsedRegionName.tableName
   val startKey          = parsedRegionName.startKey
@@ -47,66 +41,40 @@ case class Region(val regionServer:RegionServer,  val regionLoad:HServerLoad.Reg
   val regionURI         = tableName + ",," + regionIdTimestamp + "." +
                             parsedRegionName.encodedName
 
-  def getRegionInfo() = {
-    var loc:HRegionLocation = null;
-    hBaseContext.hBase.withAdmin { admin =>
-      val connection = admin.getConnection()
-      loc = connection.getRegionLocation(Bytes.toBytes(tableName), parsedElements(1), false)
-    }
-    RegionInfo(loc.getRegionInfo())
-  }
+  lazy val serverInfoUrl = "http://" + serverHostName + ":" + serverInfoPort
 
-  def serverInfoUrl() = "http://" + serverHostName + ":" + serverInfoPort
+  lazy val info: RegionInfo = {
+    val hRegionInfo =
+      hBaseContext.hBase
+        .withAdmin { _.getConnection.getRegionLocation(Bytes.toBytes(tableName), parsedElements(1), false)}
+        .getRegionInfo
+
+    RegionInfo(hRegionInfo)
+  }
+      
 }
 
 object Region {
-
-  def allAsync(): Promise[Seq[Region]] = {
-    Akka.future { all() }
-  }
-  def all(): Seq[Region] = {
-    val list = new ListBuffer[Region]()
-
+  def all(): Seq[Region] =
     hBaseContext.hBase.eachRegionServer { regionServer =>
-      regionServer.regionsLoad.foreach { regionLoad =>
-        list += Region(regionServer, regionLoad)
-      }
-    }
+      regionServer.regionsLoad.map(Region(regionServer, _))
+    }.flatten
 
-    list.toList
-  }
-
-  def findByNameAsync(regionName: String): Promise[Region] = {
-    allAsync().map { infos =>
-      infos.find { ri =>
-        RegionName(ri.regionName) == RegionName(regionName)
-      }.getOrElse(null)
-    }
-
-  }
-
-  def findByName(regionName: String): Region = {
-    findByNameAsync(regionName).value.get
-  }
-
-  def forTableAsync(tableName: String): Promise[Seq[Region]] = {
-    allAsync().map{ regions => regions.filter(_.tableName == tableName) }
-  }
-  def forTable(tableName: String): Seq[Region] = forTableAsync(tableName).value.get
+  def findByName(regionName: String): Option[Region] =
+    all().find(_.regionName == regionName)
 }
 
 
 case class RegionInfo(wrapped:HRegionInfo) {
-  def endKey() = Bytes.toStringBinary(wrapped.getEndKey())
-  def startKey() = Bytes.toStringBinary(wrapped.getStartKey())
-  def version() = wrapped.getVersion()
-  def regionId() = wrapped.getRegionId()
-  def regionName() = wrapped.getRegionNameAsString()
+  def endKey() = Bytes.toStringBinary(wrapped.getEndKey)
+  def startKey() = Bytes.toStringBinary(wrapped.getStartKey)
+  def version() = wrapped.getVersion
+  def regionId() = wrapped.getRegionId
+  def regionName() = wrapped.getRegionNameAsString
 }
 
 
 case class RegionName(tableName: String, startKey: String, regionIdTimestamp: Long, encodedName: String) {
-
   override def equals(that: Any): Boolean =
     that match {
       case r: RegionName => r.encodedName == this.encodedName &&
@@ -114,7 +82,6 @@ case class RegionName(tableName: String, startKey: String, regionIdTimestamp: Lo
                               r.regionIdTimestamp == this.regionIdTimestamp
       case _ => false
     }
-
 }
 
 object RegionName {
@@ -140,14 +107,13 @@ object RegionName {
     )
   }
 
-  implicit def regionNameWrites : Writes[RegionName] = new Writes[RegionName] {
-     def writes(rn: RegionName) = {
+  implicit val regionNameWrites: Writes[RegionName] = new Writes[RegionName] {
+     def writes(rn: RegionName) =
       toJson(JsObject(Seq(
         "tableName" -> toJson(rn.tableName),
         "startKey" -> toJson(rn.startKey),
         "regionIdTimestamp" -> toJson(rn.regionIdTimestamp),
         "encodedName" -> toJson(rn.encodedName)
       )))
-    }
   }
 }

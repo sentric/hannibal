@@ -13,11 +13,11 @@ import play.api.Play.current
 object Api extends Controller {
   val heartBeatOk = toJson(Map("status" -> "OK"))
 
-  def heartbeat = Action { implicit request =>
+  def heartbeat() = Action { implicit request =>
     Ok(heartBeatOk)
   }
 
-  def tables = Action { implicit request =>
+  def tables() = Action { implicit request =>
     Ok(generate(Table.all())).as(JSON)
   }
 

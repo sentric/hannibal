@@ -8,12 +8,12 @@ import scala.collection.JavaConversions._
 import models.hbase.{HBase, RegionServer}
 
 class HBase092 extends HBase {
-  override def eachRegionServer(functionBlock: (RegionServer) => Unit) = {
+  override def eachRegionServer[T](func: RegionServer => T) = {
     withAdmin { hbaseAdmin =>
       val status = hbaseAdmin.getClusterStatus()
       val servers = status.getServers()
-      servers.foreach { serverName =>
-        functionBlock(new RegionServer092(status, serverName))
+      servers.toList.map { serverName =>
+        func(new RegionServer092(status, serverName))
       }
     }
   }

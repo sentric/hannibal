@@ -121,22 +121,21 @@ object LogFile {
   def discoverLogFileUrlPattern = {
     var logFilePattern: String  = null
     breakable {
-      globals.hBaseContext.hBase.eachRegionServer {
-        regionServer =>
-          val url = logRootUrl(regionServer)
-          val response = WS.url(url).get().value.get
-          val logFileMatcher = logFilePathPattern.matcher(response.body)
+      globals.hBaseContext.hBase.eachRegionServer { regionServer =>
+        val url = logRootUrl(regionServer)
+        val response = WS.url(url).get().value.get
+        val logFileMatcher = logFilePathPattern.matcher(response.body)
 
-          if (logFileMatcher.find()) {
-            val path = logFileMatcher.group(1)
-            // We assume that all region servers use the same pattern so once we've got the pattern for one of them,
-            // we stop
-            Logger.info("Found path matching compactions.logfile-path-pattern: %s".format(path))
-            logFilePattern = (url + path).replaceAll(regionServer.hostName, "%hostname%")
-              .replaceAll(regionServer.infoPort.toString, "%infoport%")
-              .replaceAll(regionServer.hostName.split("\\.")(0), "%hostname-without-domain%")
-            break()
-          }
+        if (logFileMatcher.find()) {
+          val path = logFileMatcher.group(1)
+          // We assume that all region servers use the same pattern so once we've got the pattern for one of them,
+          // we stop
+          Logger.info("Found path matching compactions.logfile-path-pattern: %s".format(path))
+          logFilePattern = (url + path).replaceAll(regionServer.hostName, "%hostname%")
+            .replaceAll(regionServer.infoPort.toString, "%infoport%")
+            .replaceAll(regionServer.hostName.split("\\.")(0), "%hostname-without-domain%")
+          break()
+        }
       }
     }
 
@@ -146,15 +145,14 @@ object LogFile {
   def init():Boolean = {
     if (setLogLevelsOnStartup) {
       Logger.info("setting Loglevels for the Regionservers")
-      hBaseContext.hBase.eachRegionServer {
-        regionServer =>
-          val url = logLevelUrl(regionServer)
-          val response = WS.url(url).get().value.get
-          if (response.ahcResponse.getStatusCode() != 200) {
-            throw new Exception("couldn't set log-level with URL: " + url);
-          } else {
-            Logger.debug("... Loglevel set for server %s".format(regionServer))
-          }
+      hBaseContext.hBase.eachRegionServer { regionServer =>
+        val url = logLevelUrl(regionServer)
+        val response = WS.url(url).get().value.get
+        if (response.ahcResponse.getStatusCode() != 200) {
+          throw new Exception("couldn't set log-level with URL: " + url);
+        } else {
+          Logger.debug("... Loglevel set for server %s".format(regionServer))
+        }
       }
     }
 
@@ -168,14 +166,10 @@ object LogFile {
     }
   }
 
-  def all() = {
-    val list = new ListBuffer[LogFile]()
-    hBaseContext.hBase.eachRegionServer {
-      regionServer =>
-        list += LogFile(regionServer)
+  def all(): List[LogFile] =
+    hBaseContext.hBase.eachRegionServer { regionServer =>
+      LogFile(regionServer)
     }
-    list.toList
-  }
 
   def dateFormat() = logFileDateFormat
 
