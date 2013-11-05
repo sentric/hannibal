@@ -212,7 +212,7 @@ With help from:
  * [Alexandre Normand][]
  * [churrodog][]
                            
- [YMC AG]: [http://www.ymc.ch/en/expansion-of-the-portfolio-ymc-repositions-itself]
+ [YMC AG]: http://www.ymc.ch/en/expansion-of-the-portfolio-ymc-repositions-itself
  [Sentric]: http://www.sentric.ch
  [Nils Kübler]: https://twitter.com/nkuebler
  [Jiayong Ou]: https://twitter.com/jiayongou
