@@ -200,7 +200,7 @@ If you need additional features or help please get in touch with us. Subscribe t
 
 ## Contributors
 
-This tool is developed at [Sentric][] by: [Nils Kübler][] and [Jiayong Ou][]
+This tool was developed at [Sentric][] by [Nils Kübler][] and [Jiayong Ou][]. [Sentric][] has been acquired by [YMC AG][] in May 2013.
 
 With help from:
 
@@ -211,7 +211,8 @@ With help from:
  * Stephanie Höhn
  * [Alexandre Normand][]
  * [churrodog][]
-
+                           
+ [YMC AG]: [http://www.ymc.ch/en/expansion-of-the-portfolio-ymc-repositions-itself]
  [Sentric]: http://www.sentric.ch
  [Nils Kübler]: https://twitter.com/nkuebler
  [Jiayong Ou]: https://twitter.com/jiayongou
