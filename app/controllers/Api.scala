@@ -21,7 +21,7 @@ object Api extends Controller {
     Ok(generate(Table.all())).as(JSON)
   }
 
-  def regions = Action { implicit request =>
+  def regions() = Action { implicit request =>
     val tables = request.queryString.get("table").flatten.toSet
 
     val regions = models.Region.all()
