@@ -17,7 +17,7 @@ class ApiSpec extends Specification {
     "provide a method: /heartbeat" >> {
       "always returning OK" >> {
         running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
-          val result = routeAndCall(FakeRequest(GET, "/api/heartbeat"));
+          val result = routeAndCall(FakeRequest(GET, "/api/heartbeat"))
           status(result.get) must equalTo(200)
           contentAsString(result.get) must equalTo("{\"status\":\"OK\"}")
         }
@@ -27,7 +27,7 @@ class ApiSpec extends Specification {
     "provide a method: /metrics" >> {
       "returning empty array when there are no recorded metrics" >> {
         running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
-          val result = routeAndCall(FakeRequest(GET, "/api/metrics")).get.asInstanceOf[AsyncResult].result.value
+          val result = routeAndCall(FakeRequest(GET, "/api/metrics"))
           status(result.get) must equalTo(200)
           contentAsString(result.get) must equalTo("[]")
         }
@@ -39,7 +39,7 @@ class ApiSpec extends Specification {
           val anchor = MetricDef.now
           metricDef.update(1, anchor - 2000)
           metricDef.update(0, anchor - 1000)
-          val result = routeAndCall(FakeRequest(GET, "/api/metrics?metric=regions")).get.asInstanceOf[AsyncResult].result.value
+          val result = routeAndCall(FakeRequest(GET, "/api/metrics?metric=regions"))
           status(result.get) must equalTo(200)
           contentAsString(result.get) must equalTo("[]")
         }
@@ -52,7 +52,7 @@ class ApiSpec extends Specification {
           metricDef.update(1, anchor - 2000)
           metricDef.update(0, anchor - 1000)
           metricDef.update(4, anchor - 500)
-          val result = routeAndCall(FakeRequest(GET, "/api/metrics?metric=compactions&range=0")).get.asInstanceOf[AsyncResult].result.value
+          val result = routeAndCall(FakeRequest(GET, "/api/metrics?metric=compactions&range=0"))
           status(result.get) must equalTo(200)
           contentAsString(result.get) must contain("\"values\":[],\"prevValue\":4.0,\"isEmpty\":false,\"targetDesc\":\"article,com.redtra,1344630511217.7b6e9618bdac4d4251324e57b3e4084d.\"")
         }
@@ -64,7 +64,7 @@ class ApiSpec extends Specification {
           val anchor = MetricDef.now
           metricDef.update(1, anchor - 2000)
           metricDef.update(0, anchor - 1000)
-          val result = routeAndCall(FakeRequest(GET, "/api/metrics?metric=compactions")).get.asInstanceOf[AsyncResult].result.value
+          val result = routeAndCall(FakeRequest(GET, "/api/metrics?metric=compactions"))
           status(result.get) must equalTo(200)
 
           contentAsString(result.get) must contain("\"values\":[{\"ts\":%d,\"v\":%.1f},{\"ts\":%d,\"v\":%.1f}],\"prevValue\":%.1f,\"isEmpty\":false".format(
