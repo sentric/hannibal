@@ -25,7 +25,7 @@ class UpdateMetricsActor extends Actor {
     case UPDATE_REGION_INFO_METRICS  =>
       updateMetrics("RegionMetrics", () => {
         var updated = 0
-        val regions = models.Region.all
+        val regions = models.Region.all()
         regions.foreach { regionInfo =>
           if(MetricDef.STOREFILE_SIZE_MB(regionInfo.regionName).update(regionInfo.storefileSizeMB))
             updated = updated + 1
@@ -48,25 +48,25 @@ class UpdateMetricsActor extends Actor {
     case UPDATE_COMPACTION_METRICS =>
       updateMetrics("CompactionMetrics", () => {
         try {
-        var updated = 0
-        var compactions = models.Compaction.all
-        val regions = models.Region.all
-        regions.foreach { regionInfo =>
-          val filteredCompactions = models.Compaction.forRegion(compactions, regionInfo.regionName)
-          val metric = MetricDef.COMPACTIONS(regionInfo.regionName)
-          filteredCompactions.foreach { compaction =>
-            if (compaction.end.getTime() > metric.lastUpdate) {
-              if (!metric.update(1.0, compaction.start.getTime())) {
-                Logger.warn("possible bug: start compaction during compaction?")
-              } else if(!metric.update(0.0, compaction.end.getTime())) {
-                Logger.warn("possible bug: end compaction outside compaction?")
-              } else {
-                updated = updated + 1
+          var updated = 0
+          val compactions = models.Compaction.all()
+          val regions = models.Region.all()
+          regions.foreach { regionInfo =>
+            val filteredCompactions = models.Compaction.forRegion(compactions, regionInfo.regionName)
+            val metric = MetricDef.COMPACTIONS(regionInfo.regionName)
+            filteredCompactions.foreach { compaction =>
+              if (compaction.end.getTime > metric.lastUpdate) {
+                if (!metric.update(1.0, compaction.start.getTime)) {
+                  Logger.warn("possible bug: start compaction during compaction?")
+                } else if(!metric.update(0.0, compaction.end.getTime)) {
+                  Logger.warn("possible bug: end compaction outside compaction?")
+                } else {
+                  updated = updated + 1
+                }
               }
             }
           }
-        }
-        updated
+          updated
         } finally {
            Akka.system.scheduler.scheduleOnce(30 seconds, context.self, UpdateMetricsActor.UPDATE_COMPACTION_METRICS)
         }
@@ -76,7 +76,7 @@ class UpdateMetricsActor extends Actor {
     case CLEAN_OLD_METRICS =>
       Logger.info("start cleaning metrics and records older than one week... (" + new Date() + ")")
       val before = System.currentTimeMillis()
-      var cleaned = MetricDef.clean()
+      val cleaned = MetricDef.clean()
       val after = System.currentTimeMillis()
       Logger.info("cleaned " + cleaned._1 + " old metrics and " + cleaned._2 + " old records , took " + (after - before) + "ms... (" +new Date()+") ")
   }
