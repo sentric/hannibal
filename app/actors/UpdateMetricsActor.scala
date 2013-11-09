@@ -4,13 +4,13 @@
 
 package actors
 
-import akka.actor.Actor
-import play.api.Logger
 import java.util.Date
-import models.{LogFile, Compaction, MetricDef}
-import actors.UpdateMetricsActor._
-import play.libs.Akka
+import akka.actor.Actor
 import akka.util.duration._
+import play.api.Logger
+import play.libs.Akka
+import models.{LogFile, MetricDef}
+import actors.UpdateMetricsActor._
 
 object UpdateMetricsActor {
   val UPDATE_REGION_INFO_METRICS = "updateRegionInfoMetrics"
@@ -23,7 +23,7 @@ class UpdateMetricsActor extends Actor {
   def receive = {
 
     case UPDATE_REGION_INFO_METRICS  =>
-      updateMetrics("RegionMetrics", () => {
+      updateMetrics("RegionMetrics") {
         var updated = 0
         val regions = models.Region.all()
         regions.foreach { regionInfo =>
@@ -35,7 +35,7 @@ class UpdateMetricsActor extends Actor {
             updated = updated + 1
         }
         updated
-      })
+      }
 
     case INIT_COMPACTION_METRICS =>
       if(LogFile.init()) {
@@ -46,7 +46,7 @@ class UpdateMetricsActor extends Actor {
       }
 
     case UPDATE_COMPACTION_METRICS =>
-      updateMetrics("CompactionMetrics", () => {
+      updateMetrics("CompactionMetrics") {
         try {
           var updated = 0
           val compactions = models.Compaction.all()
@@ -70,8 +70,7 @@ class UpdateMetricsActor extends Actor {
         } finally {
            Akka.system.scheduler.scheduleOnce(30 seconds, context.self, UpdateMetricsActor.UPDATE_COMPACTION_METRICS)
         }
-
-      })
+      }
 
     case CLEAN_OLD_METRICS =>
       Logger.info("start cleaning metrics and records older than one week... (" + new Date() + ")")
@@ -81,10 +80,10 @@ class UpdateMetricsActor extends Actor {
       Logger.info("cleaned " + cleaned._1 + " old metrics and " + cleaned._2 + " old records , took " + (after - before) + "ms... (" +new Date()+") ")
   }
 
-  def updateMetrics(name:String, functionBlock: () => Int) : Unit = {
+  def updateMetrics(name:String)(thunk: => Int)  {
     Logger.info("start updating " + name + "... (" + new Date() + ")")
     val before = System.currentTimeMillis()
-    val length = functionBlock()
+    val length = thunk
     val after = System.currentTimeMillis()
     Logger.info("completed updating " + length + " " + name + ", took " + (after - before) + "ms... (" +new Date()+") ")
   }
