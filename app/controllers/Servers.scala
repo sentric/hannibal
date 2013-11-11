@@ -5,9 +5,10 @@
 package controllers
 
 import play.api.mvc._
+import views.html.{servers => html}
 
 object Servers extends Controller {
   def index = Action { implicit request =>
-    Ok(views.html.servers.index(request))
+    Ok(html.index())
   }
 }

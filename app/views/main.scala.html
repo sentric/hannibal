@@ -1,4 +1,4 @@
-@(title: String)(content: Html)(javascriptIncludes: Html = Html(""))(breadcrumbs: Html = Html(""))(implicit request: play.api.mvc.Request[Any])
+@(title: String, javascriptIncludes: Html = Html(""), breadcrumbs: Html = Html(""))(content: Html)(implicit request: play.api.mvc.Request[_])
 @import play.api.libs.json.Json.toJson
 
 <!DOCTYPE html>

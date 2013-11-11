@@ -6,35 +6,16 @@ package models.hbase090
 
 import org.apache.hadoop.hbase.HServerLoad.RegionLoad
 import org.apache.hadoop.hbase.HServerInfo
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import models.hbase.RegionServer
 
 class RegionServer090(val serverInfo: HServerInfo) extends RegionServer {
-  override def serverName = {
-    serverInfo.getServerName
-  }
-
-  override def hostName = {
-    serverInfo.getHostname
-  }
-
-  override def port = {
-    serverInfo.getServerAddress().getPort
-  }
-
-  override def infoPort = {
-    serverInfo.getInfoPort
-  }
-
-  override def load = {
-    serverInfo.getLoad
-  }
-
-  override def regionsLoad:Iterable[RegionLoad] = {
-    load.getRegionsLoad
-  }
-
-  override def toString = serverName
+  override val serverName = serverInfo.getServerName
+  override val hostName = serverInfo.getHostname
+  override val port = serverInfo.getServerAddress.getPort
+  override val infoPort = serverInfo.getInfoPort
+  override lazy val load = serverInfo.getLoad
+  override lazy val regionsLoad = load.getRegionsLoad.asScala
 
   override def equals(that:Any) = {
     that match {

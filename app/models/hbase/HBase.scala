@@ -4,7 +4,6 @@
 
 package models.hbase
 
-import scala.collection.JavaConversions._
 import org.apache.hadoop.hbase.client.{HBaseAdmin, HTable}
 import org.apache.hadoop.hbase.{HTableDescriptor, HBaseConfiguration}
 import org.apache.hadoop.hbase.util.Bytes
@@ -15,31 +14,31 @@ import org.apache.hadoop.hbase.util.Bytes
  * The concrete implementation is found in hannibal/hbase/[version]/scala
  */
 trait HBase {
-  def eachRegionServer(functionBlock: (RegionServer) => Unit)
+  def eachRegionServer[T](func: RegionServer => T): List[T]
 
-  def withHTable(tableName:String, functionBlock: (HTable) => Unit) = {
+  def withHTable[T](tableName: String, func: HTable => T): T = {
     val conf = HBaseConfiguration.create()
     val table = new HTable(conf, Bytes.toBytes(tableName))
     try {
-      functionBlock(table)
+      func(table)
     } finally {
       table.close()
     }
   }
 
-  def eachTableDescriptor(functionBlock: (HTableDescriptor) => Unit) = {
+  def eachTableDescriptor[T](func: HTableDescriptor => T): List[T] = {
     withAdmin { admin =>
-      admin.listTables().foreach { desc =>
-        functionBlock(desc)
+      admin.listTables().toList.map { desc =>
+        func(desc)
       }
     }
   }
 
-  def withAdmin(functionBlock: (HBaseAdmin) => Unit) = {
+  def withAdmin[T](func: HBaseAdmin => T): T = {
     val conf = HBaseConfiguration.create()
     val client = new HBaseAdmin(conf)
     try {
-      functionBlock(client)
+      func(client)
     } finally {
       client.close()
     }
