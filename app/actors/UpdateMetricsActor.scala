@@ -66,8 +66,8 @@ class UpdateMetricsActor extends Actor {
   def receive = {
 
     case UPDATE_REGION_INFO  =>
-      execute("update RegionInfo cache") {
-        models.Region.updateCache
+      execute("refresh RegionInfo cache") {
+        models.Region.refresh()
       }
 
       executeMetricUpdate("RegionMetrics") {

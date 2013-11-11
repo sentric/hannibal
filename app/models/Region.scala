@@ -14,6 +14,9 @@ import play.api.libs.json.{JsObject, Writes}
 import play.api.libs.json.Json._
 import models.hbase.RegionServer
 import globals.hBaseContext
+import play.api.cache.Cache
+import play.api.Play.current
+import play.api.libs.json.JsObject
 
 
 @JsonIgnoreProperties(Array("parsedRegionName", "regionServer", "regionLoad", "info"))
@@ -56,41 +59,36 @@ case class Region(val regionServer: RegionServer, val regionLoad: HServerLoad.Re
 }
 
 object Region {
-  private var cache: Map[String, ListBuffer[Region]] = null // TODO replace http://www.playframework.com/documentation/2.0.1/ScalaCache
-
-  def all(): Seq[Region] = {
-    if(cache == null) {
-      Logger.error("Region Cache not yet ready!")
-      return List()
+  def all(): Seq[Region] =
+    Cache.getAs[Seq[Region]]("regions.allRegions") getOrElse {
+      Logger.warn("Region Cache not yet ready, forcing refresh!")
+      refresh()
+      Cache.getAs[Seq[Region]]("regions.allRegions") get
     }
-
-    cache.values.flatten.toSeq
-  }
 
   def findByName(regionName: String): Option[Region] =
     all().find((region) => RegionName(region.regionName) == RegionName(regionName))
 
   def forTable(tableName: String): Seq[Region] = {
-    if(cache == null) {
-      Logger.error("Region Cache not yet ready!")
-      return List()
-    }
-
-    cache.get(tableName).get.toSeq
+    Cache.getAs[Map[String, Seq[Region]]]("regions.forTable") getOrElse {
+      Logger.warn("Region Cache not yet ready, forcing refresh!")
+      refresh()
+      Cache.getAs[Map[String, Seq[Region]]]("regions.forTable") get
+    } getOrElse (tableName, {
+      Logger.error("Table '%s' not found".format(tableName))
+      Seq[Region]()
+    })
   }
 
-  def updateCache() = {
-    var newCache = Map[String, ListBuffer[Region]]()
-    hBaseContext.hBase.eachRegionServer { regionServer =>
-      regionServer.regionsLoad.foreach { regionLoad =>
-        val region: Region = Region(regionServer, regionLoad)
-        var regions: ListBuffer[Region] = newCache.get(region.tableName).getOrElse(ListBuffer[Region]())
-        regions += region
-        newCache += region.tableName -> regions
-      }
-    }
-    cache = newCache
+  def refresh() = {
+    val allRegions = hBaseContext.hBase.eachRegionServer { regionServer =>
+      regionServer.regionsLoad.map(Region(regionServer, _))
+    } flatten
+    val groupedRegions = allRegions.groupBy(_.tableName)
+    Cache.set("regions.allRegions", allRegions);
+    Cache.set("regions.forTable", groupedRegions);
   }
+
 }
 
 case class RegionInfo(wrapped:HRegionInfo) {
