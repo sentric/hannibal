@@ -14,6 +14,8 @@ import org.apache.hadoop.hbase.util.Bytes
  * The concrete implementation is found in hannibal/hbase/[version]/scala
  */
 trait HBase {
+  val conf = HBaseConfiguration.create()
+
   def eachRegionServer[T](func: RegionServer => T): List[T]
 
   def withHTable[T](tableName: String, func: HTable => T): T = {
@@ -35,7 +37,6 @@ trait HBase {
   }
 
   def withAdmin[T](func: HBaseAdmin => T): T = {
-    val conf = HBaseConfiguration.create()
     val client = new HBaseAdmin(conf)
     try {
       func(client)

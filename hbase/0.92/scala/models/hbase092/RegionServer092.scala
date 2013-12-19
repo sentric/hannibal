@@ -9,11 +9,10 @@ import org.apache.hadoop.hbase.{ServerName, ClusterStatus, HServerInfo}
 import scala.collection.JavaConverters._
 import models.hbase.RegionServer
 
-class RegionServer092(val clusterStatus: ClusterStatus, val serverNameObj: ServerName) extends RegionServer {
+class RegionServer092(val clusterStatus: ClusterStatus, val serverNameObj: ServerName, override val infoPort: Int) extends RegionServer {
   override val serverName = serverNameObj.getServerName
   override val hostName = serverNameObj.getHostname
   override val port = serverNameObj.getPort
-  override val infoPort = 60030
   override lazy val load = clusterStatus.getLoad(serverNameObj)
   override lazy val regionsLoad = load.getRegionsLoad().values.asScala
 
