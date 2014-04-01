@@ -175,7 +175,7 @@ Old metrics are cleaned after one day by default and it makes sense since the re
 ## Deployment
 If you intend to run Hannibal on a different host from where you want to build it, then you can run
 
-	./build_package
+	./create_package
 
 This script generates a tgz-package inside the target folder, which you can then deploy on your target server. The HBase version can be set with the HANNIBAL_HBASE_VERSION environment variable, as described in the quickstart section.
 
