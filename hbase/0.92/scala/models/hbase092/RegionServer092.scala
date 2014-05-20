@@ -13,8 +13,8 @@ class RegionServer092(val clusterStatus: ClusterStatus, val serverNameObj: Serve
   override val serverName = serverNameObj.getServerName
   override val hostName = serverNameObj.getHostname
   override val port = serverNameObj.getPort
-  override lazy val load = clusterStatus.getLoad(serverNameObj)
-  override lazy val regionsLoad = load.getRegionsLoad().values.asScala
+  lazy val load = clusterStatus.getLoad(serverNameObj)
+  override lazy val regionsLoad = load.getRegionsLoad().values.asScala.map( new RegionLoad092(_) )
 
   override def equals(that: Any) = {
     that match {

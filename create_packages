@@ -1,0 +1,29 @@
+#!/bin/sh
+script=$0
+if [ -h $script ]; then
+    script=`readlink $script`
+fi
+dir=`dirname $script`
+
+export PATH="/develop/sdk/java-6/1.6.0.jdk/Contents/Home/bin:$PATH"
+hannibal_dir="`cd $dir; pwd`"
+
+./sbt clean
+HANNIBAL_HBASE_VERSION=0.90 ./create_package
+mkdir -p deploy/hbase090
+cp target/hannibal-hbase*.tgz deploy/hbase090
+
+./sbt clean
+HANNIBAL_HBASE_VERSION=0.92 ./create_package
+mkdir -p deploy/hbase092
+cp target/hannibal-hbase*.tgz deploy/hbase092
+
+./sbt clean
+HANNIBAL_HBASE_VERSION=0.94 ./create_package
+mkdir -p deploy/hbase094
+cp target/hannibal-hbase*.tgz deploy/hbase094
+
+./sbt clean
+HANNIBAL_HBASE_VERSION=0.96 ./create_package
+mkdir -p deploy/hbase096
+cp target/hannibal-hbase*.tgz deploy/hbase096

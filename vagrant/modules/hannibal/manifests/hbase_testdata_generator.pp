@@ -2,6 +2,7 @@ class hannibal::hbase_testdata_generator {
 
   service { "hbase-testdata-generator":
     ensure => "running",
+    enable => true,
     require => File["/etc/init.d/hbase-testdata-generator"]
   }
 

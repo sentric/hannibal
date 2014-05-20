@@ -4,9 +4,6 @@
 
 package models.hbase
 
-import org.apache.hadoop.hbase.{HServerLoad, HServerInfo}
-import org.apache.hadoop.hbase.HServerLoad.RegionLoad
-
 trait RegionServer {
 
   def infoUrl(url: String) =
@@ -19,7 +16,6 @@ trait RegionServer {
   def hostName: String
   def port: Int
   def infoPort: Int
-  def load: HServerLoad
   def regionsLoad: Iterable[RegionLoad]
 
   override def toString = serverName

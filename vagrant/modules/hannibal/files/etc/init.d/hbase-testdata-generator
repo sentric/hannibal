@@ -21,19 +21,19 @@ DAEMON_OPTS=""
 
 case "$1" in
   start)
-    echo -n "Starting daemon: "$NAME
-        start-stop-daemon --start --quiet --background --nicelevel $NICELEVEL --oknodo --make-pidfile --pidfile $PIDFILE --startas $DAEMON -- $DAEMON_OPTS
+    echo -n "Starting daemon (10 s delay): "$NAME
+    (sleep 10 && start-stop-daemon --start --quiet --background --nicelevel $NICELEVEL --oknodo --make-pidfile --pidfile $PIDFILE --startas $DAEMON -- $DAEMON_OPTS) &
     echo "."
         ;;
   stop)
     echo -n "Stopping daemon: "$NAME
-        start-stop-daemon --stop --quiet --oknodo --pidfile $PIDFILE --retry=TERM/630/KILL/10
+    start-stop-daemon --stop --quiet --oknodo --pidfile $PIDFILE --retry=TERM/630/KILL/10
     echo "."
         ;;
   restart)
-        start-stop-daemon --stop --quiet --oknodo --pidfile $PIDFILE --retry=TERM/630/KILL/10
+    start-stop-daemon --stop --quiet --oknodo --pidfile $PIDFILE --retry=TERM/630/KILL/10
     sleep 2
-        start-stop-daemon --start --quiet --background --nicelevel $NICELEVEL --oknodo --make-pidfile --pidfile $PIDFILE --startas $DAEMON -- $DAEMON_OPTS
+    start-stop-daemon --start --quiet --background --nicelevel $NICELEVEL --oknodo --make-pidfile --pidfile $PIDFILE --startas $DAEMON -- $DAEMON_OPTS
         ;;
   status)
     status_of_proc -p "$PIDFILE" "$DAEMON" $NAME && exit 0 || exit 1

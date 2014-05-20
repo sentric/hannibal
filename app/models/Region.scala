@@ -5,14 +5,14 @@
 package models
 
 import org.apache.hadoop.hbase.util.Bytes
-import org.apache.hadoop.hbase.{HRegionInfo, HServerLoad}
+import org.apache.hadoop.hbase.{HRegionInfo}
 import scala.collection.mutable.ListBuffer
 import play.api.Logger
 import org.codehaus.jackson.annotate.JsonIgnoreProperties
 import scala.collection._
 import play.api.libs.json.{JsObject, Writes}
 import play.api.libs.json.Json._
-import models.hbase.RegionServer
+import models.hbase.{RegionLoad, RegionServer}
 import globals.hBaseContext
 import play.api.cache.Cache
 import play.api.Play.current
@@ -20,9 +20,9 @@ import play.api.libs.json.JsObject
 
 
 @JsonIgnoreProperties(Array("parsedRegionName", "regionServer", "regionLoad", "info"))
-case class Region(val regionServer: RegionServer, val regionLoad: HServerLoad.RegionLoad) {
+case class Region(val regionServer: RegionServer, val regionLoad: RegionLoad) {
 
-  val regionName        = Bytes.toStringBinary(regionLoad.getName)
+  val regionName        = Bytes.toStringBinary(regionLoad.name)
 
   val parsedRegionName  = RegionName(regionName)
 
@@ -31,12 +31,12 @@ case class Region(val regionServer: RegionServer, val regionLoad: HServerLoad.Re
   val serverPort        = regionServer.port
   val serverInfoPort    = regionServer.infoPort
 
-  val storefiles        = regionLoad.getStorefiles
-  val stores            = regionLoad.getStores
-  val storefileSizeMB   = regionLoad.getStorefileSizeMB
-  val memstoreSizeMB    = regionLoad.getMemStoreSizeMB
+  val storefiles        = regionLoad.storeFiles
+  val stores            = regionLoad.stores
+  val storefileSizeMB   = regionLoad.storeFileSizeMB
+  val memstoreSizeMB    = regionLoad.memStoreSizeMB
 
-  val parsedElements    = HRegionInfo.parseRegionName(regionLoad.getName)
+  val parsedElements    = HRegionInfo.parseRegionName(regionLoad.name)
 
   val tableName         = parsedRegionName.tableName
   val startKey          = parsedRegionName.startKey
