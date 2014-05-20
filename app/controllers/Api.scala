@@ -8,6 +8,7 @@ import play.api.libs.json.Json._
 import models.{MetricDef, Table}
 import com.codahale.jerkson.Json._
 import java.util.concurrent.TimeUnit
+import play.api.Play
 
 object Api extends Controller {
 
@@ -62,7 +63,8 @@ object Api extends Controller {
 
   def parsePeriod(implicit request: Request[_]) = {
     val until = System.currentTimeMillis()
-    val since = until - request.queryString.get("range").flatMap(_.headOption).map(_.toLong).getOrElse(TimeUnit.DAYS.toMillis(1))
+    val defaultRange:Int = Play.current.configuration.getInt("metrics.default-range").getOrElse(TimeUnit.DAYS.toSeconds(1).toInt)
+    val since = until - request.queryString.get("range").flatMap(_.headOption).map(_.toLong).getOrElse(defaultRange * 1000L)
     (since, until)
   }
 }
