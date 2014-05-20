@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Sentric. See LICENSE for details.
+ * Copyright 2014 YMC. See LICENSE for details.
  */
 
 package models.hbase
