@@ -12,7 +12,7 @@ import models.hbase.LogFileParser
 class LogFileParser092 extends LogFileParser {
 
   val COMPACTION = Pattern.compile(
-    """^(.*) INFO (.*)\.CompactionRequest: completed compaction: regionName=(.*\.), storeName=(.*), fileCount=(.*), fileSize=(.*), priority=(.*), time=(.*); duration=(.*)$""",
+    """(.*) \[.*\] (.*) - completed compaction: regionName=(.*\.), storeName=(.*), fileCount=(.*), fileSize=(.*), priority=(.*), time=(.*); duration=(.*)$""",
     Pattern.MULTILINE
   )
   val DATE_GROUP = 1
@@ -20,15 +20,20 @@ class LogFileParser092 extends LogFileParser {
   val DURATION_GROUP = 9
 
   override def eachCompaction(logFile: LogFile, functionBlock: (String, Date, Long) => Unit) = {
-    val m = COMPACTION.matcher(logFile.tail())
+    val t = logFile.tail()
+    val m = COMPACTION.matcher(t)
     while(m.find()) {
       val date = m.group(DATE_GROUP)
-      val region = m.group(REGION_GROUP)
+      val regionRaw = m.group(REGION_GROUP)
+      // Our logs are inconsistent and sometimes encode the region as 
+      // "tableName,,id" instead of "tableName,startKey,id", so we'll strip out 
+      // the startKey when it's present
+      val pattern = ",.*,".r
+      val region = pattern replaceFirstIn(regionRaw, ",,")
       val duration = m.group(DURATION_GROUP)
 
       val end = LogFile.dateFormat.parse(date)
       val durationMsec = parseDuration(duration)
-
       functionBlock(region, end, durationMsec)
     }
   }
