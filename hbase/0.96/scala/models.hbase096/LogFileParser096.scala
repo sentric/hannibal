@@ -12,12 +12,12 @@ import models.hbase.LogFileParser
 class LogFileParser096 extends LogFileParser {
 
   val COMPACTION = Pattern.compile(
-    """^(.*) INFO (.*)\.CompactionRequest: completed compaction: regionName=(.*\.), storeName=(.*), fileCount=(.*), fileSize=(.*), priority=(.*), time=(.*); duration=(.*)$""",
+    """^(.*) INFO (.*).HStore: Completed (.*)compaction of (.*) of (.*\.) into (.*) and took (.*) to execute(.*)$""",
     Pattern.MULTILINE
   )
   val DATE_GROUP = 1
-  val REGION_GROUP = 3
-  val DURATION_GROUP = 9
+  val REGION_GROUP = 5
+  val DURATION_GROUP = 7
 
   override def eachCompaction(logFile: LogFile, functionBlock: (String, Date, Long) => Unit) = {
     val m = COMPACTION.matcher(logFile.tail())
@@ -32,5 +32,4 @@ class LogFileParser096 extends LogFileParser {
       functionBlock(region, end, durationMsec)
     }
   }
-
 }
