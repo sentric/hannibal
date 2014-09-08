@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Sentric. See LICENSE for details.
+ * Copyright 2014 YMC. See LICENSE for details.
  */
 
 package models.hbase
@@ -24,7 +24,7 @@ trait LogFileParser {
     if(seconds > 0) {
       seconds * 1000
     } else {
-      1
+      1L
     }
   }
 }

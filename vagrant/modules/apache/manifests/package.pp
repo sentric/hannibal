@@ -1,27 +1,23 @@
 define apache::package(
-    $target = "/opt",
-    $version = "",
-    $symlink = true,
-    $mirror = "http://archive.apache.org/",
+    $target = "/opt/hbase",
+    $archiveUrl = "",
 ) {
-    $folder = "${name}-${version}"
-    $archive = "${folder}.tar.gz"
+    $tmpArchive = "/tmp/hbase-download.tar.gz"
 
     exec { "download":
-        command => "/usr/bin/wget ${mirror}/dist/${name}/${folder}/${archive} -O /tmp/${archive}",
-        unless => "/usr/bin/stat ${target}/${folder}",
+        command => "/usr/bin/wget ${archiveUrl} -O ${tmpArchive}",
+        unless => "/usr/bin/stat ${$target}",
         notify => Exec["extract"]
     }
 
-    exec { "extract":
-        command => "/bin/tar -C ${target} -xf /tmp/${archive}",
-        refreshonly => true,
+    file { "targetfolder" :
+        name => $target,
+        ensure => "directory"
     }
 
-    if ( $symlink ) {
-        file { "${target}/${name}":
-            ensure => symlink,
-            target => "${target}/${folder}",
-        }
+    exec { "extract":
+        require => File["targetfolder"],
+        command => "/bin/tar -C ${target} --strip-components=1 -xf ${tmpArchive}",
+        refreshonly => true,
     }
 }

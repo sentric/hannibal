@@ -1,11 +1,11 @@
-@(tables:Seq[models.Table])(implicit request: play.api.mvc.Request[Any])
+@(tables: Seq[models.Table])(implicit request: play.api.mvc.Request[_])
+
+@import helpers.Utils._
 
 @main("Tables") {
-
-<ul>
-	@tables.map { table =>
-	<li><a href="@routes.Tables.show(java.net.URLEncoder.encode(table.name, "UTF-8"))">@table.name</a></li> }
-</ul>
-
-} { } {
+    <ul>
+        @tables.map { table =>
+            <li><a href="@routes.Tables.show(urlEncode(table.name))">@table.name</a></li>
+        }
+    </ul>
 }

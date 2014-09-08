@@ -1,10 +1,9 @@
-@(regionList:Seq[models.RegionInfo])(implicit request: play.api.mvc.Request[Any])
+@(regionList: Seq[models.RegionInfo])(implicit request: play.api.mvc.Request[_])
 
 @main("Welcome to Play 2.0") {
-
-<ul>
-	@regionList.map { region =>
-	<li>@region.toString</li> }
-</ul>
-
-} { } { }
+    <ul>
+        @regionList.map { region =>
+            <li>@region.toString</li>
+        }
+    </ul>
+}

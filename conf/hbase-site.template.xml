@@ -28,4 +28,10 @@
         <value>localhost</value>
     </property>
 
+    <!--<property>-->
+    <!--<property>-->
+        <!--<name>hbase.regionserver.info.port</name>-->
+        <!--<value>60030</value>-->
+    <!--</property>-->
+
 </configuration>

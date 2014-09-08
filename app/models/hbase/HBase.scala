@@ -1,10 +1,9 @@
 /*
- * Copyright 2013 Sentric. See LICENSE for details.
+ * Copyright 2014 YMC. See LICENSE for details.
  */
 
 package models.hbase
 
-import scala.collection.JavaConversions._
 import org.apache.hadoop.hbase.client.{HBaseAdmin, HTable}
 import org.apache.hadoop.hbase.{HTableDescriptor, HBaseConfiguration}
 import org.apache.hadoop.hbase.util.Bytes
@@ -15,31 +14,32 @@ import org.apache.hadoop.hbase.util.Bytes
  * The concrete implementation is found in hannibal/hbase/[version]/scala
  */
 trait HBase {
-  def eachRegionServer(functionBlock: (RegionServer) => Unit)
+  val conf = HBaseConfiguration.create()
 
-  def withHTable(tableName:String, functionBlock: (HTable) => Unit) = {
+  def eachRegionServer[T](func: RegionServer => T): List[T]
+
+  def withHTable[T](tableName: String, func: HTable => T): T = {
     val conf = HBaseConfiguration.create()
     val table = new HTable(conf, Bytes.toBytes(tableName))
     try {
-      functionBlock(table)
+      func(table)
     } finally {
       table.close()
     }
   }
 
-  def eachTableDescriptor(functionBlock: (HTableDescriptor) => Unit) = {
+  def eachTableDescriptor[T](func: HTableDescriptor => T): List[T] = {
     withAdmin { admin =>
-      admin.listTables().foreach { desc =>
-        functionBlock(desc)
+      admin.listTables().toList.map { desc =>
+        func(desc)
       }
     }
   }
 
-  def withAdmin(functionBlock: (HBaseAdmin) => Unit) = {
-    val conf = HBaseConfiguration.create()
+  def withAdmin[T](func: HBaseAdmin => T): T = {
     val client = new HBaseAdmin(conf)
     try {
-      functionBlock(client)
+      func(client)
     } finally {
       client.close()
     }

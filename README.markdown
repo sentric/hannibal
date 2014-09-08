@@ -27,7 +27,7 @@ You will also need a browser with [SVG][]-Support to display Hannibal's graphs.
 
 ### HBase Compatibilty
 
-Hannibal currently supports HBase versions 0.90 to 0.94. The Scala-sources are currently compiled with Apache HBase versions wherever possible, you can try to alter the version in project/Build.scala if you wish to.
+Hannibal currently supports HBase versions 0.90 to 0.96. The Scala-sources are currently compiled with Apache HBase versions wherever possible, you can try to alter the version in project/Build.scala if you wish to.
 
 ## Quickstart
 
@@ -68,7 +68,7 @@ For information about the usage, check out [the Usage page on our Wiki][Wiki-Usa
 
         $ export HANNIBAL_HBASE_VERSION=0.92
     
-    Other possible values are "0.90" or "0.94". Be sure to always have this environment-variable set before executing any of the scripts: `build`, `start` or `sbt`. 
+    Other possible values are "0.90", "0.94" or "0.96". Be sure to always have this environment-variable set before executing any of the scripts: `build`, `start` or `sbt`.
 
 
  3. Copy `conf/hbase-site.template.xml` to `conf/hbase-site.xml` and adjust it.
@@ -175,7 +175,7 @@ Old metrics are cleaned after one day by default and it makes sense since the re
 ## Deployment
 If you intend to run Hannibal on a different host from where you want to build it, then you can run
 
-	./build_package
+	./create_package
 
 This script generates a tgz-package inside the target folder, which you can then deploy on your target server. The HBase version can be set with the HANNIBAL_HBASE_VERSION environment variable, as described in the quickstart section.
 
