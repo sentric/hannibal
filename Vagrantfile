@@ -54,6 +54,18 @@ Vagrant.configure("2") do |config|
     end
   end
 
+  config.vm.define :hbase098 do |vm_conf|
+    vm_conf.vm.box = "spantree/ubuntu-precise-64"
+    vm_conf.vm.hostname = "hbase098.hannibal.dev"
+    vm_conf.vm.network :private_network, ip: "192.168.80.98"
+    vm_conf.vm.provision :puppet do |puppet|
+      puppet.manifests_path = "vagrant/manifests"
+      puppet.manifest_file = "nodes.pp"
+      puppet.module_path = "vagrant/modules"
+      puppet.options = "--verbose"
+    end
+  end
+
   config.vm.provider :virtualbox do |vb|
       vb.customize ["modifyvm", :id, "--memory", 3072]
   end

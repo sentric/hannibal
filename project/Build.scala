@@ -38,8 +38,8 @@ object ApplicationBuild extends Build {
       )
       case "0.98" => Seq(
         "org.apache.hadoop" % "hadoop-common" % "2.4.0",
-        "org.apache.hbase" % "hbase-common" % "0.98.1",
-        "org.apache.hbase" % "hbase-client" % "0.98.1"
+        "org.apache.hbase" % "hbase-common" % "0.98.1-hadoop2",
+        "org.apache.hbase" % "hbase-client" % "0.98.1-hadoop2"
       )
     })
 

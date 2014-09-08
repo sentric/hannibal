@@ -37,3 +37,13 @@ node "hbase096" {
     hbaseVersion => "0.96"
   }
 }
+
+node "hbase098" {
+  class { "apache::hbase::standalone":
+    archiveUrl => "http://archive.apache.org/dist/hbase/hbase-0.98.5/hbase-0.98.5-hadoop1-bin.tar.gz"
+  }
+
+  class { "hannibal":
+    hbaseVersion => "0.98"
+  }
+}

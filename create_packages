@@ -27,3 +27,8 @@ cp target/hannibal-hbase*.tgz deploy/hbase094
 HANNIBAL_HBASE_VERSION=0.96 ./create_package
 mkdir -p deploy/hbase096
 cp target/hannibal-hbase*.tgz deploy/hbase096
+
+./sbt clean
+HANNIBAL_HBASE_VERSION=0.98 ./create_package
+mkdir -p deploy/hbase098
+cp target/hannibal-hbase*.tgz deploy/hbase098
