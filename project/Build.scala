@@ -1,6 +1,5 @@
 import sbt._
 import Keys._
-import PlayProject._
 import java.lang.System._
 
 object ApplicationBuild extends Build {
@@ -17,6 +16,10 @@ object ApplicationBuild extends Build {
     println("Configuring for HBase Version: %s".format(hBaseVersion))
 
     val appDependencies = Seq(
+//      jdbc,
+//      anorm,
+//      cache,
+//      ws,
         "org.slf4j" % "slf4j-log4j12" % "1.6.0"
     ) ++ (hBaseVersion match {
       case "0.90" => Seq(
@@ -43,10 +46,7 @@ object ApplicationBuild extends Build {
       )
     })
 
-    val appResolvers = Seq(
-    )
-    
-    val projectSettings = Seq( 
+    val projectSettings = Seq(
       ivyXML :=
     	<dependencies>
           <exclude module="thrift" />
@@ -61,8 +61,14 @@ object ApplicationBuild extends Build {
       case _ => "hbase/0.96/scala"
     })
 
-    val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA).settings(
-      resolvers ++= appResolvers,
+
+    val main = Project(appName, file(".")).enablePlugins(play.PlayScala).settings(
+
+      version := appVersion,
+
+      scalaVersion := "2.11.1",
+
+      libraryDependencies ++= appDependencies,
 
       unmanagedSourceDirectories in Compile <++= baseDirectory { base =>
         Seq(
