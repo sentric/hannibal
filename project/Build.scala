@@ -1,6 +1,8 @@
 import sbt._
 import Keys._
 import java.lang.System._
+import play.Play.autoImport._
+import PlayKeys._
 
 object ApplicationBuild extends Build {
 
@@ -16,11 +18,12 @@ object ApplicationBuild extends Build {
     println("Configuring for HBase Version: %s".format(hBaseVersion))
 
     val appDependencies = Seq(
-//      jdbc,
-//      anorm,
-//      cache,
-//      ws,
-        "org.slf4j" % "slf4j-log4j12" % "1.6.0"
+      jdbc,
+      anorm,
+      cache,
+      json,
+      ws,
+      "org.slf4j" % "slf4j-log4j12" % "1.6.0"
     ) ++ (hBaseVersion match {
       case "0.90" => Seq(
         "org.apache.hadoop" % "hadoop-core" % "0.20.205.0",
