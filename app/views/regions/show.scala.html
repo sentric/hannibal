@@ -3,8 +3,10 @@
 @import helpers.Referer
 @import java.text.DateFormat
 
+@import play.libs.Json._
+
 @regionMetricChart(metricNames: Seq[String]) = {
-    <div class="metric-chart-view region-metric-chart-view" data-region-name="@region.regionName" data-metric-names="@com.codahale.jerkson.Json.generate(metricNames)">
+    <div class="metric-chart-view region-metric-chart-view" data-region-name="@region.regionName" data-metric-names="@stringify(toJson(metricNames))">
         <div class="x-axis"></div>
         <div class="chart"></div>
         <div class="legend-container">

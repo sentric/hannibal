@@ -4,16 +4,19 @@
 
 package models
 
+import org.apache.commons.lang3.StringUtils
+
 import collection.mutable
 import play.api.{Configuration, Logger}
-import play.api.libs.ws.{Response, WS}
-import play.api.libs.concurrent.NotWaiting
-import org.apache.commons.lang.StringUtils
+import play.api.Play.current
+import play.api.libs.ws._
+import scala.concurrent.{Await, Future}
 import models.LogFile._
 import collection.mutable.ListBuffer
 import scala.util.control.Breaks._
 import java.util.regex._
 import java.text.SimpleDateFormat
+import scala.concurrent.duration._
 import globals.hBaseContext
 import models.hbase.RegionServer
 
@@ -23,14 +26,15 @@ case class LogFile(regionServer:RegionServer) {
     val url = logFileUrl(regionServer)
 
     if (!logOffsets.contains(regionServer.serverName)) {
-      val headValue: NotWaiting[Response] = WS.url(url).head().value
-      val logLength = headValue.get.header("Content-Length").get.toLong
+      val holder: WSRequestHolder = WS.url(url)
+      val headValue = WS.url(url).head().value
+      val logLength = headValue.get.get.header("Content-Length").get.toLong
       val offset = scala.math.max(0, logLength - initialLogLookBehindSizeInKBs * 1024)
       Logger.info("Initializing log offset to [%d] for log file at %s with content-length [%d]".format(offset, url, logLength))
       logOffsets(regionServer.serverName) = offset
     }
 
-    var response: Response = recentLogContent(url, logOffsets(regionServer.serverName))
+    var response: WSResponse = recentLogContent(url, logOffsets(regionServer.serverName))
 
     if(wasRotated(response)) {
       logOffsets(regionServer.serverName) = 0l
@@ -52,22 +56,23 @@ case class LogFile(regionServer:RegionServer) {
 
   def recentLogContent(url: String, offset: Long) = {
     Logger.debug("... fetching Logfile from %s with range [%d-]".format(url, offset))
-    val response = WS.url(url).withHeaders(("Range", "bytes=%d-".format(offset))).get().await(logFetchTimeout * 1000).get
-    val statusCode = response.ahcResponse.getStatusCode
-    if (!List(200, 206, 416).contains(response.ahcResponse.getStatusCode)) {
+    val future = WS.url(url).withHeaders(("Range", "bytes=%d-".format(offset))).get()
+    val response = Await.result(future, (logFetchTimeout * 1000) nanos)
+    val statusCode = response.status
+    if (!List(200, 206, 416).contains(statusCode)) {
       throw new Exception("couldn't load Compaction Metrics from URL: '" +
         url + " (statusCode was: "+statusCode+")")
     }
     response
   }
 
-  def wasRotated(response:Response):Boolean = {
-    if(response.ahcResponse.getStatusCode == 416) {
+  def wasRotated(response:WSResponse):Boolean = {
+    if(response.status == 416) {
       Logger.debug("Log file [%s] seems to have rotated (StatusCode = 416)")
       return true
     }
 
-    val contentRange = response.getAHCResponse.getHeader("Content-Range")
+    val contentRange = response.header("Content-Range").getOrElse("")
     val rangeValue = StringUtils.substringBetween(contentRange, "bytes", "/").trim()
 
     if (rangeValue eq "*") {
@@ -118,7 +123,7 @@ object LogFile {
     breakable {
       globals.hBaseContext.hBase.eachRegionServer { regionServer =>
         val url = logRootUrl(regionServer)
-        val response = WS.url(url).get().value.get
+        val response = WS.url(url).get().value.get.get
         val logFileMatcher = logFilePathPattern.matcher(response.body)
 
         if (logFileMatcher.find()) {
@@ -142,8 +147,8 @@ object LogFile {
       Logger.info("setting Loglevels for the Regionservers")
       hBaseContext.hBase.eachRegionServer { regionServer =>
         val url = logLevelUrl(regionServer)
-        val response = WS.url(url).get().value.get
-        if (response.ahcResponse.getStatusCode() != 200) {
+        val response = WS.url(url).get().value.get.get
+        if (response.status != 200) {
           throw new Exception("couldn't set log-level with URL: " + url);
         } else {
           Logger.debug("... Loglevel set for server %s".format(regionServer))

@@ -2,8 +2,10 @@
 
 @import helpers.Referer
 
+@import play.libs.Json._
+
 @tableRegionsChart() = {
-    <div class="table-regions-chart-view" data-table="@com.codahale.jerkson.Json.generate(table)">
+    <div class="table-regions-chart-view" data-table="@stringify(toJson(table))">
         <div class="y-axis"></div>
         <div class="x-axis"></div>
         <div class="chart"></div>
