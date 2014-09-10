@@ -1,3 +1,4 @@
+import com.typesafe.sbt.web.SbtWeb
 import sbt._
 import Keys._
 import java.lang.System._
@@ -65,7 +66,7 @@ object ApplicationBuild extends Build {
     })
 
 
-    val main = Project(appName, file(".")).enablePlugins(play.PlayScala).settings(
+    val main = Project(appName, file(".")).enablePlugins(play.PlayScala, SbtWeb).settings(
 
       version := appVersion,
 

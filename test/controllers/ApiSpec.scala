@@ -48,7 +48,7 @@ class ApiSpec extends Specification {
         running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
           val region = "article,com.redtra,1344630511217.7b6e9618bdac4d4251324e57b3e4084d."
           val metricDef = MetricDef.findRegionMetricDef(region, "compactions")
-          val anchor = MetricDef.now
+          val anchor =  MetricDef.now
           metricDef.update(1, anchor - 2000)
           metricDef.update(0, anchor - 1000)
           metricDef.update(4, anchor - 500)
