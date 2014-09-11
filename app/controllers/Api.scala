@@ -3,26 +3,29 @@
  */
 package controllers
 
+import play.api.libs.json.Writes
 import play.api.mvc._
-import play.api.libs.json.Json._
-import models.{MetricDef, Table}
-import com.codahale.jerkson.Json._
+import models.{Region, MetricDef, Table}
+import play.api.libs.json._
+
 import java.util.concurrent.TimeUnit
 import play.api.Play
 
 object Api extends Controller {
 
   def heartbeat() = Action { implicit request =>
-    val heartBeatOk = toJson(Map("status" -> "OK"))
-    Ok(heartBeatOk).as(JSON)
+    val heartBeatOk: JsValue =  JsObject(Seq("status" -> JsString("OK")))
+    Ok(Json.stringify(heartBeatOk)).as(JSON)
   }
 
   def tables() = Action { implicit request =>
-    Ok(generate(Table.all())).as(JSON)
+    Ok(Json.stringify(Json.toJson(Table.all()))).as(JSON) // TODO: toJson really required ???
   }
 
   def regions() = Action { implicit request =>
-    val tables = request.queryString.get("table").flatten.toSet
+    val tables = request.queryString.get("table").getOrElse {
+      Seq()
+    }
 
     val regions = if(tables.isEmpty) {
       models.Region.all()
@@ -32,7 +35,7 @@ object Api extends Controller {
       } flatten
     }
 
-    Ok(generate(regions)).as(JSON)
+    Ok(Json.stringify(Json.toJson(regions))).as(JSON)
   }
 
   def metrics() = Action { implicit request =>
@@ -44,7 +47,7 @@ object Api extends Controller {
         metricDef.metric(since, until)
       }
     }
-    Ok(generate(metrics.flatten)).as(JSON)
+    Ok(Json.stringify(Json.toJson(metrics.flatten))).as(JSON)
   }
 
   def metricsByTarget(target: String) = Action { implicit request =>
@@ -55,11 +58,14 @@ object Api extends Controller {
       MetricDef.findRegionMetricDef(target, metricName).metric(since, until)
     }
 
-    Ok(generate(metrics)).as(JSON)
+    Ok(Json.stringify(Json.toJson(metrics))).as(JSON)
   }
 
   def parseMetricNames(implicit request: Request[_]) =
-    if (request.queryString.contains("metric")) request.queryString("metric").toSet else MetricDef.ALL_REGION_METRICS
+    if (request.queryString.contains("metric"))
+      request.queryString("metric").toSet
+    else
+      MetricDef.ALL_REGION_METRICS
 
   def parsePeriod(implicit request: Request[_]) = {
     val until = System.currentTimeMillis()

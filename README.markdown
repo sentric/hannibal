@@ -27,7 +27,7 @@ You will also need a browser with [SVG][]-Support to display Hannibal's graphs.
 
 ### HBase Compatibilty
 
-Hannibal currently supports HBase versions 0.90 to 0.96. The Scala-sources are currently compiled with Apache HBase versions wherever possible, you can try to alter the version in project/Build.scala if you wish to.
+Hannibal currently supports HBase versions 0.90 to 0.98. The Scala-sources are currently compiled with Apache HBase versions wherever possible, you can try to alter the version in project/Build.scala if you wish to.
 
 ## Quickstart
 
@@ -64,11 +64,11 @@ For information about the usage, check out [the Usage page on our Wiki][Wiki-Usa
         $ git clone https://github.com/sentric/hannibal.git
         $ cd hannibal
 
- 2. Set the Environmentvariable HANNIBAL_HBASE_VERSION according to your HBase version. For example for HBase 0.92 do:
+ 2. Set the Environmentvariable HANNIBAL_HBASE_VERSION according to your HBase version. For example for HBase 0.98 do:
 
-        $ export HANNIBAL_HBASE_VERSION=0.92
+        $ export HANNIBAL_HBASE_VERSION=0.98
     
-    Other possible values are "0.90", "0.94" or "0.96". Be sure to always have this environment-variable set before executing any of the scripts: `build`, `start` or `sbt`.
+    Other possible values are "0.90", "0.94", "0.96" or "0.98". Be sure to always have this environment-variable set before executing `build` or `start` scripts.
 
 
  3. Copy `conf/hbase-site.template.xml` to `conf/hbase-site.xml` and adjust it.
@@ -117,9 +117,9 @@ If you want to make Hannibal reachable from the Internet, it's recommended to pu
 
 ## How to display compactions
 HBase 0.90.x's API doesn't allow you to query information on running compactions directly, so what we do is to parse
-the RegionServers' log files directly, which are available through the service interface. HBase 0.92 allows you to query
-compactions directly, but we still collect compactions using the logfile-parsing technique, because this way we don't miss 
-any short running compactions.
+the RegionServers' log files directly, which are available through the service interface. HBase 0.92 and up allows you 
+to query compactions directly, but we still collect compactions using the logfile-parsing technique, because this way we 
+don't miss any short running compactions.
 The downside is that this doesn't work out of the box for all HBase clusters because either, the path-pattern or the
 date-pattern can differ from system to system. Another problem can be, that the compaction-information isn't logged at
 all in your setup, because your LogLevel is set too high.

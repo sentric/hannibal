@@ -9,6 +9,7 @@ import play.api.Play.current
 import play.api.db.DB
 import play.api.Logger
 import models.MetricDef._
+import play.api.libs.json.{Json, JsValue, Writes}
 
 
 /**
@@ -163,6 +164,17 @@ object MetricDef {
     WHERE
       last_update < {until}
                                 """)
+
+  implicit val metricDefWrites = new Writes[MetricDef] {
+    override def writes(o: MetricDef): JsValue = Json.obj(
+      "id" -> o.id,
+      "target" -> o.target,
+      "name" -> o.name,
+      "lastValue" -> o.lastValue,
+      "lastUpdate" -> o.lastUpdate,
+      "targetDesc" -> o.targetDesc
+    )
+  }
 }
 
 case class MetricDef(id: Long, target: String, name: String, var lastValue: Double, var lastUpdate: Long, var targetDesc: String) {
@@ -199,6 +211,28 @@ case class MetricDef(id: Long, target: String, name: String, var lastValue: Doub
       Metric(name, target, since, until, values, lastValue, lastUpdate == 0, targetDesc)
     else
       Metric(name, target, since, until, values, prevValue.get, lastUpdate == 0, targetDesc)
+  }
+}
+
+object Metric {
+  implicit val metricRecordWrites = new Writes[MetricRecord] {
+    override def writes(o: MetricRecord): JsValue = Json.obj(
+      "ts" -> o.ts,
+      "v" -> o.v
+    )
+  }
+
+  implicit val metricWrites = new Writes[Metric] {
+    override def writes(o: Metric): JsValue = Json.obj(
+      "name" -> o.name,
+      "target" -> o.target,
+      "begin" -> o.begin,
+      "end" -> o.end,
+      "values" -> Json.toJson(o.values),
+      "prevValue" -> o.prevValue,
+      "isEmpty" -> o.isEmpty,
+      "targetDesc" -> o.targetDesc
+    )
   }
 }
 

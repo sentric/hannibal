@@ -9,7 +9,8 @@ import play.api.Configuration
 
 import java.util.Date
 import akka.actor.Actor
-import akka.util.duration._
+import scala.concurrent.duration._
+import play.api.libs.concurrent.Execution.Implicits._
 import play.api.Logger
 
 import play.libs.Akka

@@ -16,14 +16,15 @@ fi
 
 if [ "" = "$HANNIBAL_HBASE_VERSION" ]; then
     HANNIBAL_HBASE_VERSION="0.90"
-    echo "creating Hannibal package for HBase $HANNIBAL_HBASE_VERSION (may be altered by assigning 0.90, 0.92 or 0.94 to HANNIBAL_HBASE_VERSION)"
+    echo "creating Hannibal package for HBase $HANNIBAL_HBASE_VERSION (may be altered by assigning 0.90, 0.92, 0.94, 0.96 or 0.98 to HANNIBAL_HBASE_VERSION)"
 else
     echo "creating Hannibal package for HBase $HANNIBAL_HBASE_VERSION (as defined by HANNIBAL_HBASE_VERSION)"
 fi
 
 echo "1. building ..."
 cd $hannibal_dir
-./sbt stage
+#./activator universal:package-zip-tarball
+./activator stage
 if [ "$?" != "0" ]; then
     echo "error during build";
     exit 1
@@ -35,10 +36,8 @@ if [ ! -d $temp_dir ]; then
     echo "could not create temp dir: $temp_dir";
     exit 1
 fi
-mkdir -p $temp_dir/hannibal/target
-cp -r $hannibal_dir/target/staged $temp_dir/hannibal/target
-cp -r $hannibal_dir/conf $temp_dir/hannibal
-cp $hannibal_dir/README.markdown $temp_dir/hannibal
+mkdir -p $temp_dir
+cp -R $hannibal_dir/target/universal/stage $temp_dir/hannibal
 cp $hannibal_dir/LICENSE $temp_dir/hannibal
 
 echo "3. generting startscript ..."
@@ -48,16 +47,16 @@ echo "#!/bin/sh" >> $temp_dir/hannibal/start
 echo "export HANNIBAL_HBASE_VERSION=$HANNIBAL_HBASE_VERSION" >> $temp_dir/hannibal/start
 echo 'if [ "" = "$HANNIBAL_HTTP_PORT" ]; then' >> $temp_dir/hannibal/start
 echo 'HANNIBAL_HTTP_PORT="9000"' >> $temp_dir/hannibal/start
-echo 'echo "starting Hannibal for HBase '$HANNIBAL_HBASE_VERSION' on Port 9000 (may be altered by assigning another port-number to HANNIBAL_HTTP_PORT)"' >> $temp_dir/hannibal/start
+echo 'echo "  starting Hannibal for HBase '$HANNIBAL_HBASE_VERSION' on Port 9000 (may be altered by assigning another port-number to HANNIBAL_HTTP_PORT)"' >> $temp_dir/hannibal/start
 echo 'else' >> $temp_dir/hannibal/start
-echo 'echo "starting Hannibal for HBase '$HANNIBAL_HBASE_VERSION' on Port $HANNIBAL_HTTP_PORT (as defined by HANNIBAL_HTTP_PORT)"' >> $temp_dir/hannibal/start
+echo 'echo "  starting Hannibal for HBase '$HANNIBAL_HBASE_VERSION' on Port $HANNIBAL_HTTP_PORT (as defined by HANNIBAL_HTTP_PORT)"' >> $temp_dir/hannibal/start
 echo 'fi' >> $temp_dir/hannibal/start
 echo 'HBASE_CLASSPATH=`hbase classpath`' >> $temp_dir/hannibal/start
 echo '# Only use the hbase classpath if the command is available and ran successfully' >> $temp_dir/hannibal/start
 echo 'if [ $? -ne 0 ]; then' >> $temp_dir/hannibal/start
 echo '  HBASE_CLASSPATH=""' >> $temp_dir/hannibal/start
 echo 'fi' >> $temp_dir/hannibal/start
-echo 'exec java -DapplyEvolutions.default=true -Dhttp.port=$HANNIBAL_HTTP_PORT -cp "`dirname $0`/conf:`dirname $0`/target/staged/*:$HBASE_CLASSPATH" play.core.server.NettyServer `dirname $0`' >> $temp_dir/hannibal/start
+echo 'exec java -DapplyEvolutions.default=true -Dhttp.port=$HANNIBAL_HTTP_PORT -cp "`dirname $0`/conf:`dirname $0`/lib/*:$HBASE_CLASSPATH" play.core.server.NettyServer `dirname $0`' >> $temp_dir/hannibal/start
 
 pkgname=hannibal-hbase$HANNIBAL_HBASE_VERSION.tgz
 echo "4. create package: $pkgname ..."

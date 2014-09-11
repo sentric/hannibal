@@ -2,8 +2,9 @@
 
 @import java.text.DateFormat
 
+@import play.api.libs.json._
+
 @includes = {
-  <link rel="stylesheet" media="screen" href='@routes.Assets.at("stylesheets/metric_chart_view.css")'>
   <script src='@routes.Assets.at("javascripts/views/common/VisualCountDown.js")' type="text/javascript"></script>
   <script src='@routes.Assets.at("javascripts/views/common/MetricChart.js")' type="text/javascript"></script>
   <script src='@routes.Assets.at("javascripts/views/compactions/ShowCompactions.js")' type="text/javascript"></script>
@@ -13,7 +14,7 @@
 }
 
 @clusterMetricChart(metricNames: Seq[String]) = {
-    <div class="metric-chart-view compaction-metric-chart-view" data-metric-names="@com.codahale.jerkson.Json.generate(metricNames)">
+    <div class="metric-chart-view compaction-metric-chart-view" data-metric-names="@Json.stringify(Json.toJson(metricNames))">
         <div class="x-axis"></div>
         <div class="chart"></div>
         <div class="legend-container">
