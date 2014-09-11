@@ -1,0 +1,19 @@
+#!/bin/sh
+
+script=$0
+if [ -h $script ]; then
+   script=`readlink $script`
+fi
+dir=`dirname $script`
+
+if [ "" = "$HANNIBAL_HBASE_VERSION" ]; then
+    HANNIBAL_HBASE_VERSION="0.90"
+    echo "Debugging Hannibal for HBase $HANNIBAL_HBASE_VERSION (may be altered by assigning HANNIBAL_HBASE_VERSION)"
+else
+    echo "building Hannibal for HBase $HANNIBAL_HBASE_VERSION (as defined by HANNIBAL_HBASE_VERSION)"
+fi
+
+#export HANNIBAL_LOGFILE_PATH_PATTERN="(?i)\"/logs/(.*master.*[.].*)\""
+
+$dir/activator -jvm-debug 9999 "~run"
+
