@@ -8,18 +8,15 @@ import org.apache.hadoop.hbase.util.Bytes
 import org.apache.hadoop.hbase.{HRegionInfo}
 import scala.collection.mutable.ListBuffer
 import play.api.Logger
-import org.codehaus.jackson.annotate.JsonIgnoreProperties
 import scala.collection._
-import play.api.libs.json.{JsObject, Writes}
+import play.api.libs.json.{Json, JsObject, Writes}
 import play.api.libs.json.Json._
 import models.hbase.{RegionLoad, RegionServer}
 import globals.hBaseContext
 import play.api.cache.Cache
 import play.api.Play.current
-import play.api.libs.json.JsObject
 
 
-@JsonIgnoreProperties(Array("parsedRegionName", "regionServer", "regionLoad", "info"))
 case class Region(val regionServer: RegionServer, val regionLoad: RegionLoad) {
 
   val regionName        = Bytes.toStringBinary(regionLoad.name)
@@ -89,6 +86,24 @@ object Region {
     Cache.set("regions.forTable", groupedRegions);
   }
 
+  implicit val regionWrites = new Writes[Region] {
+    def writes(region: Region) = Json.obj(
+      "regionName" -> region.regionName,
+      "serverName" -> region.serverName,
+      "serverHostName" -> region.serverHostName,
+      "serverPort" -> region.serverPort,
+      "serverInfoPort" -> region.serverInfoPort,
+      "storefiles" -> region.storefiles,
+      "stores" -> region.stores,
+      "storefileSizeMB" -> region.storefileSizeMB,
+      "memstoreSizeMB" -> region.memstoreSizeMB,
+      "tableName" -> region.tableName,
+      "startKey" -> region.startKey,
+      "regionIdTimestamp" -> region.regionIdTimestamp,
+      "regionURI" -> region.regionURI,
+      "serverInfoUrl" -> region.serverInfoUrl
+    )
+  }
 }
 
 case class RegionInfo(wrapped:HRegionInfo) {

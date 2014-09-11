@@ -3,17 +3,22 @@
  */
 package controllers
 
+import play.api.libs.json.Writes
 import play.api.mvc._
-import models.{MetricDef, Table}
+import models.{Region, MetricDef, Table}
 import play.libs.Json._
+import play.api.libs.json._
+
 import java.util.concurrent.TimeUnit
 import play.api.Play
 
 object Api extends Controller {
 
+
+
   def heartbeat() = Action { implicit request =>
-    val heartBeatOk = toJson(Map("status" -> "OK"))
-    Ok(stringify(heartBeatOk)).as(JSON)
+    val heartBeatOk: JsValue =  JsObject(Seq("status" -> JsString("OK")))
+    Ok(Json.stringify(heartBeatOk)).as(JSON)
   }
 
   def tables() = Action { implicit request =>
@@ -21,7 +26,9 @@ object Api extends Controller {
   }
 
   def regions() = Action { implicit request =>
-    val tables = request.queryString.get("table").get
+    val tables = request.queryString.get("table").getOrElse {
+      Seq()
+    }
 
     val regions = if(tables.isEmpty) {
       models.Region.all()
@@ -31,7 +38,7 @@ object Api extends Controller {
       } flatten
     }
 
-    Ok(stringify(toJson(regions))).as(JSON)
+    Ok(Json.stringify(Json.toJson(regions))).as(JSON)
   }
 
   def metrics() = Action { implicit request =>
