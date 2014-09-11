@@ -1,7 +1,7 @@
 class java {
   require java::base
 
-  File["/root/java-accept-lic"] ~> Exec["accept-java-lic"] -> Package["sun-java6-jdk"]
+  File["/root/java-accept-lic"] ~> Exec["accept-java-lic"] ~> Exec["add-java-home"] -> Package["sun-java6-jdk"]
   
   File { 
     owner => "root", 
@@ -16,6 +16,11 @@ class java {
   exec { "accept-java-lic":
     command => "/usr/bin/debconf-set-selections /root/java-accept-lic",
     refreshonly => true,
+  }
+
+  exec { "add-java-home":
+    command => "/bin/bash -c 'echo JAVA_HOME=/usr/lib/jvm/java-6-sun-1.6.0.21' >> /etc/environment",
+    refreshonly => true
   }
   
   package { "sun-java6-jdk":
