@@ -3,10 +3,10 @@
 @import helpers.Referer
 @import java.text.DateFormat
 
-@import play.libs.Json._
+@import play.api.libs.json._
 
 @regionMetricChart(metricNames: Seq[String]) = {
-    <div class="metric-chart-view region-metric-chart-view" data-region-name="@region.regionName" data-metric-names="@stringify(toJson(metricNames))">
+    <div class="metric-chart-view region-metric-chart-view" data-region-name="@region.regionName" data-metric-names="@Json.stringify(Json.toJson(metricNames))">
         <div class="x-axis"></div>
         <div class="chart"></div>
         <div class="legend-container">

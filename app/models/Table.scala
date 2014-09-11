@@ -6,6 +6,7 @@ package models
 
 import org.apache.hadoop.hbase.util.Bytes
 import org.apache.hadoop.hbase.HTableDescriptor
+import play.api.libs.json.{Json, Writes}
 import scala.util.control.Exception._
 import scala.collection.immutable._
 import globals.hBaseContext
@@ -31,6 +32,15 @@ object Table {
       val tableColor = Palette.getColor(table.name).toHtmlCode
       (table.name, tableColor)
     }.toMap
+  }
+
+  implicit val tableWrites = new Writes[Table] {
+    def writes(table: Table) = Json.obj(
+      "name" -> table.name,
+      "maxFileSize" -> table.maxFileSize,
+      "memstoreFlushSize" -> table.memstoreFlushSize,
+      "color" -> table.color
+    )
   }
 }
 

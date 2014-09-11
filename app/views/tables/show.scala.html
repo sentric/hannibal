@@ -2,10 +2,10 @@
 
 @import helpers.Referer
 
-@import play.libs.Json._
+@import play.api.libs.json._
 
 @tableRegionsChart() = {
-    <div class="table-regions-chart-view" data-table="@stringify(toJson(table))">
+    <div class="table-regions-chart-view" data-table="@Json.stringify(Json.toJson(table))">
         <div class="y-axis"></div>
         <div class="x-axis"></div>
         <div class="chart"></div>

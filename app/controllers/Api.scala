@@ -6,7 +6,6 @@ package controllers
 import play.api.libs.json.Writes
 import play.api.mvc._
 import models.{Region, MetricDef, Table}
-import play.libs.Json._
 import play.api.libs.json._
 
 import java.util.concurrent.TimeUnit
@@ -14,15 +13,13 @@ import play.api.Play
 
 object Api extends Controller {
 
-
-
   def heartbeat() = Action { implicit request =>
     val heartBeatOk: JsValue =  JsObject(Seq("status" -> JsString("OK")))
     Ok(Json.stringify(heartBeatOk)).as(JSON)
   }
 
   def tables() = Action { implicit request =>
-    Ok(stringify(toJson(Table.all()))).as(JSON) // TODO: toJson really required ???
+    Ok(Json.stringify(Json.toJson(Table.all()))).as(JSON) // TODO: toJson really required ???
   }
 
   def regions() = Action { implicit request =>
@@ -50,7 +47,7 @@ object Api extends Controller {
         metricDef.metric(since, until)
       }
     }
-    Ok(stringify(toJson(metrics.flatten))).as(JSON)
+    Ok(Json.stringify(Json.toJson(metrics.flatten))).as(JSON)
   }
 
   def metricsByTarget(target: String) = Action { implicit request =>
@@ -61,11 +58,14 @@ object Api extends Controller {
       MetricDef.findRegionMetricDef(target, metricName).metric(since, until)
     }
 
-    Ok(stringify(toJson(metrics))).as(JSON)
+    Ok(Json.stringify(Json.toJson(metrics))).as(JSON)
   }
 
   def parseMetricNames(implicit request: Request[_]) =
-    if (request.queryString.contains("metric")) request.queryString("metric").toSet else MetricDef.ALL_REGION_METRICS
+    if (request.queryString.contains("metric"))
+      request.queryString("metric").toSet
+    else
+      MetricDef.ALL_REGION_METRICS
 
   def parsePeriod(implicit request: Request[_]) = {
     val until = System.currentTimeMillis()

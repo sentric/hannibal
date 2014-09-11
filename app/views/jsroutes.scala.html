@@ -10,18 +10,18 @@
         },
         Tables: {
             index: route("@routes.Tables.index()"),
-            show: route("@routes.Tables.show("%name%")")
+            show: route("@routes.Tables.show("!name!")")
         },
         Regions: {
             index: route("@routes.Regions.index()"),
-            show: route("@routes.Regions.show("%name%")")
+            show: route("@routes.Regions.show("!name!")")
         },
         Api: {
             heartbeat: route("@routes.Api.heartbeat()"),
             tables: route("@routes.Api.tables()"),
             regions: route("@routes.Api.regions()"),
             metrics: route("@routes.Api.metrics()"),
-            metricsByTarget: route("@routes.Api.metricsByTarget("%target%")")
+            metricsByTarget: route("@routes.Api.metricsByTarget("!target!")")
         }
     }
 
@@ -30,8 +30,8 @@
             var url = u;
             options = options || {}
             for (key in options) {
-                if (url.indexOf("%" + key + "%") > -1) {
-                    url = url.replace("%" + key + "%", encodeURIComponent(options[key]));
+                if (url.indexOf("!" + key + "!") > -1) {
+                    url = url.replace("!" + key + "!", encodeURIComponent(options[key]));
                 }
                 else {
                     var args = options[key] instanceof Array ? options[key] : [options[key]];
