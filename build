@@ -13,4 +13,15 @@ else
     echo "building Hannibal for HBase $HANNIBAL_HBASE_VERSION (as defined by HANNIBAL_HBASE_VERSION)"
 fi
 
-$dir/sbt clean compile
+$dir/activator clean compile assets
+res1=$?
+
+$dir/activator doc
+res2=$?
+
+if [ "0 0" = "$res1 $res2"  ]; then
+    echo "**** Hannibal READY! Start with ./start"
+else
+    echo "Wooops! It seams that there was a problem building Hannibal, please report to https://github.com/sentric/hannibal/issues"
+fi
+
