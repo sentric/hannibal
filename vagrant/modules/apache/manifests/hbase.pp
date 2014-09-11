@@ -2,7 +2,9 @@
 class apache::hbase::standalone(
   $archiveUrl = "http://archive.apache.org/dist/hbase/hbase-0.96.2/hbase-0.96.2-hadoop1-bin.tar.gz",
 
-  $ipAddress = "127.0.0.1"
+  $ipAddress = "127.0.0.1",
+
+  $hostName = "localhost"
 ) {
     class { "apache::hbase::base":
       archiveUrl => $archiveUrl
