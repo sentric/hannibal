@@ -63,15 +63,17 @@ class @MetricChartView extends Backbone.View
       element: @$('.timeline')[0]
 
     @createAnnotations()
-
+	
+    legendElement = @$(".legend")[0]
     @legend = new Rickshaw.Graph.Legend
       graph: @graph
-      element: @$(".legend")[0]
+      element: legendElement
+    @$(legendElement).drags()
 
     @shelving = new Rickshaw.Graph.Behavior.Series.Toggle
       graph: @graph
       legend: @legend
-
+	
     @graph.render()
 
     $(".timeline").delegate(".annotation", 'mouseover',( (e) ->

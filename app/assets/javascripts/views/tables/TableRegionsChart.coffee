@@ -45,7 +45,6 @@ class @TableRegionsChartView extends Backbone.View
       graph: @graph
       element: @$(".legend")[0]
 
-
     @threshold = @table.maxFileSize / 1024 / 1024
     @thresholdLine = new RickshawUtil.ThresholdLine
       graph: @graph
