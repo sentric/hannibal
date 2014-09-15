@@ -43,17 +43,16 @@ class @MetricChartView extends Backbone.View
     @hoverDetail = new Rickshaw.Graph.HoverDetail
       graph: @graph
       yFormatter: ((y) => y)
+      xFormatter: ((x) => new Date(x * 1000).toLocaleString())
       formatter: ((series, x, y, formattedX, formattedY, d) =>
         "#{series.name} : #{series.denormalize(y)} #{series.unit}"
       )
 
-    time = new Rickshaw.Fixtures.Time()
     @xAxis = new RickshawUtil.LeftAlignedXAxis
       graph: @graph
       element: @$(".x-axis")[0]
       tickFormat: (x) ->
-        d = new Date(x * 1000)
-        time.formatTime(d)
+        new Date(x * 1000).toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'})
 
     @slider = new Rickshaw.Graph.RangeSlider
       graph: @graph,

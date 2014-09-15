@@ -11,6 +11,7 @@ class @ShowRegionView extends Backbone.View
       el: @$(".refresh-text")
       pattern: "(next refresh in %delay% seconds)"
     @visualCountDown.on "done", _.bind(@updateMetrics, @)
+	
     @updateMetrics()
 
   createRegionMetricChartView: ($el) ->
