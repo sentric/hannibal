@@ -57,6 +57,10 @@ class @AbstractServerChartView extends Backbone.View
   render: ->
     RickshawUtil.mergeSeriesData(@getChartSeries(), @series)
 
+    if !@series || !@series.length
+       @$el.html("No Data recorded yet.")
+       return
+
     if(!@graphComponents)
       @$el.html(klass.chartContent)
       @graphComponents = @createGraphComponents()
