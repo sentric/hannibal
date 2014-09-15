@@ -35,6 +35,7 @@ class @ShowCompactionsView extends Backbone.View
 
   updateLongestCompactionDuration: ->
     max = 0
+    maxFound = false
     target = "[none]"
     date = new Date()
     @compactions.each (metric) ->
@@ -44,9 +45,13 @@ class @ShowCompactionsView extends Backbone.View
           begin = record.ts
         else if record.ts - begin > max
           max = record.ts - begin
+          maxFound = true
           date = new Date(begin)
           target = metric.getTargetDesc()
-
     route = Routes.Regions.show
       name: target
-    @$(".longest-compaction").html("<b>#{(max/1000.0).toFixed(1)}s</b> <a href='#{route}'>on Region</a>")
+
+    if maxFound
+        @$(".longest-compaction").html("<b>#{(max/1000.0).toFixed(1)}s</b> <a href='#{route}'>on Region</a>")
+    else
+        @$(".longest-compaction").html("None")
