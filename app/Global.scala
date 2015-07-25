@@ -5,6 +5,7 @@
 import models.hbase.HBaseContext
 import play.api._
 import actors.UpdateMetricsActor
+import java.util.regex.Pattern
 
 object Global extends GlobalSettings {
 
@@ -20,6 +21,13 @@ object Global extends GlobalSettings {
         try {
           Logger.debug("Try to intanciate api-wrapper %s".format(hbaseContext));
           globals.hBaseContext = Class.forName(hbaseContext).newInstance.asInstanceOf[HBaseContext]
+          val overrideCompactionRegex = app.configuration.getString("logfileParser.overrideCompactionRegexPattern").getOrElse("")
+          if(!Option(overrideCompactionRegex).getOrElse("").isEmpty){
+            //override regex  pattern for compaction metric has been set by user
+            val overrideRegexPattern = Pattern.compile(overrideCompactionRegex,Pattern.MULTILINE)
+            globals.hBaseContext.logFileParser.setOverrideCopactionRegexPattern(overrideRegexPattern)
+            Logger.info("Setting regex pattern for Compaction metrics in logFileParser as [%s]".format(overrideRegexPattern.pattern()))
+          }
         } catch {
           case e: java.lang.ClassNotFoundException =>
             Logger.debug("Instanciating api-wrapper %s failed ".format(hbaseContext));

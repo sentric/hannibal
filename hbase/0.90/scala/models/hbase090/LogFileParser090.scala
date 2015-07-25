@@ -11,7 +11,7 @@ import models.hbase.LogFileParser
 
 class LogFileParser090 extends LogFileParser {
 
-  val COMPACTION = Pattern.compile(
+  var COMPACTION = Pattern.compile(
     """^(.*) INFO (.*).HRegion: completed compaction on region (.*\.) after (.*)$""",
     Pattern.MULTILINE
   )
@@ -31,6 +31,10 @@ class LogFileParser090 extends LogFileParser {
 
       functionBlock(region, end, durationMsec)
     }
+  }
+
+  override def setOverrideCopactionRegexPattern(pattern: Pattern): Unit = {
+    COMPACTION = pattern
   }
 
 }

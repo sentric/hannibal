@@ -14,6 +14,8 @@ trait LogFileParser {
 
   def eachCompaction(logFile: LogFile, functionBlock: (String, Date, Long) => Unit)
 
+  def setOverrideCopactionRegexPattern(pattern: Pattern): Unit
+
   def parseDuration(s:String) = {
     val m = TIME.matcher(s)
     m.find()

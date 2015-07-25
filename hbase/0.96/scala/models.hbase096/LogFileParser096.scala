@@ -11,7 +11,7 @@ import models.hbase.LogFileParser
 
 class LogFileParser096 extends LogFileParser {
 
-  val COMPACTION = Pattern.compile(
+  var COMPACTION = Pattern.compile(
     """^(.*) INFO (.*).HStore: Completed (.*)compaction of (.*) of (.*\.) into (.*) and took (.*) to execute(.*)$""",
     Pattern.MULTILINE
   )
@@ -32,4 +32,9 @@ class LogFileParser096 extends LogFileParser {
       functionBlock(region, end, durationMsec)
     }
   }
+
+  override def setOverrideCopactionRegexPattern(pattern: Pattern): Unit = {
+    COMPACTION = pattern
+  }
+
 }

@@ -154,6 +154,15 @@ and set
     logfile.set-loglevels-on-startup = true
 If this doesn't work for you, you should try to manually change the loglevel on your regionservers.
 
+### 4. logfileParser.overrideCompactionRegexPattern
+
+Hannibal has been already been configured to look for the INFO message containing compaction metrics (with some default regex patterns depending on the version of hbase.)
+Some times the INFO message logged might not match with the default regex pattern(maybe its different distribution of base), which would result in you not being able to see the compaction metrics.
+
+if this is the case, you can set the regex pattern via this variable
+example:
+logfileParser.overrideCompactionRegexPattern="""^(.*) INFO (.*)\.CompactionRequest: completed compaction: regionName=(.*\.), storeName=(.*), fileCount=(.*), fileSize=(.*), priority=(.*), time=(.*); duration=(.*)$"""
+
 
 ## Tuning for large clusters
 Hannibal is not yet ready to be used on large clusters (say about more than 100 machines), however some work has been done (thanks to [Alexandre Normand][] and [churrodog][]) to make it at least possible to run it without crashing on mid-sized clusters. If Hannibal's performance is not sufficient with your HBase setup, it may help to tune the following parameters in [conf/application.conf][].
