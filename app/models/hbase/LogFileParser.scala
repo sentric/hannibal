@@ -16,6 +16,12 @@ trait LogFileParser {
 
   def setOverrideCopactionRegexPattern(pattern: Pattern): Unit
 
+  def setDateGroupPosition(pos: Int): Unit
+
+  def setRegionGroupPosition(pos: Int): Unit
+
+  def setDurationGroupPosition(pos: Int): Unit
+
   def parseDuration(s:String) = {
     val m = TIME.matcher(s)
     m.find()

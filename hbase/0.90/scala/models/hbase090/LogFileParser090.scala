@@ -15,9 +15,9 @@ class LogFileParser090 extends LogFileParser {
     """^(.*) INFO (.*).HRegion: completed compaction on region (.*\.) after (.*)$""",
     Pattern.MULTILINE
   )
-  val DATE_GROUP = 1
-  val REGION_GROUP = 3
-  val DURATION_GROUP = 4
+  var DATE_GROUP = 1
+  var REGION_GROUP = 3
+  var DURATION_GROUP = 4
 
   override def eachCompaction(logFile: LogFile, functionBlock: (String, Date, Long) => Unit) = {
     val m = COMPACTION.matcher(logFile.tail())
@@ -35,6 +35,18 @@ class LogFileParser090 extends LogFileParser {
 
   override def setOverrideCopactionRegexPattern(pattern: Pattern): Unit = {
     COMPACTION = pattern
+  }
+
+  override def setDateGroupPosition(pos: Int): Unit = {
+    DATE_GROUP = pos
+  }
+
+  override def setRegionGroupPosition(pos: Int): Unit = {
+    REGION_GROUP = pos
+  }
+
+  override def setDurationGroupPosition(pos: Int): Unit = {
+    DURATION_GROUP = pos
   }
 
 }

@@ -23,10 +23,24 @@ object Global extends GlobalSettings {
           globals.hBaseContext = Class.forName(hbaseContext).newInstance.asInstanceOf[HBaseContext]
           val overrideCompactionRegex = app.configuration.getString("logfileParser.overrideCompactionRegexPattern").getOrElse("")
           if(!Option(overrideCompactionRegex).getOrElse("").isEmpty){
+            
             //override regex  pattern for compaction metric has been set by user
-            val overrideRegexPattern = Pattern.compile(overrideCompactionRegex,Pattern.MULTILINE)
-            globals.hBaseContext.logFileParser.setOverrideCopactionRegexPattern(overrideRegexPattern)
-            Logger.info("Setting regex pattern for Compaction metrics in logFileParser as [%s]".format(overrideRegexPattern.pattern()))
+            val dateGroupPosition = app.configuration.getInt("logfileParser.dateGroupPosition").getOrElse(0)        
+            val regionGroupPosition = app.configuration.getInt("logfileParser.regionGroupPosition").getOrElse(0)        
+            val durationGroupPosition = app.configuration.getInt("logfileParser.durationGroupPosition").getOrElse(0)        
+            
+            if(dateGroupPosition <= 0 || durationGroupPosition <= 0 || regionGroupPosition <= 0){
+              Logger.warn("Regex pattern for compaction metric has been set, but group positions for date/region/duration are invalid. Regex pattern will be set to default");
+            }else{
+              val overrideRegexPattern = Pattern.compile(overrideCompactionRegex,Pattern.MULTILINE)
+              globals.hBaseContext.logFileParser.setOverrideCopactionRegexPattern(overrideRegexPattern)
+              Logger.info("Setting regex pattern for Compaction metrics in logFileParser as [%s]".format(overrideRegexPattern.pattern()))
+
+              globals.hBaseContext.logFileParser.setDateGroupPosition(dateGroupPosition)
+              globals.hBaseContext.logFileParser.setRegionGroupPosition(regionGroupPosition)
+              globals.hBaseContext.logFileParser.setDurationGroupPosition(durationGroupPosition)
+              Logger.info("Setting group positions for date/region/duration in compaction regex pattern as [%d],[%d],[%d]".format(dateGroupPosition,regionGroupPosition,durationGroupPosition)) 
+            }
           }
         } catch {
           case e: java.lang.ClassNotFoundException =>
@@ -51,6 +65,7 @@ object Global extends GlobalSettings {
   override def onStop(app: Application) {
     Logger.info("Application shutdown...")
   }
+  
 }
 
 package object globals {

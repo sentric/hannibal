@@ -163,6 +163,13 @@ if this is the case, you can set the regex pattern via this variable
 example:
 logfileParser.overrideCompactionRegexPattern="""^(.*) INFO (.*)\.CompactionRequest: completed compaction: regionName=(.*\.), storeName=(.*), fileCount=(.*), fileSize=(.*), priority=(.*), time=(.*); duration=(.*)$"""
 
+Also set the positions of the date/region/duration groups in the above regex via the following parameters:
+
+logfileParser.dateGroupPosition=1
+logfileParser.regionGroupPosition=3
+logfileParser.durationGroupPosition=9
+
+i.e. date occurs as the first group, region as the third group and duration as the ninth group in the above example regex pattern
 
 ## Tuning for large clusters
 Hannibal is not yet ready to be used on large clusters (say about more than 100 machines), however some work has been done (thanks to [Alexandre Normand][] and [churrodog][]) to make it at least possible to run it without crashing on mid-sized clusters. If Hannibal's performance is not sufficient with your HBase setup, it may help to tune the following parameters in [conf/application.conf][].
