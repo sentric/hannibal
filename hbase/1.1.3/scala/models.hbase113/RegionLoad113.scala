@@ -1,4 +1,4 @@
-package models.hbase111
+package models.hbase113
 
 import org.apache.hadoop.hbase.RegionLoad
 
@@ -6,7 +6,7 @@ import org.apache.hadoop.hbase.RegionLoad
 /**
  * Created by Amit Anand on 09/22/2016.
  */
-class RegionLoad111(val hbaseRegionLoad:RegionLoad) extends models.hbase.RegionLoad {
+class RegionLoad113(val hbaseRegionLoad:RegionLoad) extends models.hbase.RegionLoad {
   override val memStoreSizeMB: Float = hbaseRegionLoad.getMemStoreSizeMB
   override val storeFileSizeMB: Float = hbaseRegionLoad.getStorefileSizeMB
   override val stores: Int = hbaseRegionLoad.getStores

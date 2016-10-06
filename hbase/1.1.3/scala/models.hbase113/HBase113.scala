@@ -2,18 +2,18 @@
  * Copyright 2014 YMC. See LICENSE for details.
  */
 
-package models.hbase111
+package models.hbase113
 
 import scala.collection.JavaConverters._
 import models.hbase.{HBase, RegionServer}
 
-class HBase111 extends HBase {
+class HBase113 extends HBase {
   override def eachRegionServer[T](func: RegionServer => T) = {
     withAdmin { hbaseAdmin =>
       val status = hbaseAdmin.getClusterStatus()
       val servers = status.getServers().asScala.toList
       servers.map { serverName =>
-        func(new RegionServer111(status, serverName, conf.getInt("hbase.regionserver.info.port", 60030)))
+        func(new RegionServer113(status, serverName, conf.getInt("hbase.regionserver.info.port", 60030)))
       }
     }
   }
