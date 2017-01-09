@@ -7,8 +7,8 @@ fi
 dir=`dirname $script`
 
 if [ "" = "$HANNIBAL_HTTP_PORT" ]; then
-    HANNIBAL_HTTP_PORT="9000"
-    echo "starting Hannibal on Port 9000 (may be altered by assigning another port-number to HANNIBAL_HTTP_PORT)"
+    HANNIBAL_HTTP_PORT="9001"
+    echo "starting Hannibal on Port 9001 (may be altered by assigning another port-number to HANNIBAL_HTTP_PORT)"
 else
     echo "starting Hannibal on Port $HANNIBAL_HTTP_PORT (as defined by HANNIBAL_HTTP_PORT)"
 fi
