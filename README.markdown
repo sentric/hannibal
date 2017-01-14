@@ -27,37 +27,15 @@ You will also need a browser with [SVG][]-Support to display Hannibal's graphs.
 
 ### HBase Compatibilty
 
-Hannibal currently supports HBase versions 0.90 to 0.98. The Scala-sources are currently compiled with Apache HBase versions wherever possible, you can try to alter the version in project/Build.scala if you wish to.
+Hannibal currently supports HBase versions 0.90 to 0.98.
+This Forked Version also supports Hbase 1.2.0-CDH, specifically CDH 5.9 
 
 ## Quickstart
-
-### Variant 1: From Binary Package
-
- 1. Download and extract the package according to your HBase version. Grab the Download-URL for the correct HBase-Version from the [Release-Page][Release-Page] and extract it:
-
-        $ wget <URL-TO-PACKAGE>
-        $ tar -xf "hannibal-hbase*.tgz"
-        $ cd hannibal
-	
- 2. Copy `conf/hbase-site.template.xml` to `conf/hbase-site.xml` and adjust it:
-
- 		$ cp conf/hbase-site.template.xml conf/hbase-site.xml
- 		$ vi conf/hbase-site.xml
- 		
- 3. Run the start script inside the root folder of the project:
- 
-        $ ./start
-
-When the application has started, you can access the web UI at: <http://localhost:9000>
-
-Please note that history data about regions is only collected while the application is running, it will need to run for some time until the region detail graphs fill up. 
-
-For information about the usage, check out [the Usage page on our Wiki][Wiki-Usage].
 
  [Wiki-Usage]: https://github.com/sentric/hannibal/wiki/Usage
  [Release-Page]: https://github.com/sentric/hannibal/releases/latest 
 
-### Variant 2: From Source
+### From Source
 
  1. Grab the sources from github: 
  
@@ -68,7 +46,8 @@ For information about the usage, check out [the Usage page on our Wiki][Wiki-Usa
 
         $ export HANNIBAL_HBASE_VERSION=0.98
     
-    Other possible values are "0.90", "0.94", "0.96" or "0.98". Be sure to always have this environment-variable set before executing `build` or `start` scripts.
+    Other possible values are "0.90", "0.94", "0.96","0.98", or "1.2.0" Be sure to always have this environment-variable set before executing `build` or `start` scripts.
+    Keep in mind, selecting 1.2.0 will use Cloudera Specific jars, and not the vanilla apache.org ones
 
 
  3. Copy `conf/hbase-site.template.xml` to `conf/hbase-site.xml` and adjust it.
