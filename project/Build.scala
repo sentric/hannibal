@@ -4,6 +4,7 @@ import Keys._
 import java.lang.System._
 import play.Play.autoImport._
 import PlayKeys._
+import play.sbt.PlayImport._
 
 object ApplicationBuild extends Build {
 
@@ -20,7 +21,7 @@ object ApplicationBuild extends Build {
 
     val appDependencies = Seq(
       jdbc,
-      anorm,
+      "com.typesafe.play" %% "anorm-java8" % "2.4.0-RC2",
       cache,
       json,
       ws,
@@ -77,9 +78,11 @@ object ApplicationBuild extends Build {
 
       version := appVersion,
 
-      scalaVersion := "2.11.1",
+      scalaVersion := "2.11.7",
 
       libraryDependencies ++= appDependencies,
+      libraryDependencies += specs2 % Test,
+      libraryDependencies += evolutions,
 
       unmanagedSourceDirectories in Compile <++= baseDirectory { base =>
         Seq(
