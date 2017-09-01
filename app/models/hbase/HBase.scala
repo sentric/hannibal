@@ -21,7 +21,7 @@ trait HBase {
   val conf:Configuration = HBaseConfiguration.create()
   val AUTH_METHOD = conf.get("hadoop.security.authentication", "SIMPLE")
 
-  if (AUTH_METHOD == "KERBEROS")
+  if (AUTH_METHOD.toUpperCase == "KERBEROS")
     UserGroupInformation.setConfiguration(conf)
 
   val conn:Connection = ConnectionFactory.createConnection(conf)
