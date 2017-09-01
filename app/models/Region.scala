@@ -5,11 +5,13 @@
 package models
 
 import org.apache.hadoop.hbase.util.Bytes
-import org.apache.hadoop.hbase.{HRegionInfo}
+import org.apache.hadoop.hbase.{HRegionInfo, TableName}
+
 import scala.collection.mutable.ListBuffer
 import play.api.Logger
+
 import scala.collection._
-import play.api.libs.json.{Json, JsObject, Writes}
+import play.api.libs.json.{JsObject, Json, Writes}
 import play.api.libs.json.Json._
 import models.hbase.{RegionLoad, RegionServer}
 import globals.hBaseContext
@@ -49,7 +51,8 @@ case class Region(val regionServer: RegionServer, val regionLoad: RegionLoad) {
   lazy val info: RegionInfo = {
     val hRegionInfo =
       hBaseContext.hBase
-        .withAdmin { _.getConnection.getRegionLocation(Bytes.toBytes(tableName), parsedElements(1), false)}
+        //.withAdmin { _.getConnection.getRegionLocation(Bytes.toBytes(tableName), parsedElements(1), false)}
+          .withAdmin{_.getConnection.getRegionLocator(TableName.valueOf(tableName)).getRegionLocation(parsedElements(1), false)}
         .getRegionInfo
     RegionInfo(hRegionInfo)
   }
@@ -109,7 +112,7 @@ object Region {
 case class RegionInfo(wrapped:HRegionInfo) {
   def endKey() = Bytes.toStringBinary(wrapped.getEndKey)
   def startKey() = Bytes.toStringBinary(wrapped.getStartKey)
-  def version() = wrapped.getVersion
+  //def version() = wrapped.getVersion
   def regionId() = wrapped.getRegionId
   def regionName() = wrapped.getRegionNameAsString
 }
