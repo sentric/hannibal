@@ -112,7 +112,6 @@ object Region {
 case class RegionInfo(wrapped:HRegionInfo) {
   def endKey() = Bytes.toStringBinary(wrapped.getEndKey)
   def startKey() = Bytes.toStringBinary(wrapped.getStartKey)
-  //def version() = wrapped.getVersion
   def regionId() = wrapped.getRegionId
   def regionName() = wrapped.getRegionNameAsString
 }
