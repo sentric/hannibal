@@ -118,7 +118,7 @@ case class RegionInfo(wrapped:HRegionInfo) {
 }
 
 
-case class RegionName(tableName: String, startKey: String, regionIdTimestamp: Long, encodedName: String) {
+case class RegionName(tableName: String, startKey: String, regionIdTimestamp: String, encodedName: String) {
   override def equals(that: Any): Boolean =
     that match {
       case r: RegionName => r.encodedName == this.encodedName &&
@@ -146,7 +146,7 @@ object RegionName {
       tableName = commaParts.head,
       // startKey can contain commas itself, so we join all components except the first and last with a ","
       startKey = commaParts.view(1, commaParts.length - 1).reduceLeft(_ + "," + _),
-      regionIdTimestamp = regionIdTimestampAndEncodedName.head.toLong,
+      regionIdTimestamp = regionIdTimestampAndEncodedName.head.toString,
       encodedName = regionIdTimestampAndEncodedName.last
     )
   }
