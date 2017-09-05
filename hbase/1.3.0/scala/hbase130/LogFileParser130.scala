@@ -2,14 +2,14 @@
  * Copyright 2014 YMC. See LICENSE for details.
  */
 
-package models.hbase113
+package models.hbase130
 
 import models.LogFile
 import java.util.regex._
 import java.util.Date
 import models.hbase.LogFileParser
 
-class LogFileParser113 extends LogFileParser {
+class LogFileParser130 extends LogFileParser {
 
   val COMPACTION = Pattern.compile(
     """^(.*) INFO (.*).HStore: Completed (.*)compaction of (.*) of (.*\.) into (.*) and took (.*) to execute(.*)$""",
