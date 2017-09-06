@@ -14,7 +14,7 @@ else
 fi
 
 if [ -d $dir/target ]; then
-    $dir/activator start -Dhttp.port=$HANNIBAL_HTTP_PORT -DapplyEvolutions.default=true
+    sbt start -Dhttp.port=$HANNIBAL_HTTP_PORT -DapplyEvolutions.default=true
 else
     echo "The project has not yet been built, please run './build' first"
 fi

@@ -5,7 +5,6 @@ script=$0
 if [ -h $script ]; then
    script=`readlink $script`
 fi
-dir=`dirname $script`
 
 if [ "" = "$HANNIBAL_HBASE_VERSION" ]; then
     HANNIBAL_HBASE_VERSION="0.90"
@@ -14,10 +13,10 @@ else
     echo "building Hannibal for HBase $HANNIBAL_HBASE_VERSION (as defined by HANNIBAL_HBASE_VERSION)"
 fi
 
-$dir/activator clean compile assets
+sbt clean compile assets
 res1=$?
 
-$dir/activator doc
+sbt doc
 res2=$?
 
 if [ "0 0" = "$res1 $res2"  ]; then

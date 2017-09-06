@@ -23,8 +23,7 @@ fi
 
 echo "1. building ..."
 cd $hannibal_dir
-#./activator universal:package-zip-tarball
-./activator stage
+sbt stage
 if [ "$?" != "0" ]; then
     echo "error during build";
     exit 1
@@ -40,7 +39,7 @@ mkdir -p $temp_dir
 cp -R $hannibal_dir/target/universal/stage $temp_dir/hannibal
 cp $hannibal_dir/LICENSE $temp_dir/hannibal
 
-echo "3. generting startscript ..."
+echo "3. generting start script ..."
 touch $temp_dir/hannibal/start
 chmod +x $temp_dir/hannibal/start
 echo "#!/bin/sh" >> $temp_dir/hannibal/start
