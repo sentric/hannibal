@@ -21,6 +21,7 @@ object ApplicationBuild extends Build {
 
     val appDependencies = Seq(
       jdbc,
+      "mysql" % "mysql-connector-java" % "5.1.37",
       "com.typesafe.play" %% "anorm-java8" % "2.4.0-RC2",
       "com.google.guava" % "guava" % "23.0",
       cache,
