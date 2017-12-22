@@ -12,7 +12,8 @@ object Global extends GlobalSettings {
   private val apiVersions = List(
     "models.hbase096.HBaseContext096",
     "models.hbase092.HBaseContext092",
-    "models.hbase090.HBaseContext090"
+    "models.hbase090.HBaseContext090",
+    "models.hbase130.HBaseContext130"
   );
 
   override def onStart(app: Application) {
